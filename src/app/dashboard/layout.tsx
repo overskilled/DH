@@ -1,5 +1,5 @@
-import { Sidebar } from '@/components/sidebar';
-import * as React from 'react';
+import { Sidebar } from "@/components/sidebar";
+import * as React from "react";
 
 export default function DashboardLayout({
   children,
@@ -9,7 +9,7 @@ export default function DashboardLayout({
   return (
     <div className="flex">
       <Sidebar />
-      {children}
+      <div className="w-full ml-[280px]">{children}</div>
     </div>
   );
 }

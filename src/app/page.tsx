@@ -1,9 +1,9 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div id="webcrumbs">
-      <div className="w-[1200px] bg-white">
+      <div className="w-full bg-white">
         <nav className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-50">
           <h1 className="text-2xl font-bold">LawPro Solutions</h1>
           <div className="flex gap-8">
@@ -56,19 +56,19 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-8">
             {[
               {
-                icon: 'add_task',
-                title: 'Create & Track Cases',
-                desc: 'Easily add new cases and monitor progress',
+                icon: "add_task",
+                title: "Create & Track Cases",
+                desc: "Easily add new cases and monitor progress",
               },
               {
-                icon: 'group_add',
-                title: 'Assign Lawyers & Set Deadlines',
-                desc: 'Allocate cases to lawyers with expected completion timelines',
+                icon: "group_add",
+                title: "Assign Lawyers & Set Deadlines",
+                desc: "Allocate cases to lawyers with expected completion timelines",
               },
               {
-                icon: 'payments',
-                title: 'Manage Clients & Send Invoices',
-                desc: 'Store client information and send invoices or emails directly',
+                icon: "payments",
+                title: "Manage Clients & Send Invoices",
+                desc: "Store client information and send invoices or emails directly",
               },
             ].map((step, index) => (
               <div className="p-8 rounded-xl bg-white shadow-lg hover:shadow-xl transition-all text-center group">
@@ -89,34 +89,34 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-8">
             {[
               {
-                icon: 'folder_supervised',
-                title: 'Case Management',
-                desc: 'Track ongoing, completed, and abandoned cases',
+                icon: "folder_supervised",
+                title: "Case Management",
+                desc: "Track ongoing, completed, and abandoned cases",
               },
               {
-                icon: 'group',
-                title: 'Client Management',
-                desc: 'Store client details and generate invoices',
+                icon: "group",
+                title: "Client Management",
+                desc: "Store client details and generate invoices",
               },
               {
-                icon: 'assignment_ind',
-                title: 'Lawyer Assignments',
-                desc: 'Assign cases to lawyers and set timeframes',
+                icon: "assignment_ind",
+                title: "Lawyer Assignments",
+                desc: "Assign cases to lawyers and set timeframes",
               },
               {
-                icon: 'description',
-                title: 'Document Management',
-                desc: 'Upload and manage case-related files',
+                icon: "description",
+                title: "Document Management",
+                desc: "Upload and manage case-related files",
               },
               {
-                icon: 'filter_alt',
-                title: 'Search & Filters',
-                desc: 'Find cases by name, client, or status',
+                icon: "filter_alt",
+                title: "Search & Filters",
+                desc: "Find cases by name, client, or status",
               },
               {
-                icon: 'notifications_active',
-                title: 'Notifications & Reminders',
-                desc: 'Get alerts for deadlines and updates',
+                icon: "notifications_active",
+                title: "Notifications & Reminders",
+                desc: "Get alerts for deadlines and updates",
               },
             ].map((feature) => (
               <div className="p-8 bg-white rounded-xl shadow hover:shadow-lg transition-all group">
@@ -137,41 +137,41 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               {
-                title: 'Basic',
-                price: '$49',
+                title: "Basic",
+                price: "$49",
                 features: [
-                  '5 Users',
-                  'Basic Case Management',
-                  'Client Database',
-                  'Email Support',
+                  "5 Users",
+                  "Basic Case Management",
+                  "Client Database",
+                  "Email Support",
                 ],
               },
               {
-                title: 'Pro',
-                price: '$99',
+                title: "Pro",
+                price: "$99",
                 features: [
-                  '20 Users',
-                  'Advanced Case Management',
-                  'Document Management',
-                  'Priority Support',
+                  "20 Users",
+                  "Advanced Case Management",
+                  "Document Management",
+                  "Priority Support",
                 ],
               },
               {
-                title: 'Enterprise',
-                price: 'Custom',
+                title: "Enterprise",
+                price: "Custom",
                 features: [
-                  'Unlimited Users',
-                  'Custom Features',
-                  'API Access',
-                  '24/7 Support',
+                  "Unlimited Users",
+                  "Custom Features",
+                  "API Access",
+                  "24/7 Support",
                 ],
               },
             ].map((plan, index) => (
               <div
                 className={`p-8 rounded-xl shadow-xl hover:shadow-2xl transition-all ${
                   index === 1
-                    ? 'bg-blue-600 text-white transform scale-105'
-                    : 'bg-white'
+                    ? "bg-blue-600 text-white transform scale-105"
+                    : "bg-white"
                 }`}
               >
                 <h3 className="text-2xl font-bold mb-4">{plan.title}</h3>
@@ -192,8 +192,8 @@ export default function Home() {
                 <button
                   className={`w-full py-3 rounded-lg font-semibold transition-all transform hover:scale-105 ${
                     index === 1
-                      ? 'bg-white text-blue-600'
-                      : 'bg-blue-600 text-white'
+                      ? "bg-white text-blue-600"
+                      : "bg-blue-600 text-white"
                   }`}
                 >
                   Get Started
@@ -210,14 +210,14 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
             {[
               {
-                text: 'The platform has revolutionized how we manage our cases. Highly recommended!',
-                name: 'Robert Anderson',
-                role: 'Senior Partner, Anderson Legal',
+                text: "The platform has revolutionized how we manage our cases. Highly recommended!",
+                name: "Robert Anderson",
+                role: "Senior Partner, Anderson Legal",
               },
               {
-                text: 'Intuitive interface and powerful features. Perfect for our growing law firm.',
-                name: 'Emily Chen',
-                role: 'Managing Partner, Chen & Associates',
+                text: "Intuitive interface and powerful features. Perfect for our growing law firm.",
+                name: "Emily Chen",
+                role: "Managing Partner, Chen & Associates",
               },
             ].map((testimonial) => (
               <div className="p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all">
@@ -259,7 +259,6 @@ export default function Home() {
                 />
                 <textarea
                   placeholder="Message"
-                  rows="4"
                   className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 ></textarea>
                 <button className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all w-full font-semibold">
