@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <div id="webcrumbs">
-      <div className="w-full bg-gray-50 min-h-screen font-sans">
+      <div className="w-full bg-gray-50 min-h-screen p-6 font-sans">
         <header className="bg-white shadow-md p-6">
           <div className="flex justify-between items-center">
             <div>
@@ -29,7 +29,7 @@ export default function Page() {
           </div>
         </header>
 
-        <div className="px-6 py-4">
+        <div className="py-4">
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex flex-col md:flex-row justify-between items-center mb-6">
               <div className="relative w-full md:w-96 mb-4 md:mb-0">

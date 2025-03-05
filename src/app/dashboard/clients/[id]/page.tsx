@@ -2,52 +2,47 @@ export default function Page() {
   return (
     <div id="webcrumbs">
       <div className="w-full bg-gray-50 font-sans overflow-hidden">
-        <header className="bg-white shadow-md p-6">
-          <div className="flex flex-col gap-4">
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Case Name
-            </th>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-              <div>
-                <h1 className="text-3xl font-bold text-indigo-800">John Doe</h1>
-                <nav className="text-sm text-gray-500 mt-1">
-                  <span className="hover:text-indigo-600 transition-colors duration-200 cursor-pointer">
-                    Dashboard
-                  </span>{" "}
-                  &gt;
-                  <span className="hover:text-indigo-600 transition-colors duration-200 cursor-pointer ml-1">
-                    Clients
-                  </span>{" "}
-                  &gt;
-                  <span className="text-indigo-600 ml-1">John Doe</span>
-                </nav>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-                <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center">
-                  <span className="material-symbols-outlined mr-1 text-sm">
-                    edit
-                  </span>
-                  Edit Client
-                </button>
-                <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center">
-                  <span className="material-symbols-outlined mr-1 text-sm">
-                    delete
-                  </span>
-                  Delete Client
-                </button>
-                <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center">
-                  <span className="material-symbols-outlined mr-1 text-sm">
-                    email
-                  </span>
-                  Send Email
-                </button>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center">
-                  <span className="material-symbols-outlined mr-1 text-sm">
-                    receipt
-                  </span>
-                  Generate Invoice
-                </button>
-              </div>
+        <header className="bg-white shadow-md p-6 m-6 rounded-lg mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-indigo-800">John Doe.</h1>
+              <nav className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                <span className="hover:text-blue-600 transition cursor-pointer">
+                  Dashboard
+                </span>
+                <span className="material-symbols-outlined text-xs">
+                  chevron_right
+                </span>
+                <span className="hover:text-blue-600 transition cursor-pointer">
+                  Clients
+                </span>
+                <span className="material-symbols-outlined text-xs">
+                  chevron_right
+                </span>
+                <span className="text-gray-700">John Doe</span>
+              </nav>
+            </div>
+            <div className="flex gap-3">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">edit</span>
+                Edit Client
+              </button>
+              <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">
+                  delete
+                </span>
+                Delete Client
+              </button>
+              <button className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">
+                  receipt
+                </span>
+                Generate Invoice
+              </button>
+              <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm">mail</span>
+                Email Client
+              </button>
             </div>
           </div>
         </header>

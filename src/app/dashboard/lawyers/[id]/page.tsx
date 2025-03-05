@@ -1,13 +1,45 @@
 export default function Page() {
   return (
-    <div className="bg-white shadow-md p-6">
-      <h2 className="text-lg font-semibold mb-4 flex items-center">
-        <span className="material-symbols-outlined mr-2">person</span>
-        Lawyer Details
-      </h2>
+    <div className="bg-gray-50 shadow-md p-6">
+      <header className="bg-white shadow-md p-6 rounded-lg mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-indigo-800">John Doe.</h1>
+            <nav className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+              <span className="hover:text-blue-600 transition cursor-pointer">
+                Dashboard
+              </span>
+              <span className="material-symbols-outlined text-xs">
+                chevron_right
+              </span>
+              <span className="hover:text-blue-600 transition cursor-pointer">
+                Lawyers
+              </span>
+              <span className="material-symbols-outlined text-xs">
+                chevron_right
+              </span>
+              <span className="text-gray-700">John Doe</span>
+            </nav>
+          </div>
+          <div className="flex gap-3">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">edit</span>
+              Edit Lawyer
+            </button>
+            <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">delete</span>
+              Delete Lawyer
+            </button>
+            <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">mail</span>
+              Email Lawyer
+            </button>
+          </div>
+        </div>
+      </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="col-span-1 bg-gray-50 p-6 rounded-lg">
+        <div className="col-span-1 bg-gray-200 p-6 rounded-lg">
           <div className="flex flex-col items-center">
             <img
               src="https://randomuser.me/api/portraits/women/21.jpg"
@@ -116,7 +148,7 @@ export default function Page() {
 
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-200">
                     <tr>
                       <th
                         scope="col"
@@ -179,7 +211,7 @@ export default function Page() {
                     ].map((caseItem, index) => (
                       <tr
                         key={index}
-                        className="hover:bg-gray-50 transition duration-300 cursor-pointer"
+                        className="hover:bg-gray-200 transition duration-300 cursor-pointer"
                       >
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition duration-300">
@@ -217,7 +249,7 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-200 p-4 rounded-lg">
                 <h4 className="font-medium mb-4 flex items-center">
                   <span className="material-symbols-outlined mr-2">
                     schedule
@@ -252,7 +284,7 @@ export default function Page() {
                 </ul>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-200 p-4 rounded-lg">
                 <h4 className="font-medium mb-4 flex items-center">
                   <span className="material-symbols-outlined mr-2">update</span>
                   Recent Updates
@@ -307,7 +339,7 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-200 p-4 rounded-lg">
               <h4 className="font-medium mb-4 flex items-center">
                 <span className="material-symbols-outlined mr-2">
                   description
