@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <div id="webcrumbs">
-      <div className="w-[1200px] bg-white rounded-xl shadow-lg p-6 font-sans">
+      <div className="w-full bg-white shadow-lg p-6 font-sans">
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
             <div>

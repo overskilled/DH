@@ -1,6 +1,6 @@
 export default function Page() {
   return (
-    <div className="w-full bg-white shadow-lg p-4 md:p-6 lg:p-8">
+    <div className="w-full bg-gray-50 shadow-lg p-4 md:p-6 lg:p-8">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
           Case Management
@@ -57,7 +57,7 @@ export default function Page() {
       </header>
 
       <div className="grid gap-6">
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-100 group">
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-300 group">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
             <div>
               <div className="flex items-center gap-2">

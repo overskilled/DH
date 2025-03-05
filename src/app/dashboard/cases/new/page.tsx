@@ -1,6 +1,6 @@
 export default function CreateCasePage() {
   return (
-    <div className="w-full max-w-[1080px] mx-auto bg-gray-50 p-4 sm:p-6 lg:p-8 font-sans shadow-sm">
+    <div className="w-full mx-auto bg-gray-50 p-4 sm:p-6 lg:p-8 font-sans shadow-sm">
       <header className="mb-4 sm:mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">Create New Case</h1>
         <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600">

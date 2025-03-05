@@ -1,7 +1,7 @@
 export default function Navbar() {
   return (
     <div id="webcrumbs">
-      <nav className="w-full bg-white dark:bg-gray-900 shadow-md transition-all duration-300 ease-in-out">
+      <nav className="w-full bg-white dark:bg-gray-900 border-b shadow-sm transition-all duration-300 ease-in-out">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0">

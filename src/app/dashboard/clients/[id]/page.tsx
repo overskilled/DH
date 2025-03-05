@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <div id="webcrumbs">
-      <div className="w-[1200px] bg-gray-50 font-sans overflow-hidden">
+      <div className="w-full bg-gray-50 font-sans overflow-hidden">
         <header className="bg-white shadow-md p-6">
           <div className="flex flex-col gap-4">
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

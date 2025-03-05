@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <div id="webcrumbs">
-      <div className="w-full bg-white rounded-lg shadow-lg p-8">
+      <div className="w-full bg-white shadow-lg p-8">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
@@ -48,7 +48,7 @@ export default function Page() {
               </h2>
 
               <div className="mb-6">
-                <div className="w-32 h-32 mx-auto bg-white rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-blue-500 transition-all group relative overflow-hidden">
+                <div className="w-32 h-32 mx-auto bg-gray-50 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-blue-500 transition-all group relative overflow-hidden">
                   <input type="file" className="hidden" id="profile-upload" />
                   <label
                     htmlFor="profile-upload"
@@ -57,7 +57,7 @@ export default function Page() {
                     <span className="material-symbols-outlined text-4xl text-gray-400 group-hover:text-blue-500 transition-all">
                       add_photo_alternate
                     </span>
-                    <span className="text-xs mt-2 text-gray-500 group-hover:text-blue-500 transition-all">
+                    <span className="text-xs mt-2 text-white0 group-hover:text-blue-500 transition-all">
                       Upload Photo
                     </span>
                   </label>
@@ -218,14 +218,14 @@ export default function Page() {
                     </label>
                     <details className="relative">
                       <summary className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all list-none cursor-pointer flex justify-between items-center">
-                        <span className="text-gray-500">
+                        <span className="text-white0">
                           Select Specializations
                         </span>
                         <span className="material-symbols-outlined">
                           expand_more
                         </span>
                       </summary>
-                      <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 mt-1 rounded z-10 shadow-lg p-2">
+                      <div className="absolute top-full left-0 right-0 bg-gray-50 border border-gray-300 mt-1 rounded z-10 shadow-lg p-2">
                         <div className="max-h-48 overflow-y-auto">
                           <div className="p-2 hover:bg-gray-100 rounded flex items-center">
                             <input
@@ -348,7 +348,9 @@ export default function Page() {
                   </div>
                 </div>
               </div>
+            </div>
 
+            <div className="col-span-3">
               <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6 hover:shadow-md transition-all">
                 <h2 className="text-lg font-semibold mb-4 flex items-center">
                   <span className="material-symbols-outlined mr-2">badge</span>
@@ -374,7 +376,7 @@ export default function Page() {
                         <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all">
                           upload_file
                         </span>
-                        <p className="mt-2 text-sm text-gray-500 group-hover:text-blue-500 transition-all">
+                        <p className="mt-2 text-sm text-white0 group-hover:text-blue-500 transition-all">
                           Drag & drop files here or click to browse
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
@@ -401,7 +403,7 @@ export default function Page() {
                         <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all">
                           description
                         </span>
-                        <p className="mt-2 text-sm text-gray-500 group-hover:text-blue-500 transition-all">
+                        <p className="mt-2 text-sm text-white0 group-hover:text-blue-500 transition-all">
                           Drag & drop your CV here or click to browse
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
@@ -419,7 +421,7 @@ export default function Page() {
                       LinkedIn Profile URL
                     </label>
                     <div className="flex">
-                      <span className="inline-flex items-center px-3 py-2 text-gray-500 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+                      <span className="inline-flex items-center px-3 py-2 text-white0 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
                         <i className="fa-brands fa-linkedin text-blue-600"></i>
                       </span>
                       <input
@@ -446,7 +448,7 @@ export default function Page() {
                       className="sr-only peer"
                       id="case-assignment-toggle"
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-50 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     <span className="ml-3 text-sm font-medium">
                       Assign Cases Immediately?
                     </span>
@@ -482,7 +484,7 @@ export default function Page() {
                         #1238 - Employment Dispute - Acme Inc.
                       </option>
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-white0 mt-1">
                       Hold Ctrl/Cmd to select multiple cases
                     </p>
                   </div>
