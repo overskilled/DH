@@ -15,7 +15,7 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="fixed w-[280px] h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg">
+    <div className="h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg relative">
       <div className="flex items-center justify-between p-4 bg-white">
         <div className="flex items-center space-x-2">
           <span className="material-symbols-outlined text-blue-600">gavel</span>
@@ -131,7 +131,7 @@ export const Sidebar = () => {
       </nav>
 
       {/* User Info & Logout */}
-      <div className="absolute bottom-0 w-full p-4 bg-white border-t border-gray-200">
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200">
         <div className="flex justify-between items-center space-x-3 group cursor-pointer">
           <div className="flex gap-5">
             <img

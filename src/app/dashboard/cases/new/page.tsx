@@ -405,7 +405,6 @@ export default function CreateCasePage() {
               </div>
               <textarea
                 id="caseDescription"
-                rows="6"
                 className="w-full p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="Enter detailed case notes here..."
               ></textarea>
@@ -423,7 +422,6 @@ export default function CreateCasePage() {
           </div>
           <div className="border rounded-lg p-3 bg-yellow-50 hidden">
             <textarea
-              rows="3"
               className="w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent transition-all"
               placeholder="Internal remarks..."
             ></textarea>

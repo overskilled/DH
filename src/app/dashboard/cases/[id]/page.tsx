@@ -585,7 +585,6 @@ export default function Page() {
           <div className="mt-4 relative">
             <textarea
               className="w-full border rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              rows="3"
               placeholder="Add a note or comment..."
             ></textarea>
             <button className="absolute right-3 bottom-3 text-blue-600 hover:text-blue-800 transition">
