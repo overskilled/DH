@@ -1,6 +1,6 @@
 // import { Geist, Geist_Mono } from "next/font/google";
-import './globals.css';
-
+import "./globals.css";
+import { AuthProvider } from "@/components/context/auth-context";
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -12,8 +12,8 @@ import './globals.css';
 // });
 
 export const metadata = {
-  title: 'Next app',
-  description: 'Law firm.',
+  title: "Next app",
+  description: "Law firm.",
   // icons: {
   //   icon: "/logo.png"
   // }
@@ -33,7 +33,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
       </head>
-      <body className={` antialiased`}>{children}</body>
+      <body className={` antialiased`}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

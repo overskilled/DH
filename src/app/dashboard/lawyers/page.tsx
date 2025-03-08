@@ -1,4 +1,11 @@
+"use client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 export default function Page() {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div id="webcrumbs">
       <div className="w-full bg-gray-50 min-h-screen p-6 font-sans">
@@ -15,7 +22,10 @@ export default function Page() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-300 transform hover:scale-105">
+              <button
+                onClick={() => router.push("/dashboard/lawyers/new")}
+                className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-300 transform hover:scale-105"
+              >
                 <span className="material-symbols-outlined mr-2">
                   person_add
                 </span>
@@ -68,8 +78,14 @@ export default function Page() {
                     </div>
                   </div>
                 </details>
-                <details className="relative">
-                  <summary className="flex items-center cursor-pointer bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 transition duration-300">
+                <details open={isOpen} className="relative">
+                  <summary
+                    onClick={(e: any) => {
+                      e.preventDefault();
+                      setIsOpen((prev) => !prev);
+                    }}
+                    className="flex items-center cursor-pointer bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 transition duration-300"
+                  >
                     <span className="material-symbols-outlined mr-2 text-gray-500">
                       work
                     </span>
@@ -79,7 +95,10 @@ export default function Page() {
                     </span>
                   </summary>
                   <div className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md py-2 z-10 w-48">
-                    <div className="px-4 py-2 hover:bg-indigo-50 cursor-pointer transition duration-300">
+                    <div
+                      onClick={() => setIsOpen(false)}
+                      className="px-4 py-2 hover:bg-indigo-50 cursor-pointer transition duration-300"
+                    >
                       All Lawyers
                     </div>
                     <div className="px-4 py-2 hover:bg-indigo-50 cursor-pointer transition duration-300">
