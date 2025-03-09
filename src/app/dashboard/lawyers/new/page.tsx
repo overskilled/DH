@@ -1,4 +1,74 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+
 export default function Page() {
+  const [formData, setFormData] = useState({
+    // Basic Information
+    full_name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    dob: "",
+
+    // Professional Details
+    department: "",
+    bar_number: "",
+    experience: "",
+    specializations: [] as string[],
+    status: "available",
+    max_cases: "",
+    hourly_rate: "",
+
+    // Social & Documents
+    linkedin: "",
+    case_assignment: false,
+    assigned_cases: [],
+    case_duration: "",
+    duration_unit: "days",
+    notes: "",
+  });
+
+  const [profile_image, setProfileImage] = useState(null);
+  const [certifications, setCertifications] = useState<any>([]);
+  const [resume, setResume] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const profileRef = useRef<HTMLInputElement | null>(null);
+  const certsRef = useRef<HTMLInputElement | null>(null);
+  const resumeRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log(formData);
+    }, 15000); // 5 seconds in milliseconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [formData]);
+
+  const handleInputChange = (e: any) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSpecializationChange = (e: any) => {
+    const { value, checked } = e.target;
+    setFormData((prev: any) => ({
+      ...prev,
+      specializations: checked
+        ? [...prev.specializations, value]
+        : prev.specializations.filter((s: any) => s !== value),
+    }));
+  };
+
+  // Update the file input handlers:
+  const handleProfileUpload = (e: any) => setProfileImage(e.target.files[0]);
+  const handleCertUpload = (e: any) => setCertifications([...e.target.files]);
+  const handleResumeUpload = (e: any) => setResume(e.target.files[0]);
+
   return (
     <div id="webcrumbs">
       <div className="w-full bg-white shadow-lg p-8">
@@ -49,7 +119,14 @@ export default function Page() {
 
               <div className="mb-6">
                 <div className="w-32 h-32 mx-auto bg-gray-50 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-blue-500 transition-all group relative overflow-hidden">
-                  <input type="file" className="hidden" id="profile-upload" />
+                  <input
+                    type="file"
+                    ref={profileRef}
+                    onChange={handleProfileUpload}
+                    readOnly={loading}
+                    className="hidden"
+                    id="profile-upload"
+                  />
                   <label
                     htmlFor="profile-upload"
                     className="cursor-pointer flex flex-col items-center"
@@ -77,9 +154,14 @@ export default function Page() {
                   </label>
                   <input
                     type="text"
-                    id="full-name"
+                    id="full_name"
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     placeholder="John Smith"
+                    name="full_name"
+                    value={formData.full_name}
+                    onChange={handleInputChange}
+                    readOnly={loading}
+                    required
                   />
                 </div>
 
@@ -95,6 +177,11 @@ export default function Page() {
                     id="email"
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     placeholder="john.smith@lawfirm.com"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    readOnly={loading}
+                    required
                   />
                 </div>
 
@@ -110,6 +197,11 @@ export default function Page() {
                     id="phone"
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     placeholder="+1 (555) 123-4567"
+                    name="phone"
+                    onChange={handleInputChange}
+                    value={formData.phone}
+                    readOnly={loading}
+                    required
                   />
                 </div>
 
@@ -122,12 +214,16 @@ export default function Page() {
                   </label>
                   <select
                     id="gender"
+                    name="gender"
+                    onChange={handleInputChange}
+                    value={formData.gender} // Bind to formData just like other inputs
+                    disabled={loading} // Equivalent to readOnly for inputs
+                    required
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   >
                     <option value="">Select Gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
-                    <option value="other">Other</option>
                   </select>
                 </div>
 
@@ -141,6 +237,11 @@ export default function Page() {
                   <input
                     type="date"
                     id="dob"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleInputChange}
+                    readOnly={loading}
+                    required
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   />
                 </div>
@@ -164,6 +265,11 @@ export default function Page() {
                     </label>
                     <select
                       id="department"
+                      name="department"
+                      value={formData.department}
+                      onChange={handleInputChange}
+                      disabled={loading}
+                      required
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
                       <option value="">Select Department</option>
@@ -184,6 +290,11 @@ export default function Page() {
                     <input
                       type="text"
                       id="bar-number"
+                      name="bar_number"
+                      value={formData.bar_number}
+                      onChange={handleInputChange}
+                      readOnly={loading}
+                      required
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       placeholder="e.g. BAR12345"
                     />
@@ -198,6 +309,10 @@ export default function Page() {
                     </label>
                     <select
                       id="experience"
+                      name="experience"
+                      value={formData.experience}
+                      onChange={handleInputChange}
+                      disabled={loading}
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
                       <option value="">Select Experience</option>
@@ -227,60 +342,30 @@ export default function Page() {
                       </summary>
                       <div className="absolute top-full left-0 right-0 bg-gray-50 border border-gray-300 mt-1 rounded z-10 shadow-lg p-2">
                         <div className="max-h-48 overflow-y-auto">
-                          <div className="p-2 hover:bg-gray-100 rounded flex items-center">
-                            <input
-                              type="checkbox"
-                              id="spec-corporate"
-                              className="mr-2"
-                            />
-                            <label htmlFor="spec-corporate">
-                              Corporate Law
-                            </label>
-                          </div>
-                          <div className="p-2 hover:bg-gray-100 rounded flex items-center">
-                            <input
-                              type="checkbox"
-                              id="spec-criminal"
-                              className="mr-2"
-                            />
-                            <label htmlFor="spec-criminal">Criminal Law</label>
-                          </div>
-                          <div className="p-2 hover:bg-gray-100 rounded flex items-center">
-                            <input
-                              type="checkbox"
-                              id="spec-family"
-                              className="mr-2"
-                            />
-                            <label htmlFor="spec-family">Family Law</label>
-                          </div>
-                          <div className="p-2 hover:bg-gray-100 rounded flex items-center">
-                            <input
-                              type="checkbox"
-                              id="spec-estate"
-                              className="mr-2"
-                            />
-                            <label htmlFor="spec-estate">Estate Planning</label>
-                          </div>
-                          <div className="p-2 hover:bg-gray-100 rounded flex items-center">
-                            <input
-                              type="checkbox"
-                              id="spec-intellectual"
-                              className="mr-2"
-                            />
-                            <label htmlFor="spec-intellectual">
-                              Intellectual Property
-                            </label>
-                          </div>
-                          <div className="p-2 hover:bg-gray-100 rounded flex items-center">
-                            <input
-                              type="checkbox"
-                              id="spec-real-estate"
-                              className="mr-2"
-                            />
-                            <label htmlFor="spec-real-estate">
-                              Real Estate Law
-                            </label>
-                          </div>
+                          {[
+                            "Corporate Law",
+                            "Criminal Law",
+                            "Family Law",
+                            "Estate Planning",
+                            "Intellectual Property",
+                            "Real Estate Law",
+                          ].map((spec) => (
+                            <div
+                              key={spec}
+                              className="p-2 hover:bg-gray-100 rounded flex items-center"
+                            >
+                              <input
+                                type="checkbox"
+                                id={`spec-${spec}`}
+                                value={spec}
+                                checked={formData.specializations.includes(
+                                  spec
+                                )}
+                                onChange={handleSpecializationChange}
+                              />
+                              <label htmlFor={`spec-${spec}`}>{spec}</label>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </details>
@@ -306,6 +391,10 @@ export default function Page() {
                     </label>
                     <select
                       id="status"
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      disabled={loading}
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     >
                       <option value="available">Available</option>
@@ -324,6 +413,10 @@ export default function Page() {
                     <input
                       type="number"
                       id="max-cases"
+                      name="max_cases"
+                      value={formData.max_cases}
+                      onChange={handleInputChange}
+                      readOnly={loading}
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       min="1"
                       placeholder="e.g. 10"
@@ -339,6 +432,10 @@ export default function Page() {
                     </label>
                     <input
                       type="number"
+                      name="hourly_rate"
+                      value={formData.hourly_rate}
+                      onChange={handleInputChange}
+                      readOnly={loading}
                       id="hourly-rate"
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                       min="0"
@@ -368,6 +465,8 @@ export default function Page() {
                         multiple
                         className="hidden"
                         id="certification-upload"
+                        onChange={handleCertUpload}
+                        ref={certsRef}
                       />
                       <label
                         htmlFor="certification-upload"
@@ -398,6 +497,8 @@ export default function Page() {
                         type="file"
                         className="hidden"
                         id="resume-upload"
+                        onChange={handleResumeUpload}
+                        ref={resumeRef}
                       />
                       <label htmlFor="resume-upload" className="cursor-pointer">
                         <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all">
@@ -427,6 +528,10 @@ export default function Page() {
                       <input
                         type="url"
                         id="linkedin"
+                        name="linkedin"
+                        value={formData.linkedin}
+                        onChange={handleInputChange}
+                        readOnly={loading}
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-r focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                         placeholder="https://linkedin.com/in/username"
                       />
@@ -447,6 +552,10 @@ export default function Page() {
                       type="checkbox"
                       className="sr-only peer"
                       id="case-assignment-toggle"
+                      name="case_assignment"
+                      checked={formData.case_assignment}
+                      onChange={handleInputChange}
+                      disabled={loading}
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-50 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     <span className="ml-3 text-sm font-medium">
@@ -454,40 +563,40 @@ export default function Page() {
                     </span>
                   </label>
                 </div>
-
                 <div className="space-y-4 mt-4">
-                  <div>
-                    <label
-                      className="block text-sm font-medium mb-1"
-                      htmlFor="case-selection"
-                    >
-                      Select Cases to Assign
-                    </label>
-                    <select
-                      multiple
-                      id="case-selection"
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-32"
-                    >
-                      <option value="case1">
-                        #1234 - Johnson vs. Smith (Corporate Dispute)
-                      </option>
-                      <option value="case2">
-                        #1235 - Miller Estate Planning
-                      </option>
-                      <option value="case3">
-                        #1236 - ABC Corp Merger Review
-                      </option>
-                      <option value="case4">
-                        #1237 - Intellectual Property Claim - XYZ Tech
-                      </option>
-                      <option value="case5">
-                        #1238 - Employment Dispute - Acme Inc.
-                      </option>
-                    </select>
-                    <p className="text-xs text-white0 mt-1">
-                      Hold Ctrl/Cmd to select multiple cases
-                    </p>
-                  </div>
+                  {formData.case_assignment === true && (
+                    <div>
+                      <label
+                        className="block text-sm font-medium mb-1"
+                        htmlFor="case-selection"
+                      >
+                        Select Cases to Assign
+                      </label>
+                      <select
+                        id="case-selection"
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-32"
+                      >
+                        <option value="case1">
+                          #1234 - Johnson vs. Smith (Corporate Dispute)
+                        </option>
+                        <option value="case2">
+                          #1235 - Miller Estate Planning
+                        </option>
+                        <option value="case3">
+                          #1236 - ABC Corp Merger Review
+                        </option>
+                        <option value="case4">
+                          #1237 - Intellectual Property Claim - XYZ Tech
+                        </option>
+                        <option value="case5">
+                          #1238 - Employment Dispute - Acme Inc.
+                        </option>
+                      </select>
+                      <p className="text-xs text-white0 mt-1">
+                        Hold Ctrl/Cmd to select multiple cases
+                      </p>
+                    </div>
+                  )}
 
                   <div>
                     <label
