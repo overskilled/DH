@@ -29,28 +29,41 @@ export default function Page() {
     notes: "",
   });
 
-  const [profile_image, setProfileImage] = useState(null);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log(formData);
+    }, 5000); // 5 seconds in milliseconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [formData]);
+
+  const [profile_image, setProfileImage] = useState<any>(null);
   const [certifications, setCertifications] = useState<any>([]);
-  const [resume, setResume] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [resume, setResume] = useState<any>(null);
+  const [loading, setLoading] = useState<any>(false);
 
   const profileRef = useRef<HTMLInputElement | null>(null);
   const certsRef = useRef<HTMLInputElement | null>(null);
   const resumeRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log(formData);
-    }, 15000); // 5 seconds in milliseconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [formData]);
-
   const handleInputChange = (e: any) => {
-    const { name, value, type, checked } = e.target;
+    const { name, type, checked, options } = e.target;
+
+    let value;
+    if (type === "checkbox") {
+      value = checked;
+    } else if (e.target.multiple) {
+      // Extract all selected values
+      value = Array.from(options)
+        .filter((option: any) => option.selected)
+        .map((option: any) => option.value);
+    } else {
+      value = e.target.value;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
 
@@ -127,20 +140,31 @@ export default function Page() {
                     className="hidden"
                     id="profile-upload"
                   />
-                  <label
-                    htmlFor="profile-upload"
-                    className="cursor-pointer flex flex-col items-center"
-                  >
-                    <span className="material-symbols-outlined text-4xl text-gray-400 group-hover:text-blue-500 transition-all">
-                      add_photo_alternate
-                    </span>
-                    <span className="text-xs mt-2 text-white0 group-hover:text-blue-500 transition-all">
-                      Upload Photo
-                    </span>
+                  {profile_image ? (
+                    <img
+                      src={URL.createObjectURL(profile_image)}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <label
+                      htmlFor="profile-upload"
+                      className="cursor-pointer flex flex-col items-center"
+                    >
+                      <span className="material-symbols-outlined text-4xl text-gray-400 group-hover:text-blue-500 transition-all">
+                        add_photo_alternate
+                      </span>
+                      <span className="text-xs mt-2 text-white0 group-hover:text-blue-500 transition-all">
+                        Upload Photo
+                      </span>
+                    </label>
+                  )}
+
+                  <label htmlFor="profile-upload" className="cursor-pointer">
+                    <div className="absolute inset-0 bg-black bg-opacity-50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="material-symbols-outlined">edit</span>
+                    </div>
                   </label>
-                  <div className="absolute inset-0 bg-black bg-opacity-50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined">edit</span>
-                  </div>
                 </div>
               </div>
 
@@ -459,30 +483,74 @@ export default function Page() {
                     <label className="block text-sm font-medium mb-2">
                       Upload Certifications
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-all cursor-pointer group">
-                      <input
-                        type="file"
-                        multiple
-                        className="hidden"
-                        id="certification-upload"
-                        onChange={handleCertUpload}
-                        ref={certsRef}
-                      />
-                      <label
-                        htmlFor="certification-upload"
-                        className="cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all">
-                          upload_file
-                        </span>
-                        <p className="mt-2 text-sm text-white0 group-hover:text-blue-500 transition-all">
-                          Drag & drop files here or click to browse
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          PDF, DOCX, JPG (Max 5MB each)
-                        </p>
-                      </label>
-                    </div>
+                    <label htmlFor="certification-upload">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-all cursor-pointer group">
+                        <input
+                          type="file"
+                          multiple
+                          className="hidden"
+                          id="certification-upload"
+                          onChange={handleCertUpload}
+                          ref={certsRef}
+                        />
+
+                        {certifications && certifications.length > 0 ? (
+                          <div className="w-full flex space-x-2 space-y-2">
+                            {Array.from(certifications).map(
+                              (file: any, index: number) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center space-x-2"
+                                >
+                                  {file.type.startsWith("image/") ? (
+                                    <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden">
+                                      <img
+                                        src={URL.createObjectURL(file)}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  ) : file.type === "application/pdf" ? (
+                                    <div className="p-2 bg-gray-200 rounded-lg flex items-center">
+                                      <span className="material-symbols-outlined text-gray-700">
+                                        picture_as_pdf
+                                      </span>
+                                      <span className="text-sm text-gray-700 ml-2">
+                                        {file.name}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className="p-2 bg-gray-200 rounded-lg flex items-center">
+                                      <span className="material-symbols-outlined text-gray-700">
+                                        insert_drive_file
+                                      </span>
+                                      <span className="text-sm text-gray-700 ml-2">
+                                        {file.name}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="certification-upload"
+                            className="cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all relative">
+                              description
+                            </span>
+                            <p className="mt-2 text-sm text-white0 group-hover:text-blue-500 transition-all">
+                              Drag & drop your CV here or click to browse
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              PDF, DOCX (Max 10MB)
+                            </p>
+                          </label>
+                        )}
+                      </div>
+                    </label>
                   </div>
 
                   <div>
@@ -492,26 +560,59 @@ export default function Page() {
                     >
                       Upload Resume or CV
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-all cursor-pointer group">
-                      <input
-                        type="file"
-                        className="hidden"
-                        id="resume-upload"
-                        onChange={handleResumeUpload}
-                        ref={resumeRef}
-                      />
-                      <label htmlFor="resume-upload" className="cursor-pointer">
-                        <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all">
-                          description
-                        </span>
-                        <p className="mt-2 text-sm text-white0 group-hover:text-blue-500 transition-all">
-                          Drag & drop your CV here or click to browse
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          PDF, DOCX (Max 10MB)
-                        </p>
-                      </label>
-                    </div>
+                    <label htmlFor="resume-upload">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-all cursor-pointer group">
+                        <input
+                          type="file"
+                          className="hidden"
+                          id="resume-upload"
+                          onChange={handleResumeUpload}
+                          ref={resumeRef}
+                        />
+                        {!resume ? (
+                          <>
+                            <label
+                              htmlFor="resume-upload"
+                              className="cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-all relative">
+                                description
+                              </span>
+                              <p className="mt-2 text-sm text-white0 group-hover:text-blue-500 transition-all">
+                                Drag & drop your CV here or click to browse
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                PDF, DOCX (Max 10MB)
+                              </p>
+                            </label>
+                          </>
+                        ) : (
+                          <div className="w-full mt-4">
+                            {resume.type.startsWith("image/") ? (
+                              <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden">
+                                <img
+                                  src={URL.createObjectURL(resume)}
+                                  alt="Preview"
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ) : resume.type === "application/pdf" ? (
+                              <div className="p-2 bg-gray-200 rounded-lg">
+                                <span className="text-sm text-gray-700">
+                                  {resume.name}
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="p-2 bg-gray-200 rounded-lg">
+                                <span className="text-sm text-gray-700">
+                                  {resume.name}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </label>
                   </div>
 
                   <div>
@@ -574,6 +675,10 @@ export default function Page() {
                       </label>
                       <select
                         id="case-selection"
+                        multiple
+                        name="assigned_cases"
+                        onChange={handleInputChange}
+                        disabled={loading}
                         className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-32"
                       >
                         <option value="case1">
@@ -597,32 +702,6 @@ export default function Page() {
                       </p>
                     </div>
                   )}
-
-                  <div>
-                    <label
-                      className="block text-sm font-medium mb-1"
-                      htmlFor="case-duration"
-                    >
-                      Case Duration
-                    </label>
-                    <div className="flex space-x-2">
-                      <input
-                        type="number"
-                        id="case-duration"
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                        min="1"
-                        placeholder="e.g. 30"
-                      />
-                      <select
-                        id="duration-unit"
-                        className="px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                      >
-                        <option value="days">Days</option>
-                        <option value="weeks">Weeks</option>
-                        <option value="months">Months</option>
-                      </select>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -634,6 +713,10 @@ export default function Page() {
 
                 <div>
                   <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleInputChange}
+                    readOnly={loading}
                     className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-32"
                     placeholder="Add internal notes about this lawyer (only visible to administrators)"
                   ></textarea>
