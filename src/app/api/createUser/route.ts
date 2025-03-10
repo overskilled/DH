@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import { adminAuth } from "@/functions/firebase";
-import admin from "firebase-admin";
-// Function to generate random password
+import { adminAuth } from "@/functions/firebase-admin";
+
 function generateRandomPassword(length: number = 12): string {
   const charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
@@ -13,22 +12,22 @@ function generateRandomPassword(length: number = 12): string {
   return password;
 }
 
-// API Route to create user
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
+export async function POST(request: Request) {
   try {
-    const { email, displayName } = req.body;
+    const body = await request.json();
+    console.log("Incoming request body:", body);
 
-    // Generate a random password
+    const { email, displayName } = body;
+
+    if (!email || !displayName) {
+      return NextResponse.json(
+        { error: "Missing email or display name" },
+        { status: 400 }
+      );
+    }
+
     const password = generateRandomPassword(12);
 
-    // Create the user in Firebase Authentication
     const userRecord = await adminAuth.createUser({
       email,
       password,
@@ -37,17 +36,16 @@ export default async function handler(
       disabled: false,
     });
 
-    // Send email with credentials using Nodemailer
     const transporter = nodemailer.createTransport({
-      service: "smtp.hostinger.com", // You can use your email service here (Gmail in this case)
+      host: "smtp.hostinger.com",
       port: 465,
+      secure: true,
       auth: {
-        user: "admin@onevisaplace.com", // Add your email here
-        pass: "Micro-phone43@", // Add your email password or app password here
+        user: "admin@onevisaplace.com",
+        pass: "Micro-phone43@",
       },
     });
 
-    // Email content
     const mailOptions = {
       from: "admin@onevisaplace.com",
       to: email,
@@ -55,14 +53,17 @@ export default async function handler(
       text: `Hello ${displayName},\n\nYour account has been successfully created. Here are your credentials:\n\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after logging in for security reasons.\n\nBest regards,\nYour App Team`,
     };
 
-    // Send email
     await transporter.sendMail(mailOptions);
 
-    // Respond to the client
-    res
-      .status(200)
-      .json({ message: "User created successfully", userId: userRecord.uid });
+    return NextResponse.json({
+      message: "User created successfully",
+      userId: userRecord.uid,
+    });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Error:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }

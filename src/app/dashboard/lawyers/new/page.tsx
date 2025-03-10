@@ -35,14 +35,6 @@ export default function Page() {
     notes: "",
   });
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log(formData);
-    }, 5000); // 5 seconds in milliseconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [formData]);
-
   const [profile_image, setProfileImage] = useState<any>(null);
   const [certifications, setCertifications] = useState<any>([]);
   const [resume, setResume] = useState<any>(null);
