@@ -1,6 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import {
+  addToCollection,
+  setToCollection,
+} from "@/functions/add-to-collection";
+import { uploadFile } from "@/functions/upload-file";
+import Loader from "@/components/loader";
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -82,8 +88,109 @@ export default function Page() {
   const handleCertUpload = (e: any) => setCertifications([...e.target.files]);
   const handleResumeUpload = (e: any) => setResume(e.target.files[0]);
 
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const response = await fetch("/api/createUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        displayName: formData.full_name,
+      }),
+    });
+
+    const data = await response.json();
+
+    try {
+      // Upload profile image
+      const profileUrl = profile_image
+        ? await uploadFile(
+            profile_image,
+            `lawyers/${formData.email}/profile/${profile_image.name}`
+          )
+        : null;
+
+      // Upload certifications
+      const certUrls = await Promise.all(
+        certifications.map(async (file: any, index: number) => ({
+          name: file.name,
+          url: await uploadFile(
+            file,
+            `lawyers/${formData.email}/certifications/${file.name}`
+          ),
+        }))
+      );
+
+      // Upload resume
+      const resumeUrl = resume
+        ? await uploadFile(
+            resume,
+            `lawyers/${formData.email}/resume/${resume.name}`
+          )
+        : null;
+
+      // Create lawyer document
+      const lawyerData = {
+        ...formData,
+        profileImage: profileUrl,
+        certifications: certUrls,
+        resume: resumeUrl,
+        createdAt: new Date(),
+      };
+
+      await setToCollection("users", data.userId, {
+        email: formData.email,
+        name: formData.full_name,
+        role: "lawyer",
+        phone: formData.phone,
+      });
+      await setToCollection("lawyers", data.userId, lawyerData);
+
+      alert("Lawyer added successfully!");
+      // Reset form
+      setFormData({
+        // Basic Information
+        full_name: "",
+        email: "",
+        phone: "",
+        gender: "",
+        dob: "",
+
+        // Professional Details
+        department: "",
+        bar_number: "",
+        experience: "",
+        specializations: [] as string[],
+        status: "available",
+        max_cases: "",
+        hourly_rate: "",
+
+        // Social & Documents
+        linkedin: "",
+        case_assignment: false,
+        assigned_cases: [],
+        case_duration: "",
+        duration_unit: "days",
+        notes: "",
+      });
+      setProfileImage(null);
+      setCertifications([]);
+      setResume(null);
+    } catch (error) {
+      console.error("Error adding lawyer:", error);
+      alert("Error adding lawyer. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div id="webcrumbs">
+      {loading && <Loader />}
       <div className="w-full bg-white shadow-lg p-8">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
@@ -729,7 +836,10 @@ export default function Page() {
             <button className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-all transform hover:scale-105 shadow">
               Cancel
             </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all transform hover:scale-105 shadow flex items-center">
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all transform hover:scale-105 shadow flex items-center"
+            >
               <span className="material-symbols-outlined mr-1">add_circle</span>
               Add Lawyer
             </button>
