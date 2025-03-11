@@ -1,10 +1,18 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from '@/components/context/auth-context'
+import Image from 'next/image'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function Page() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const { lawyers } = useAuth()
+
+  useEffect(() => {
+    console.log(lawyers)
+  }, [lawyers])
 
   return (
     <div id="webcrumbs">
@@ -228,7 +236,7 @@ export default function Page() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            <img
+                            <Image
                               className="h-10 w-10 rounded-full object-cover hover:ring-2 hover:ring-indigo-500 transition duration-300"
                               src={lawyer.img}
                               alt={lawyer.name}

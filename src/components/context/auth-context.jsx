@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);  // Initialize totalIncome
-  const [transactions, setTransactions] = useState([]);  // Initialize totalIncome
+  const [lawyers, setLawyers] = useState([]);  // Initialize totalIncome
   const [referrals, setReferrals] = useState(null);  // Initialize totalIncome
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, userInfo, transactions, referrals, setUserInfo, setTransactions, setReferrals }}>
+    <AuthContext.Provider value={{ user, loading, userInfo, lawyers, referrals, setUserInfo, setLawyers, setReferrals }}>
       {children}
     </AuthContext.Provider>
   );
