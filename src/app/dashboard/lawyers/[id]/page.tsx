@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/context/auth-context";
+import getRealTimeQuery from "@/functions/query-a-collection";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -8,12 +9,25 @@ export default function Page() {
   const router = useRouter();
   const { id } = useParams();
   const [lawyer, setLawyer] = useState<any>({});
-  const { lawyers } = useAuth();
+  const [lawyerCases, setLawyerCases] = useState<any>([]);
+  const { lawyers, cases } = useAuth();
 
   useEffect(() => {
     console.log(lawyers?.find((lawyer: any) => lawyer.id === id));
     setLawyer(lawyers?.find((lawyer: any) => lawyer.id === id));
   }, [lawyers]);
+
+  useEffect(() => {
+    if (!lawyer.id) return;
+    const unsubscribe = getRealTimeQuery(
+      "cases",
+      "lawyers",
+      lawyer.id,
+      setLawyerCases
+    );
+
+    return () => unsubscribe(); // Cleanup on unmount
+  }, [lawyers, lawyer, id, cases]);
 
   return (
     <div className="bg-gray-50 shadow-md p-6">
@@ -118,7 +132,7 @@ export default function Page() {
                 <div className="flex justify-between mb-1">
                   <span className="text-sm font-medium">Active Cases</span>
                   <span className="text-sm text-gray-600">
-                    {lawyer?.cases?.length ?? 0}
+                    {lawyerCases?.length ?? 0}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">

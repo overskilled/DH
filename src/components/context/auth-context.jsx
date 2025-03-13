@@ -1,19 +1,24 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/functions/firebase";
 // import { IncomeType } from "@/lib/definitions";
-
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState(null);  // Initialize totalIncome
-  const [lawyers, setLawyers] = useState([]);  // Initialize totalIncome
-  const [referrals, setReferrals] = useState(null);  // Initialize totalIncome
+  const [userInfo, setUserInfo] = useState(null); // Initialize totalIncome
+  const [lawyers, setLawyers] = useState([]); // Initialize totalIncome
+  const [cases, setCases] = useState([]); // Initialize totalIncome
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -24,7 +29,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, userInfo, lawyers, referrals, setUserInfo, setLawyers, setReferrals }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        userInfo,
+        lawyers,
+        cases,
+        setUserInfo,
+        setLawyers,
+        setCases,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
