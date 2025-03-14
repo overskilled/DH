@@ -1,4 +1,9 @@
+"use client";
+import { useRouter } from "next/navigation";
+
 export default function Page() {
+  const router = useRouter();
+
   return (
     <div className="w-full min-h-screen bg-white font-sans">
       <header className="p-6 border-b">
@@ -12,7 +17,10 @@ export default function Page() {
             </nav>
           </div>
           <div className="flex space-x-3">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105">
+            <button
+              onClick={() => router.push("/dashboard/clients/new")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105"
+            >
               <span className="material-symbols-outlined mr-1 text-sm">
                 person_add
               </span>
