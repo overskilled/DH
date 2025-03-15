@@ -1,22 +1,36 @@
-"use client"
+"use client";
 import Navbar from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
 import * as React from "react";
 import ProtectedRoute from "@/components/context/protected-route";
-import { getACollection } from "@/functions/get-a-collection"
-import { useAuth } from '@/components/context/auth-context'
+import { getACollection } from "@/functions/get-a-collection";
+import { useAuth } from "@/components/context/auth-context";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const {user, setLawyers} = useAuth()
-  
+  const { user, setLawyers, setClients } = useAuth();
+
   React.useEffect(() => {
     if (!user) {
-      console.error("User is not authenticated")
-      return
+      console.error("User is not authenticated");
+      return;
+    }
+
+    const unsubscribe = getACollection("clients", setClients);
+
+    // Cleanup listener on component unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [user, setClients]);
+
+  React.useEffect(() => {
+    if (!user) {
+      console.error("User is not authenticated");
+      return;
     }
 
     const unsubscribe = getACollection("lawyers", setLawyers);
@@ -25,8 +39,7 @@ export default function DashboardLayout({
     return () => {
       if (unsubscribe) unsubscribe();
     };
-
-  }, [user, setLawyers])
+  }, [user, setLawyers]);
 
   return (
     <ProtectedRoute>

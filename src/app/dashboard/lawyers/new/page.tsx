@@ -7,6 +7,7 @@ import {
 } from "@/functions/add-to-collection";
 import { uploadFile } from "@/functions/upload-file";
 import Loader from "@/components/loader";
+import { toast } from "sonner";
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -142,7 +143,9 @@ export default function Page() {
       });
       await setToCollection("lawyers", data.userId, lawyerData);
 
-      alert("Lawyer added successfully!");
+      toast.success("Successful", {
+        description: "New lawyer successfully created",
+      });
       // Reset form
       setFormData({
         // Basic Information
@@ -174,7 +177,9 @@ export default function Page() {
       setResume(null);
     } catch (error) {
       console.error("Error adding lawyer:", error);
-      alert("Error adding lawyer. Please try again.");
+      toast.error("Error", {
+        description: "Please try again",
+      });
     } finally {
       setLoading(false);
     }

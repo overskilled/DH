@@ -7,18 +7,19 @@ import {
   useEffect,
   useState,
 } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/functions/firebase";
 // import { IncomeType } from "@/lib/definitions";
 
-const AuthContext = createContext(undefined);
+const AuthContext = createContext<any>(undefined);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState(null); // Initialize totalIncome
-  const [lawyers, setLawyers] = useState([]); // Initialize totalIncome
-  const [cases, setCases] = useState([]); // Initialize totalIncome
+  const [userInfo, setUserInfo] = useState(null); // Initialize user infos
+  const [lawyers, setLawyers] = useState<any>([]); // Initialize lawyers
+  const [cases, setCases] = useState<any>([]); // Initialize cases
+  const [clients, setClients] = useState<any>([]); // Initialize clients
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -36,9 +37,11 @@ export const AuthProvider = ({ children }) => {
         userInfo,
         lawyers,
         cases,
+        clients,
         setUserInfo,
         setLawyers,
         setCases,
+        setClients,
       }}
     >
       {children}

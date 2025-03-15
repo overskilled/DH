@@ -1,5 +1,6 @@
 "use client";
 
+import { setToCollection } from "@/functions/add-to-collection";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,17 +22,12 @@ export default function Page() {
     zip: "",
     country: "",
     contactMethod: "",
-    caseName: "",
-    caseType: "",
-    caseDuration: "",
-    lawyer: "",
+    assignedCases: [],
     companyName: "",
     clientTypeDetail: "",
     notes: "",
     welcomeEmail: false,
     invoiceGeneration: false,
-    profilePicture: null,
-    assignCase: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,34 +39,72 @@ export default function Page() {
     }));
   };
 
-  const submitClientData = async (data: any) => {
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
     setIsSubmitting(true);
+
+    const response = await fetch("/api/createUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        displayName: formData.fullName,
+      }),
+    });
+
+    const data = await response.json();
+
     try {
-      // Simulated API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Submitted data:", data);
-      return { success: true };
+      // Create lawyer document
+      const clientData = {
+        ...formData,
+        createdAt: new Date(),
+      };
+
+      await setToCollection("users", data.userId, {
+        email: formData.email,
+        name: formData.fullName,
+        role: "client",
+        phone: formData.phone,
+      });
+      await setToCollection("clients", data.userId, clientData);
+
+      toast.success("Successful", {
+        description: "New Client successfully created",
+      });
+      // Reset form
+      setFormData({
+        clientType: "personal",
+        fullName: "",
+        email: "",
+        phone: "",
+        gender: "",
+        dob: "",
+        idNumber: "",
+        companyReg: "",
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        contactMethod: "",
+        assignedCases: [],
+        companyName: "",
+        clientTypeDetail: "",
+        notes: "",
+        welcomeEmail: false,
+        invoiceGeneration: false,
+      });
     } catch (error) {
-      console.error("API Error:", error);
-      throw error;
+      console.error("Error adding client:", error);
+      toast.error("Error", {
+        description: "Please try again",
+      });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    toast.error("Just testing");
-
-    if (!formData.fullName || !formData.email || !formData.phone) {
-      toast("Just testing");
-    }
-    if (formData.clientType === "organization" && !formData.companyReg) {
-      toast("just testing");
-    }
-
-    if (isSubmitting) return;
-    // await submitClientData(formData);
   };
 
   return (
@@ -209,7 +243,7 @@ export default function Page() {
                       />
                     </div>
 
-                    <div className="md:col-span-2">
+                    {/* <div className="md:col-span-2">
                       <label
                         className="block text-sm font-medium text-gray-700 mb-1"
                         htmlFor="profilePicture"
@@ -245,7 +279,7 @@ export default function Page() {
                           PNG, JPG or JPEG (Max. 2MB)
                         </p>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div>
                       <label
@@ -464,18 +498,14 @@ export default function Page() {
                       >
                         Country
                       </label>
-                      <select
+                      <input
+                        type="text"
                         id="country"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Cameroon"
                         value={formData.country}
                         onChange={handleInputChange}
-                      >
-                        <option value="">Select country</option>
-                        <option value="us">United States</option>
-                        <option value="ca">Canada</option>
-                        <option value="uk">United Kingdom</option>
-                        <option value="au">Australia</option>
-                      </select>
+                      />
                     </div>
 
                     <div>
@@ -500,7 +530,7 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+                {/* <div className="bg-white rounded-xl shadow-md p-6 mb-6">
                   <h2 className="text-xl font-semibold mb-4 flex items-center">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -615,7 +645,7 @@ export default function Page() {
                       </select>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="bg-white rounded-xl shadow-md p-6 mb-6">
                   <h2 className="text-xl font-semibold mb-4 flex items-center">
                     <svg
@@ -638,40 +668,42 @@ export default function Page() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <label
-                        className="text-sm font-medium text-gray-700"
+                        className="flex w-full items-center justify-between cursor-pointer text-sm font-medium text-gray-700"
                         htmlFor="welcomeEmail"
                       >
                         Send Welcome Email?
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            name="welcomeEmail"
+                            className="sr-only peer"
+                            id="welcomeEmail"
+                            checked={formData.welcomeEmail}
+                            onChange={handleInputChange}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          id="welcomeEmail"
-                          checked={formData.welcomeEmail}
-                          onChange={handleInputChange}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <label
-                        className="text-sm font-medium text-gray-700"
+                        className="flex w-full items-center justify-between cursor-pointer text-sm font-medium text-gray-700"
                         htmlFor="invoiceGeneration"
                       >
                         Enable Invoice Generation?
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            name="invoiceGeneration"
+                            className="sr-only peer"
+                            id="invoiceGeneration"
+                            checked={formData.invoiceGeneration}
+                            onChange={handleInputChange}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          id="invoiceGeneration"
-                          checked={formData.invoiceGeneration}
-                          onChange={handleInputChange}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -707,7 +739,7 @@ export default function Page() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex justify-center gap-5 w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting && <Loader2 className="animate-spin" />}
                     {isSubmitting ? "Submitting..." : "Add Client"}
