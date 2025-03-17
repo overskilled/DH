@@ -68,7 +68,10 @@ export default function Page() {
 
       <div className="grid gap-6">
         {cases.map((caseItem: any) => (
-          <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-300 group">
+          <div
+            key={caseItem.id}
+            className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-300 group"
+          >
             <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
               <div>
                 <div className="flex items-center gap-2">

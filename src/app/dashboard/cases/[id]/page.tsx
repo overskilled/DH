@@ -539,10 +539,10 @@ export default function Page() {
                 </span>
               </div>
               <p className="text-gray-700 mb-2">
-                Reviewed the latest evidence package from Johnson Inc. Their
+                {`Reviewed the latest evidence package from Johnson Inc. Their
                 financial records don't match up with their claims about
                 damages. We should highlight this discrepancy in our next
-                filing.
+                filing.`}
               </p>
               <div className="flex gap-2 text-sm">
                 <button className="text-blue-600 hover:text-blue-800 transition">
@@ -567,9 +567,9 @@ export default function Page() {
                 <span className="text-xs text-gray-500">Aug 27, 2023</span>
               </div>
               <p className="text-gray-700 mb-2">
-                Finished compiling all the evidence of prior use of our client's
+                {`Finished compiling all the evidence of prior use of our client's
                 trademarked logo. Found 17 instances dating back to 2015, which
-                should solidify our position on first use in commerce.
+                should solidify our position on first use in commerce.`}
               </p>
               <div className="flex gap-2 text-sm">
                 <button className="text-blue-600 hover:text-blue-800 transition">

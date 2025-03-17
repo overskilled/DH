@@ -130,7 +130,9 @@ export default function Page() {
                     </span>
                     <div>
                       <p className="text-sm text-gray-500">Registration Date</p>
-                      <p className="font-medium">{client?.createdAt?.toDate().toLocaleDateString()}</p>
+                      <p className="font-medium">
+                        {client?.createdAt?.toDate().toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -315,7 +317,10 @@ export default function Page() {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {cases.map((caseItem: any, index: any) => (
-                        <tr className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+                        >
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-indigo-600">
                               {caseItem?.name}
@@ -526,9 +531,9 @@ export default function Page() {
                           Tax Case Update
                         </p>
                         <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          Dear Mr. Doe, I'm writing to update you on the
+                          {`Dear Mr. Doe, I'm writing to update you on the
                           progress of your tax compliance case. We've made
-                          significant progress...
+                          significant progress...`}
                         </p>
                         <div className="text-right mt-1">
                           <button className="text-indigo-600 text-sm hover:text-indigo-800 transition-colors duration-200">
@@ -541,7 +546,7 @@ export default function Page() {
                         <div className="flex justify-between">
                           <span className="font-medium flex items-center">
                             <span className="material-symbols-outlined text-green-500 mr-1">
-                              outgoing_mail                                         
+                              outgoing_mail
                             </span>
                             Received
                           </span>
@@ -580,9 +585,9 @@ export default function Page() {
                           Contract Explanation
                         </p>
                         <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          Dear Mr. Doe, As discussed in our meeting, I'm sending
+                          {`Dear Mr. Doe, As discussed in our meeting, I'm sending
                           you a detailed explanation of the contract terms we
-                          reviewed...
+                          reviewed...`}
                         </p>
                         <div className="text-right mt-1">
                           <button className="text-indigo-600 text-sm hover:text-indigo-800 transition-colors duration-200">

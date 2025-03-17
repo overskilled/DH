@@ -184,7 +184,10 @@ export default function Page() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {clients.map((client: any) => (
-                <tr className="hover:bg-gray-50 transition-colors duration-150">
+                <tr
+                  key={client.id}
+                  className="hover:bg-gray-50 transition-colors duration-150"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
