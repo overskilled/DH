@@ -1,9 +1,10 @@
-"use client"
+"use client";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/context/auth-context";
 
 export default function Page() {
-  const router = useRouter()
-
+  const router = useRouter();
+  const { cases } = useAuth();
 
   return (
     <div className="w-full bg-gray-50 shadow-lg p-4 md:p-6 lg:p-8">
@@ -54,7 +55,10 @@ export default function Page() {
                 </label>
               </div>
             </details>
-            <button onClick={() => router.push("/dashboard/cases/new")} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-sm hover:shadow flex items-center gap-1">
+            <button
+              onClick={() => router.push("/dashboard/cases/new")}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-sm hover:shadow flex items-center gap-1"
+            >
               <span className="material-symbols-outlined text-sm">add</span>
               <span className="hidden sm:inline">New Case</span>
             </button>
@@ -63,239 +67,96 @@ export default function Page() {
       </header>
 
       <div className="grid gap-6">
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-300 group">
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xl font-semibold group-hover:text-blue-600 transition-all">
-                  Johnson vs. Smith Industries
-                </h3>
-                <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium text-xs">
-                  Active
+        {cases.map((caseItem: any) => (
+          <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-300 group">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-semibold group-hover:text-blue-600 transition-all">
+                    {caseItem.caseName}
+                  </h3>
+                  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium text-xs">
+                    {caseItem.caseStatus}
+                  </span>
+                </div>
+                <p className="text-gray-600 mt-1 text-sm">
+                  Client: {caseItem.selectedClient.fullName}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button className="px-2 py-1 text-xs border border-gray-200 rounded-md hover:bg-gray-50 transition-all flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">
+                    edit
+                  </span>
+                  <span>Edit</span>
+                </button>
+                <button className="px-2 py-1 text-xs border border-blue-200 bg-blue-50 rounded-md hover:bg-blue-100 transition-all flex items-center gap-1 text-blue-700">
+                  <span className="material-symbols-outlined text-sm">
+                    person_add
+                  </span>
+                  <span>Assign</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+              <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                <span className="material-symbols-outlined text-blue-500">
+                  folder
+                </span>
+                <span className="text-sm">Type: {caseItem.caseType}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                <span className="material-symbols-outlined text-amber-500">
+                  description
+                </span>
+                <span className="text-sm">Files: {caseItem.files.length}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                <span className="material-symbols-outlined text-emerald-500">
+                  schedule
+                </span>
+                <span className="text-sm">
+                  Est. Completion: {caseItem.deadline}
                 </span>
               </div>
-              <p className="text-gray-600 mt-1 text-sm">
-                Client: Robert Johnson
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button className="px-2 py-1 text-xs border border-gray-200 rounded-md hover:bg-gray-50 transition-all flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">edit</span>
-                <span>Edit</span>
-              </button>
-              <button className="px-2 py-1 text-xs border border-blue-200 bg-blue-50 rounded-md hover:bg-blue-100 transition-all flex items-center gap-1 text-blue-700">
-                <span className="material-symbols-outlined text-sm">
-                  person_add
+              <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
+                <span className="material-symbols-outlined text-purple-500">
+                  group
                 </span>
-                <span>Assign</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-blue-500">
-                folder
-              </span>
-              <span className="text-sm">Type: Litigation</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-amber-500">
-                description
-              </span>
-              <span className="text-sm">Files: 23</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-emerald-500">
-                schedule
-              </span>
-              <span className="text-sm">Est. Completion: 3 months</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-purple-500">
-                group
-              </span>
-              <span className="text-sm">Lawyers: 3</span>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-            <div className="flex -space-x-2 hover:-space-x-1 transition-all">
-              <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
-                alt="Team member"
-                className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
-              />
-              <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
-                alt="Team member"
-                className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
-              />
-              <img
-                src="https://randomuser.me/api/portraits/men/86.jpg"
-                alt="Team member"
-                className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
-              />
-            </div>
-            <div className="text-xs text-gray-500 flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">
-                calendar_today
-              </span>
-              Updated: 3 days ago
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-100 group">
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xl font-semibold group-hover:text-blue-600 transition-all">
-                  Global Corp Tax Consultation
-                </h3>
-                <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 font-medium text-xs">
-                  Pending
+                <span className="text-sm">
+                  Lawyers: {caseItem.assignedLawyers.length}
                 </span>
               </div>
-              <p className="text-gray-600 mt-1 text-sm">
-                Client: Global Corp Ltd.
-              </p>
             </div>
-            <div className="flex gap-2">
-              <button className="px-2 py-1 text-xs border border-gray-200 rounded-md hover:bg-gray-50 transition-all flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">edit</span>
-                <span>Edit</span>
-              </button>
-              <button className="px-2 py-1 text-xs border border-blue-200 bg-blue-50 rounded-md hover:bg-blue-100 transition-all flex items-center gap-1 text-blue-700">
-                <span className="material-symbols-outlined text-sm">
-                  person_add
-                </span>
-                <span>Assign</span>
-              </button>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-blue-500">
-                folder
-              </span>
-              <span className="text-sm">Type: Taxes</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-amber-500">
-                description
-              </span>
-              <span className="text-sm">Files: 15</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-emerald-500">
-                schedule
-              </span>
-              <span className="text-sm">Est. Completion: 1 month</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-purple-500">
-                group
-              </span>
-              <span className="text-sm">Lawyers: 2</span>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-            <div className="flex -space-x-2 hover:-space-x-1 transition-all">
-              <img
-                src="https://randomuser.me/api/portraits/women/68.jpg"
-                alt="Team member"
-                className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
-              />
-              <img
-                src="https://randomuser.me/api/portraits/men/43.jpg"
-                alt="Team member"
-                className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
-              />
-            </div>
-            <div className="text-xs text-gray-500 flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">
-                calendar_today
-              </span>
-              Updated: 1 week ago
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 hover:shadow-lg transition-all duration-300 border border-gray-100 group">
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xl font-semibold group-hover:text-blue-600 transition-all">
-                  Davidson Family Trust
-                </h3>
-                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium text-xs">
-                  In Progress
-                </span>
+            <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
+              <div className="flex -space-x-2 hover:-space-x-1 transition-all">
+                <img
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt="Team member"
+                  className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
+                />
+                <img
+                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  alt="Team member"
+                  className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
+                />
+                <img
+                  src="https://randomuser.me/api/portraits/men/86.jpg"
+                  alt="Team member"
+                  className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
+                />
               </div>
-              <p className="text-gray-600 mt-1 text-sm">
-                Client: Thomas Davidson
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button className="px-2 py-1 text-xs border border-gray-200 rounded-md hover:bg-gray-50 transition-all flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">edit</span>
-                <span>Edit</span>
-              </button>
-              <button className="px-2 py-1 text-xs border border-blue-200 bg-blue-50 rounded-md hover:bg-blue-100 transition-all flex items-center gap-1 text-blue-700">
+              <div className="text-xs text-gray-500 flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">
-                  person_add
+                  calendar_today
                 </span>
-                <span>Assign</span>
-              </button>
+                Last Updated: {caseItem.updatedAt.toDate().toLocaleDateString()}
+              </div>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-blue-500">
-                folder
-              </span>
-              <span className="text-sm">Type: Trust & Estate</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-amber-500">
-                description
-              </span>
-              <span className="text-sm">Files: 9</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-emerald-500">
-                schedule
-              </span>
-              <span className="text-sm">Est. Completion: 2 weeks</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-              <span className="material-symbols-outlined text-purple-500">
-                group
-              </span>
-              <span className="text-sm">Lawyers: 1</span>
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-            <div className="flex -space-x-2 hover:-space-x-1 transition-all">
-              <img
-                src="https://randomuser.me/api/portraits/women/23.jpg"
-                alt="Team member"
-                className="w-8 h-8 rounded-full border-2 border-white hover:transform hover:scale-110 transition-all"
-              />
-            </div>
-            <div className="text-xs text-gray-500 flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">
-                calendar_today
-              </span>
-              Updated: 2 days ago
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="mt-6 flex justify-center">

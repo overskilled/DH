@@ -1,64 +1,64 @@
 "use client";
-import { useState } from 'react';
+import { useState } from "react";
 import { useAuth } from "@/components/context/auth-context";
 import { useRouter } from "next/navigation";
-import { serverTimestamp } from 'firebase/firestore';
-import { addToCollection } from '@/functions/add-to-collection';
-import { toast } from 'sonner';
-import { uploadFile } from '@/functions/upload-file';
-import { addToSubCollection } from '@/functions/add-to-a-sub-collection';
-import { Loader2 } from 'lucide-react';
+import { serverTimestamp } from "firebase/firestore";
+import { addToCollection } from "@/functions/add-to-collection";
+import { toast } from "sonner";
+import { uploadFile } from "@/functions/upload-file";
+import { addToSubCollection } from "@/functions/add-to-a-sub-collection";
+import { Loader2 } from "lucide-react";
 
 export default function CreateCasePage() {
   const { clients, lawyers } = useAuth();
   const router = useRouter();
-  
+
   const [formState, setFormState] = useState({
-    caseName: '',
-    caseType: '',
-    caseStatus: 'ongoing',
-    selectedClient: null,
-    newClient: { name: '', phone: '', email: '' },
+    caseName: "",
+    caseType: "",
+    caseStatus: "ongoing",
+    selectedClient: null as null | any,
+    newClient: { name: "", phone: "", email: "" },
     assignedLawyers: [],
-    deadline: '',
+    deadline: "",
     files: [],
-    description: '',
-    internalNotes: '',
+    description: "",
+    internalNotes: "",
     notifyClient: false,
-    generateInvoice: false
+    generateInvoice: false,
   });
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [internalNotes, setInternalNotes] = useState(false);
 
-
   const handleInputChange = (e: any) => {
     const { name, value, type, checked } = e.target;
-    setFormState(prev => ({
+    setFormState((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleClientSelect = (client: any) => {
-    setFormState(prev => ({
+    console.log(client);
+    setFormState((prev) => ({
       ...prev,
       selectedClient: client,
-      newClient: { name: '', phone: '', email: '' }
+      newClient: { name: "", phone: "", email: "" },
     }));
   };
 
   const handleNewClientChange = (e: any) => {
     const { name, value } = e.target;
-    setFormState(prev => ({
+    setFormState((prev) => ({
       ...prev,
       newClient: {
         ...prev.newClient,
-        [name]: value
+        [name]: value,
       },
-      selectedClient: null
+      selectedClient: null,
     }));
   };
 
@@ -66,89 +66,100 @@ export default function CreateCasePage() {
     const newFiles = Array.from(e.target.files);
     setFormState((prev: any) => ({
       ...prev,
-      files: [...prev.files, ...newFiles]
+      files: [...prev.files, ...newFiles],
     }));
   };
 
   const removeFile = (index: number) => {
-    setFormState(prev => ({
+    setFormState((prev) => ({
       ...prev,
-      files: prev.files.filter((_, i) => i !== index)
+      files: prev.files.filter((_, i) => i !== index),
     }));
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
     try {
       // Validate required fields
-      if (!formState.caseName || !formState.caseType || 
-          (!formState.selectedClient && !formState.newClient.name) ||
-          formState.assignedLawyers.length === 0) {
-        throw new Error('Please fill all required fields');
+      if (
+        !formState.caseName ||
+        !formState.caseType ||
+        (!formState.selectedClient && !formState.newClient.name) ||
+        formState.assignedLawyers.length === 0
+      ) {
+        toast.success("Please fill all required fields!", {
+          description: "Please fill all required fields",
+        });
+        throw new Error("Please fill all required fields");
       }
 
       const fileUploadPromises = formState.files.map(async (file: File) => {
         const fileName = `${Date.now()}-${file.name}`;
         const filePath = `cases/files/${fileName}`;
         const downloadURL = await uploadFile(file, filePath);
-        
+
         return {
           name: file.name,
           url: downloadURL,
           type: file.type,
           size: file.size,
-          uploadedAt: new Date().toISOString()
+          uploadedAt: new Date().toISOString(),
         };
       });
       const fileMetadata = await Promise.all(fileUploadPromises);
-      
+
       // Create case document with files array
       const caseData = {
         ...formState,
         files: fileMetadata,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
 
       // Add to main collection and get reference
       const caseRef = await addToCollection("cases", caseData);
-      if(caseRef){
+      if (caseRef) {
         const caseId = caseRef?.id;
-  
+
         const subcollectionPromises = fileMetadata.map(async (file) => {
-          await addToSubCollection({
-            ...file,
+          await addToSubCollection(
+            {
+              ...file,
+              caseId,
+              uploadedBy: "currentUserId", // Add your user ID here
+            },
+            "cases",
             caseId,
-            uploadedBy: "currentUserId" // Add your user ID here
-          }, "cases", caseId, "files");
+            "files"
+          );
         });
 
         await Promise.all(subcollectionPromises);
       }
 
-
       // Show success
       toast.success("New Case Created!", {
-        description: "Your new case has been successfully created"
+        description: "Your new case has been successfully created",
       });
 
-      router.push('/dashboard/cases');
+      router.push("/dashboard/cases");
     } catch (error: any) {
       toast.error("Error !", {
-        description: "An error occured please try again"
-      })
+        description: "An error occured please try again",
+      });
       setError(error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const filteredClients = clients.filter((client: any) =>
-    client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.phone.includes(searchQuery)
+  const filteredClients = clients.filter(
+    (client: any) =>
+      client.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.phone.includes(searchQuery)
   );
 
   return (
@@ -175,7 +186,10 @@ export default function CreateCasePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label htmlFor="caseName" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="caseName"
+                className="block text-sm font-medium mb-1"
+              >
                 Case Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -190,7 +204,10 @@ export default function CreateCasePage() {
               />
             </div>
             <div>
-              <label htmlFor="caseType" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="caseType"
+                className="block text-sm font-medium mb-1"
+              >
                 Case Type <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -223,7 +240,10 @@ export default function CreateCasePage() {
               </div>
             </div>
             <div>
-              <label htmlFor="caseStatus" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="caseStatus"
+                className="block text-sm font-medium mb-1"
+              >
                 Status
               </label>
               <div className="relative">
@@ -262,12 +282,29 @@ export default function CreateCasePage() {
           <div className="mb-4">
             <details className="rounded-lg border mb-4 sm:mb-6">
               <summary className="cursor-pointer p-3 sm:p-4 bg-gray-50 rounded-t-lg hover:bg-gray-100 transition-colors">
-                <div className="flex items-center">
-                  <span className="material-symbols-outlined mr-2">
-                    person_search
-                  </span>
-                  <span className="font-medium">Select Existing Client</span>
-                </div>
+                {formState.selectedClient ? (
+                  <div
+                    key={formState.selectedClient.id}
+                    className="p-2 sm:p-3 border-b hover:bg-blue-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2"
+                  >
+                    <div>
+                      <p className="font-medium">
+                        {formState.selectedClient.fullName}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        {formState.selectedClient.email} •{" "}
+                        {formState.selectedClient.phone}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <span className="material-symbols-outlined mr-2">
+                      person_search
+                    </span>
+                    <span className="font-medium">Select Existing Client</span>
+                  </div>
+                )}
               </summary>
               <div className="p-3 sm:p-4 border-t">
                 <div className="relative mb-4">
@@ -284,7 +321,11 @@ export default function CreateCasePage() {
                 </div>
                 <div className="max-h-40 overflow-y-auto border rounded-md">
                   {filteredClients.map((client: any) => (
-                    <div key={client.id} className="p-2 sm:p-3 border-b hover:bg-blue-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                    <div
+                      key={client.id}
+                      onClick={() => handleClientSelect(client)}
+                      className="p-2 sm:p-3 border-b hover:bg-blue-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2"
+                    >
                       <div>
                         <p className="font-medium">{client.fullName}</p>
                         <p className="text-xs sm:text-sm text-gray-600">
@@ -316,7 +357,10 @@ export default function CreateCasePage() {
               <div className="p-3 sm:p-4 border-t">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label htmlFor="clientName" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="clientName"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Client Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -330,7 +374,10 @@ export default function CreateCasePage() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="clientPhone" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="clientPhone"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Phone Number <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -344,7 +391,10 @@ export default function CreateCasePage() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label htmlFor="clientEmail" className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="clientEmail"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Email <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -369,7 +419,10 @@ export default function CreateCasePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label htmlFor="lawyers" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="lawyers"
+                className="block text-sm font-medium mb-1"
+              >
                 Assign Lawyer(s) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -379,14 +432,19 @@ export default function CreateCasePage() {
                   multiple
                   className="w-full h-24 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   value={formState.assignedLawyers}
-                  onChange={(e) => setFormState((prev: any) => ({
-                    ...prev,
-                    assignedLawyers: Array.from(e.target.selectedOptions, option => option.value)
-                  }))}
+                  onChange={(e) =>
+                    setFormState((prev: any) => ({
+                      ...prev,
+                      assignedLawyers: Array.from(
+                        e.target.selectedOptions,
+                        (option) => option.value
+                      ),
+                    }))
+                  }
                 >
                   {lawyers.map((lawyer: any) => (
                     <option key={lawyer.id} value={lawyer.id}>
-                      {lawyer.name} ({lawyer.specialization})
+                      {lawyer.full_name} ({lawyer.department})
                     </option>
                   ))}
                 </select>
@@ -396,7 +454,10 @@ export default function CreateCasePage() {
               </div>
             </div>
             <div>
-              <label htmlFor="deadline" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="deadline"
+                className="block text-sm font-medium mb-1"
+              >
                 Set Deadline (Optional)
               </label>
               <input
@@ -431,11 +492,11 @@ export default function CreateCasePage() {
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
                 Select Files
-                <input 
-                  id="fileUpload" 
-                  type="file" 
-                  multiple 
-                  className="hidden" 
+                <input
+                  id="fileUpload"
+                  type="file"
+                  multiple
+                  className="hidden"
                   onChange={handleFileUpload}
                 />
               </label>
@@ -446,26 +507,29 @@ export default function CreateCasePage() {
               <span className="font-medium text-sm sm:text-base">
                 Uploaded Files ({formState.files.length})
               </span>
-              <button 
+              <button
                 type="button"
                 className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 transition-colors"
-                onClick={() => setFormState(prev => ({ ...prev, files: [] }))}
+                onClick={() => setFormState((prev) => ({ ...prev, files: [] }))}
               >
                 Clear All
               </button>
             </div>
             <div className="mt-2 space-y-2">
               {formState.files.map((file: any, index: number) => (
-                <div key={index} className="flex items-center justify-between bg-white p-2 rounded-md border">
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-white p-2 rounded-md border"
+                >
                   <div className="flex items-center overflow-hidden">
                     <span className="material-symbols-outlined text-red-500 mr-2 flex-shrink-0">
-                      {file.type.startsWith('image/') ? 'image' : 'description'}
+                      {file.type.startsWith("image/") ? "image" : "description"}
                     </span>
                     <span className="text-xs sm:text-sm truncate">
                       {file.name}
                     </span>
                   </div>
-                  <button 
+                  <button
                     type="button"
                     className="text-gray-500 hover:text-red-500 transition-colors flex-shrink-0 ml-2"
                     onClick={() => removeFile(index)}
@@ -485,7 +549,10 @@ export default function CreateCasePage() {
             Case Description & Notes
           </h2>
           <div className="mb-4">
-            <label htmlFor="caseDescription" className="block text-sm font-medium mb-1">
+            <label
+              htmlFor="caseDescription"
+              className="block text-sm font-medium mb-1"
+            >
               Case Description
             </label>
             <div className="border rounded-lg overflow-hidden">
@@ -520,10 +587,12 @@ export default function CreateCasePage() {
                 className="w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent transition-all"
                 placeholder="Internal remarks..."
                 value={formState.internalNotes}
-                onChange={(e) => setFormState(prev => ({
-                  ...prev,
-                  internalNotes: e.target.value
-                }))}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    internalNotes: e.target.value,
+                  }))
+                }
               ></textarea>
             </div>
           )}
@@ -537,6 +606,7 @@ export default function CreateCasePage() {
             <div className="flex items-center">
               <input
                 id="notifyClient"
+                name="notifyClient"
                 type="checkbox"
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded mr-2 focus:ring-blue-500"
                 checked={formState.notifyClient}
@@ -549,6 +619,7 @@ export default function CreateCasePage() {
             <div className="flex items-center">
               <input
                 id="generateInvoice"
+                name="generateInvoice"
                 type="checkbox"
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded mr-2 focus:ring-blue-500"
                 checked={formState.generateInvoice}
@@ -583,14 +654,17 @@ export default function CreateCasePage() {
             disabled={isSubmitting}
             className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center sm:justify-start group disabled:opacity-50"
           >
-            <Loader2 className='animate-spin mr-1 '/>
-            <span className="material-symbols-outlined mr-1 text-sm transform group-hover:rotate-12 transition-transform">
-              save
-            </span> 
-            {isSubmitting ? 'Creating...' : 'Save & Create Case'}
+            {isSubmitting ? (
+              <Loader2 className="animate-spin mr-1 " />
+            ) : (
+              <span className="material-symbols-outlined mr-1 text-sm transform group-hover:rotate-12 transition-transform">
+                save
+              </span>
+            )}
+            {isSubmitting ? "Creating..." : "Save & Create Case"}
           </button>
         </div>
       </form>
     </div>
   );
-} 
+}

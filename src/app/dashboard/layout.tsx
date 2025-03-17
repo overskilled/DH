@@ -5,13 +5,15 @@ import * as React from "react";
 import ProtectedRoute from "@/components/context/protected-route";
 import { getACollection } from "@/functions/get-a-collection";
 import { useAuth } from "@/components/context/auth-context";
+import { getADocument } from "@/functions/get-a-document";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, setLawyers, setClients } = useAuth();
+  const { user, userInfo, setLawyers, setClients, setUserInfo, setCases } =
+    useAuth();
 
   React.useEffect(() => {
     if (!user) {
@@ -33,6 +35,20 @@ export default function DashboardLayout({
       return;
     }
 
+    const unsubscribe = getADocument(user.uid, "users", setUserInfo);
+
+    // Cleanup listener on component unmount
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [user, setUserInfo]);
+
+  React.useEffect(() => {
+    if (!user) {
+      console.error("User is not authenticated");
+      return;
+    }
+
     const unsubscribe = getACollection("lawyers", setLawyers);
 
     // Cleanup listener on component unmount
@@ -40,6 +56,22 @@ export default function DashboardLayout({
       if (unsubscribe) unsubscribe();
     };
   }, [user, setLawyers]);
+
+  React.useEffect(() => {
+    if (!user || !userInfo) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    if (userInfo.role === "admin") {
+      const unsubscribe = getACollection("cases", setCases);
+
+      // Cleanup listener on component unmount
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }
+  }, [userInfo, setCases]);
 
   return (
     <ProtectedRoute>
