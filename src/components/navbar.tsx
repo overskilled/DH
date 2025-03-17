@@ -1,4 +1,9 @@
+"use client";
+import { useAuth } from "./context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
 export default function Navbar() {
+  const { userInfo } = useAuth();
   return (
     <div id="webcrumbs">
       <nav className="w-full bg-white dark:bg-gray-900 border-b shadow-sm transition-all duration-300 ease-in-out">
@@ -219,19 +224,29 @@ export default function Navbar() {
               <div className="relative">
                 <details className="group">
                   <summary className="flex items-center space-x-3 cursor-pointer list-none">
-                    <div className="h-9 w-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium text-sm overflow-hidden hover:ring-2 hover:ring-indigo-400 transition-all duration-200">
+                    {/* <div className="h-9 w-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium text-sm overflow-hidden hover:ring-2 hover:ring-indigo-400 transition-all duration-200">
                       <img
                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                         alt="User"
                         className="h-full w-full object-cover"
                       />
-                    </div>
+                    </div> */}
+                    <Avatar>
+                      <AvatarImage alt={userInfo?.name} />
+                      <AvatarFallback className="bg-stone-400">
+                        {userInfo?.name
+                          .split(" ")
+                          .slice(0, 2)
+                          .map((name: any) => name.charAt(0).toUpperCase())
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex flex-col items-start">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        John Doe
+                        {userInfo?.name}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        Attorney
+                        {userInfo?.role}
                       </span>
                     </div>
                     <svg
@@ -250,10 +265,10 @@ export default function Navbar() {
                   <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 transform opacity-0 scale-95 group-open:opacity-100 group-open:scale-100 transition-all duration-200">
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium text-gray-800 dark:text-white">
-                        John Doe
+                        {userInfo?.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        john.doe@lawfirm.com
+                        {userInfo?.email}
                       </p>
                     </div>
                     <a

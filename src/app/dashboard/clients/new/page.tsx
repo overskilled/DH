@@ -1,4 +1,112 @@
+"use client";
+
+import { setToCollection } from "@/functions/add-to-collection";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
 export default function Page() {
+  const [clientType, setClientType] = useState("personal");
+  const [formData, setFormData] = useState({
+    clientType: "personal",
+    fullName: "",
+    email: "",
+    phone: "",
+    gender: "",
+    dob: "",
+    idNumber: "",
+    companyReg: "",
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    contactMethod: "",
+    assignedCases: [],
+    companyName: "",
+    clientTypeDetail: "",
+    notes: "",
+    welcomeEmail: false,
+    invoiceGeneration: false,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e: any) => {
+    const { id, value, type, checked, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: type === "checkbox" ? checked : files ? files[0] : value,
+    }));
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const response = await fetch("/api/createUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        displayName: formData.fullName,
+      }),
+    });
+
+    const data = await response.json();
+
+    try {
+      // Create lawyer document
+      const clientData = {
+        ...formData,
+        createdAt: new Date(),
+      };
+
+      await setToCollection("users", data.userId, {
+        email: formData.email,
+        name: formData.fullName,
+        role: "client",
+        phone: formData.phone,
+      });
+      await setToCollection("clients", data.userId, clientData);
+
+      toast.success("Successful", {
+        description: "New Client successfully created",
+      });
+      // Reset form
+      setFormData({
+        clientType: "personal",
+        fullName: "",
+        email: "",
+        phone: "",
+        gender: "",
+        dob: "",
+        idNumber: "",
+        companyReg: "",
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        contactMethod: "",
+        assignedCases: [],
+        companyName: "",
+        clientTypeDetail: "",
+        notes: "",
+        welcomeEmail: false,
+        invoiceGeneration: false,
+      });
+    } catch (error) {
+      console.error("Error adding client:", error);
+      toast.error("Error", {
+        description: "Please try again",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div id="webcrumbs">
       <div className="w-full bg-white shadow-lg p-6 font-sans">
@@ -19,7 +127,10 @@ export default function Page() {
               </div>
             </div>
             <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0">
-              <button className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-all transform hover:scale-105">
+              <button
+                type="button"
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-all transform hover:scale-105"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 inline-block mr-1"
@@ -34,22 +145,11 @@ export default function Page() {
                 </svg>
                 Cancel
               </button>
-              <button className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-all transform hover:scale-105">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 inline-block mr-1"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Save & Add Another
-              </button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md">
+              <button
+                type="submit"
+                form="clientForm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 inline-block mr-1"
@@ -69,10 +169,38 @@ export default function Page() {
 
           <div className="bg-gray-100 h-1 w-full rounded-full mb-6"></div>
 
-          <form>
+          <form id="clientForm" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-3">
                 <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+                  <div className="mb-6">
+                    <h2 className="text-xl font-semibold mb-4">Client Type</h2>
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setClientType("personal")}
+                        className={`px-6 py-2 rounded-lg ${
+                          clientType === "personal"
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                      >
+                        Personal
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setClientType("organization")}
+                        className={`px-6 py-2 rounded-lg ${
+                          clientType === "organization"
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                      >
+                        Organization
+                      </button>
+                    </div>
+                  </div>
+
                   <h2 className="text-xl font-semibold mb-4 flex items-center">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +216,8 @@ export default function Page() {
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                       />
                     </svg>
-                    Personal Information
+                    {clientType === "personal" ? "Personal" : "Organization"}{" "}
+                    Information
                   </h2>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -103,16 +232,32 @@ export default function Page() {
                         type="text"
                         id="fullName"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                        placeholder="Enter client's full name"
+                        placeholder={`Enter ${
+                          clientType === "personal"
+                            ? "client's full name"
+                            : "company name"
+                        }`}
                         required
+                        value={formData.fullName}
+                        onChange={handleInputChange}
                       />
                     </div>
 
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {/* <div className="md:col-span-2">
+                      <label
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                        htmlFor="profilePicture"
+                      >
                         Profile Picture
                       </label>
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                        <input
+                          type="file"
+                          id="profilePicture"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleInputChange}
+                        />
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-12 w-12 mx-auto text-gray-400"
@@ -133,13 +278,8 @@ export default function Page() {
                         <p className="text-xs text-gray-500 mt-1">
                           PNG, JPG or JPEG (Max. 2MB)
                         </p>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept="image/*"
-                        />
                       </div>
-                    </div>
+                    </div> */}
 
                     <div>
                       <label
@@ -154,6 +294,8 @@ export default function Page() {
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="email@example.com"
                         required
+                        value={formData.email}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -170,53 +312,92 @@ export default function Page() {
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="+1 (123) 456-7890"
                         required
+                        value={formData.phone}
+                        onChange={handleInputChange}
                       />
                     </div>
 
-                    <div>
-                      <label
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                        htmlFor="gender"
-                      >
-                        Gender
-                      </label>
-                      <select
-                        id="gender"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
-                      >
-                        <option value="">Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
+                    {clientType === "personal" && (
+                      <>
+                        <div>
+                          <label
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                            htmlFor="gender"
+                          >
+                            Gender
+                          </label>
+                          <select
+                            id="gender"
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
+                            value={formData.gender}
+                            onChange={handleInputChange}
+                          >
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
 
-                    <div>
-                      <label
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                        htmlFor="dob"
-                      >
-                        Date of Birth
-                      </label>
-                      <input
-                        type="date"
-                        id="dob"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                      />
-                    </div>
+                        <div>
+                          <label
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                            htmlFor="dob"
+                          >
+                            Date of Birth
+                          </label>
+                          <input
+                            type="date"
+                            id="dob"
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            value={formData.dob}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {clientType === "organization" && (
+                      <div className="md:col-span-2">
+                        <label
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                          htmlFor="companyReg"
+                        >
+                          Company Registration Number{" "}
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="companyReg"
+                          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="Enter company registration number"
+                          required
+                          value={formData.companyReg}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
 
                     <div className="md:col-span-2">
                       <label
                         className="block text-sm font-medium text-gray-700 mb-1"
                         htmlFor="idNumber"
                       >
-                        National ID / Passport Number
+                        {clientType === "personal"
+                          ? "National ID / Passport Number"
+                          : "Tax Identification Number"}
                       </label>
                       <input
                         type="text"
                         id="idNumber"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                        placeholder="Enter ID or passport number"
+                        placeholder={
+                          clientType === "personal"
+                            ? "Enter ID or passport number"
+                            : "Enter tax ID number"
+                        }
+                        value={formData.idNumber}
+                        onChange={handleInputChange}
                       />
                     </div>
                   </div>
@@ -254,6 +435,8 @@ export default function Page() {
                         id="street"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="123 Main St"
+                        value={formData.street}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -269,6 +452,8 @@ export default function Page() {
                         id="city"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="New York"
+                        value={formData.city}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -284,6 +469,8 @@ export default function Page() {
                         id="state"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="NY"
+                        value={formData.state}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -299,6 +486,8 @@ export default function Page() {
                         id="zip"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="10001"
+                        value={formData.zip}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -309,16 +498,14 @@ export default function Page() {
                       >
                         Country
                       </label>
-                      <select
+                      <input
+                        type="text"
                         id="country"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
-                      >
-                        <option value="">Select country</option>
-                        <option value="us">United States</option>
-                        <option value="ca">Canada</option>
-                        <option value="uk">United Kingdom</option>
-                        <option value="au">Australia</option>
-                      </select>
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Cameroon"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                      />
                     </div>
 
                     <div>
@@ -331,6 +518,8 @@ export default function Page() {
                       <select
                         id="contactMethod"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
+                        value={formData.contactMethod}
+                        onChange={handleInputChange}
                       >
                         <option value="">Select contact method</option>
                         <option value="email">Email</option>
@@ -341,7 +530,7 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+                {/* <div className="bg-white rounded-xl shadow-md p-6 mb-6">
                   <h2 className="text-xl font-semibold mb-4 flex items-center">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -366,7 +555,13 @@ export default function Page() {
                         Assign a Case Immediately?
                       </span>
                       <div className="relative">
-                        <input type="checkbox" className="sr-only peer" />
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          id="assignCase"
+                          checked={formData.assignCase}
+                          onChange={handleInputChange}
+                        />
                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                       </div>
                     </label>
@@ -385,6 +580,8 @@ export default function Page() {
                         id="caseName"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="Enter case name"
+                        value={formData.caseName}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -398,6 +595,8 @@ export default function Page() {
                       <select
                         id="caseType"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
+                        value={formData.caseType}
+                        onChange={handleInputChange}
                       >
                         <option value="">Select case type</option>
                         <option value="litigation">Litigation</option>
@@ -420,6 +619,8 @@ export default function Page() {
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="Enter duration"
                         min="1"
+                        value={formData.caseDuration}
+                        onChange={handleInputChange}
                       />
                     </div>
 
@@ -433,6 +634,8 @@ export default function Page() {
                       <select
                         id="lawyer"
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
+                        value={formData.lawyer}
+                        onChange={handleInputChange}
                       >
                         <option value="">Select lawyer</option>
                         <option value="john">John Smith</option>
@@ -442,78 +645,7 @@ export default function Page() {
                       </select>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div className="lg:col-span-1">
-                <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-                  <h2 className="text-xl font-semibold mb-4 flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 mr-2 text-blue-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
-                    Additional Information
-                  </h2>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                        htmlFor="companyName"
-                      >
-                        Company Name (If Business Client)
-                      </label>
-                      <input
-                        type="text"
-                        id="companyName"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                        placeholder="Enter company name"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                        htmlFor="clientType"
-                      >
-                        Client Type
-                      </label>
-                      <select
-                        id="clientType"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white"
-                      >
-                        <option value="">Select client type</option>
-                        <option value="individual">Individual</option>
-                        <option value="corporate">Corporate</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                        htmlFor="notes"
-                      >
-                        Internal Notes (Only visible to firm staff)
-                      </label>
-                      <textarea
-                        id="notes"
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
-                        placeholder="Add any internal notes about this client..."
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-
+                </div> */}
                 <div className="bg-white rounded-xl shadow-md p-6 mb-6">
                   <h2 className="text-xl font-semibold mb-4 flex items-center">
                     <svg
@@ -536,37 +668,42 @@ export default function Page() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <label
-                        className="text-sm font-medium text-gray-700"
+                        className="flex w-full items-center justify-between cursor-pointer text-sm font-medium text-gray-700"
                         htmlFor="welcomeEmail"
                       >
                         Send Welcome Email?
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            name="welcomeEmail"
+                            className="sr-only peer"
+                            id="welcomeEmail"
+                            checked={formData.welcomeEmail}
+                            onChange={handleInputChange}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          id="welcomeEmail"
-                          checked
-                        />
-                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <label
-                        className="text-sm font-medium text-gray-700"
+                        className="flex w-full items-center justify-between cursor-pointer text-sm font-medium text-gray-700"
                         htmlFor="invoiceGeneration"
                       >
                         Enable Invoice Generation?
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            name="invoiceGeneration"
+                            className="sr-only peer"
+                            id="invoiceGeneration"
+                            checked={formData.invoiceGeneration}
+                            onChange={handleInputChange}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </div>
                       </label>
-                      <div className="relative">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          id="invoiceGeneration"
-                        />
-                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -599,8 +736,13 @@ export default function Page() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md">
-                    Add Client
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex justify-center gap-5 w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting && <Loader2 className="animate-spin" />}
+                    {isSubmitting ? "Submitting..." : "Add Client"}
                   </button>
                 </div>
               </div>

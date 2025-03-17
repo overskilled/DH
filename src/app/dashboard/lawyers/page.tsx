@@ -1,18 +1,39 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useAuth } from '@/components/context/auth-context'
-import Image from 'next/image'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/components/context/auth-context";
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Page() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const { lawyers } = useAuth()
+  const { lawyers } = useAuth();
 
   useEffect(() => {
-    console.log(lawyers)
-  }, [lawyers])
+    console.log(lawyers);
+  }, [lawyers]);
+
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Calculate total pages
+  const totalPages = Math.ceil((lawyers.length ?? 0) / itemsPerPage);
+
+  // Slice data for pagination
+  const displayedLawyers = lawyers?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Handle pagination
+  const goToNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   return (
     <div id="webcrumbs">
@@ -182,69 +203,31 @@ export default function Page() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {[
-                    {
-                      name: "Sarah Johnson",
-                      email: "s.johnson@lawfirm.com",
-                      phone: "+1 (555) 123-4567",
-                      department: "Litigation",
-                      cases: 12,
-                      status: "Available",
-                      img: "https://randomuser.me/api/portraits/women/21.jpg",
-                    },
-                    {
-                      name: "Michael Chen",
-                      email: "m.chen@lawfirm.com",
-                      phone: "+1 (555) 234-5678",
-                      department: "Tax",
-                      cases: 8,
-                      status: "Busy",
-                      img: "https://randomuser.me/api/portraits/men/34.jpg",
-                    },
-                    {
-                      name: "Emily Rodriguez",
-                      email: "e.rodriguez@lawfirm.com",
-                      phone: "+1 (555) 345-6789",
-                      department: "Consulting",
-                      cases: 10,
-                      status: "On Leave",
-                      img: "https://randomuser.me/api/portraits/women/45.jpg",
-                    },
-                    {
-                      name: "David Wilson",
-                      email: "d.wilson@lawfirm.com",
-                      phone: "+1 (555) 456-7890",
-                      department: "Customs",
-                      cases: 5,
-                      status: "Available",
-                      img: "https://randomuser.me/api/portraits/men/56.jpg",
-                    },
-                    {
-                      name: "Alexandra Kim",
-                      email: "a.kim@lawfirm.com",
-                      phone: "+1 (555) 567-8901",
-                      department: "Litigation",
-                      cases: 15,
-                      status: "Busy",
-                      img: "https://randomuser.me/api/portraits/women/67.jpg",
-                    },
-                  ].map((lawyer, index) => (
+                  {displayedLawyers?.map((lawyer: any, index: any) => (
                     <tr
                       key={index}
-                      className="hover:bg-gray-50 transition duration-300"
+                      className="hover:bg-gray-50 cursor-pointer transition duration-300"
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            <Image
-                              className="h-10 w-10 rounded-full object-cover hover:ring-2 hover:ring-indigo-500 transition duration-300"
-                              src={lawyer.img}
-                              alt={lawyer.name}
-                            />
+                            <div className="relative h-10 w-10">
+                              <Image
+                                src={lawyer.profileImage}
+                                alt={lawyer.full_name}
+                                fill
+                                className="rounded-full object-cover hover:ring-2 hover:ring-indigo-500 transition duration-300"
+                              />
+                            </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900 hover:text-indigo-600 cursor-pointer transition duration-300">
-                              {lawyer.name}
+                            <div
+                              onClick={() =>
+                                router.push(`/dashboard/lawyers/${lawyer.id}`)
+                              }
+                              className="text-sm font-medium text-gray-900 hover:text-indigo-600 cursor-pointer transition duration-300"
+                            >
+                              {lawyer.full_name}
                             </div>
                           </div>
                         </div>
@@ -281,15 +264,15 @@ export default function Page() {
                           <span className="material-symbols-outlined mr-1 text-indigo-500">
                             folder
                           </span>
-                          {lawyer.cases} cases
+                          {lawyer?.cases?.length ?? 0} cases
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            lawyer.status === "Available"
+                            lawyer.status === "available"
                               ? "bg-green-100 text-green-800"
-                              : lawyer.status === "Busy"
+                              : lawyer.status === "busy"
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-red-100 text-red-800"
                           }`}
@@ -299,7 +282,12 @@ export default function Page() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <button className="text-indigo-600 hover:text-indigo-900 transition duration-300">
+                          <button
+                            onClick={() =>
+                              router.push(`/dashboard/lawyers/${lawyer.id}`)
+                            }
+                            className="text-indigo-600 hover:text-indigo-900 transition duration-300"
+                          >
                             <span className="material-symbols-outlined">
                               visibility
                             </span>
@@ -322,56 +310,33 @@ export default function Page() {
               </table>
             </div>
 
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-300">
-                  Previous
-                </button>
-                <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-300">
-                  Next
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing <span className="font-medium">1</span> to{" "}
-                    <span className="font-medium">5</span> of{" "}
-                    <span className="font-medium">24</span> results
-                  </p>
-                </div>
-                <div>
-                  <nav
-                    className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                    aria-label="Pagination"
-                  >
-                    <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-300">
-                      <span className="material-symbols-outlined">
-                        chevron_left
-                      </span>
-                    </button>
-                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600 hover:bg-indigo-100 transition duration-300">
-                      1
-                    </button>
-                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-300">
-                      2
-                    </button>
-                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-300">
-                      3
-                    </button>
-                    <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                      ...
-                    </span>
-                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-300">
-                      5
-                    </button>
-                    <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-300">
-                      <span className="material-symbols-outlined">
-                        chevron_right
-                      </span>
-                    </button>
-                  </nav>
-                </div>
-              </div>
+            <div className="flex justify-between items-center border-t border-gray-200 px-4 py-3">
+              <button
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 border rounded-md text-sm ${
+                  currentPage === 1
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                Previous
+              </button>
+              <p className="text-sm text-gray-700">
+                Page <span className="font-medium">{currentPage}</span> of{" "}
+                <span className="font-medium">{totalPages}</span>
+              </p>
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 border rounded-md text-sm ${
+                  currentPage === totalPages
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>

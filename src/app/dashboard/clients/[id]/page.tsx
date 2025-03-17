@@ -1,11 +1,28 @@
+"use client";
+import { useAuth } from "@/components/context/auth-context";
+import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 export default function Page() {
+  const router = useRouter();
+  const { id } = useParams();
+  const [client, setClient] = useState<any>({});
+  const { clients, cases } = useAuth();
+
+  useEffect(() => {
+    console.log(clients?.find((client: any) => client?.id === id));
+    setClient(clients?.find((client: any) => client?.id === id));
+  }, [clients]);
+
   return (
     <div id="webcrumbs">
       <div className="w-full bg-gray-50 font-sans overflow-hidden">
         <header className="bg-white shadow-md p-6 m-6 rounded-lg mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-indigo-800">John Doe.</h1>
+              <h1 className="text-2xl font-bold text-indigo-800">
+                {client?.fullName}
+              </h1>
               <nav className="text-sm text-gray-500 flex items-center gap-2 mt-1">
                 <span className="hover:text-blue-600 transition cursor-pointer">
                   Dashboard
@@ -19,7 +36,7 @@ export default function Page() {
                 <span className="material-symbols-outlined text-xs">
                   chevron_right
                 </span>
-                <span className="text-gray-700">John Doe</span>
+                <span className="text-gray-700">{client?.fullName}</span>
               </nav>
             </div>
             <div className="flex gap-3">
@@ -61,7 +78,7 @@ export default function Page() {
                     </span>
                     <div>
                       <p className="text-sm text-gray-500">Full Name</p>
-                      <p className="font-medium">John Doe</p>
+                      <p className="font-medium">{client?.fullName}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -71,7 +88,7 @@ export default function Page() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-500">Phone Number</p>
                       <div className="flex items-center">
-                        <p className="font-medium">+1 (555) 123-4567</p>
+                        <p className="font-medium">{client?.phone}</p>
                         <button className="ml-2 bg-green-100 text-green-600 p-1 rounded hover:bg-green-200 transition-colors duration-200">
                           <span className="material-symbols-outlined text-sm">
                             call
@@ -87,7 +104,7 @@ export default function Page() {
                     <div className="flex-1">
                       <p className="text-sm text-gray-500">Email Address</p>
                       <div className="flex items-center">
-                        <p className="font-medium">john.doe@example.com</p>
+                        <p className="font-medium">{client?.email}</p>
                         <button className="ml-2 bg-blue-100 text-blue-600 p-1 rounded hover:bg-blue-200 transition-colors duration-200">
                           <span className="material-symbols-outlined text-sm">
                             send
@@ -103,7 +120,7 @@ export default function Page() {
                     <div>
                       <p className="text-sm text-gray-500">Address</p>
                       <p className="font-medium">
-                        123 Legal Street, Law City, LC 12345
+                        {client?.street}, {client?.city}, {client?.country}
                       </p>
                     </div>
                   </div>
@@ -113,7 +130,7 @@ export default function Page() {
                     </span>
                     <div>
                       <p className="text-sm text-gray-500">Registration Date</p>
-                      <p className="font-medium">January 15, 2023</p>
+                      <p className="font-medium">{client?.createdAt?.toDate().toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -128,7 +145,7 @@ export default function Page() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6 mt-6 hover:shadow-lg transition-shadow duration-300">
+              {/* <div className="bg-white rounded-lg shadow-md p-6 mt-6 hover:shadow-lg transition-shadow duration-300">
                 <h2 className="text-xl font-semibold mb-4 border-b pb-2">
                   Notes & Internal Comments
                 </h2>
@@ -173,7 +190,7 @@ export default function Page() {
                     Add Note
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <div className="bg-white rounded-lg shadow-md p-6 mt-6 hover:shadow-lg transition-shadow duration-300">
                 <h2 className="text-xl font-semibold mb-4 border-b pb-2">
@@ -297,138 +314,48 @@ export default function Page() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      <tr className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-indigo-600">
-                            Tax Compliance Review
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                            Tax
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Ongoing
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="flex -space-x-2">
-                            <img
-                              className="h-8 w-8 rounded-full border-2 border-white"
-                              src="https://randomuser.me/api/portraits/women/42.jpg"
-                              alt="Sarah Johnson"
-                            />
-                            <img
-                              className="h-8 w-8 rounded-full border-2 border-white"
-                              src="https://randomuser.me/api/portraits/men/32.jpg"
-                              alt="Michael Brown"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                          May 10, 2023
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-indigo-600">
-                            Import Goods Dispute
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                            Customs
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Ongoing
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="flex -space-x-2">
-                            <img
-                              className="h-8 w-8 rounded-full border-2 border-white"
-                              src="https://randomuser.me/api/portraits/women/65.jpg"
-                              alt="Emma Wilson"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                          April 28, 2023
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-indigo-600">
-                            Contract Negotiation
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                            Consulting
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Completed
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="flex -space-x-2">
-                            <img
-                              className="h-8 w-8 rounded-full border-2 border-white"
-                              src="https://randomuser.me/api/portraits/men/32.jpg"
-                              alt="Michael Brown"
-                            />
-                            <img
-                              className="h-8 w-8 rounded-full border-2 border-white"
-                              src="https://randomuser.me/api/portraits/men/55.jpg"
-                              alt="James Wilson"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                          March 15, 2023
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-indigo-600">
-                            Trademark Infringement
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                            Litigation
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                            Abandoned
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <div className="flex -space-x-2">
-                            <img
-                              className="h-8 w-8 rounded-full border-2 border-white"
-                              src="https://randomuser.me/api/portraits/women/42.jpg"
-                              alt="Sarah Johnson"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                          February 02, 2023
-                        </td>
-                      </tr>
+                      {cases.map((caseItem: any, index: any) => (
+                        <tr className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer">
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-indigo-600">
+                              {caseItem?.name}
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                              {caseItem?.type}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              {caseItem?.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <div className="flex -space-x-2">
+                              <img
+                                className="h-8 w-8 rounded-full border-2 border-white"
+                                src="https://randomuser.me/api/portraits/women/42.jpg"
+                                alt="Sarah Johnson"
+                              />
+                              <img
+                                className="h-8 w-8 rounded-full border-2 border-white"
+                                src="https://randomuser.me/api/portraits/men/32.jpg"
+                                alt="Michael Brown"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {caseItem?.createdAt}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+              {/* <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold">Invoices & Payments</h2>
                   <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center">
@@ -554,7 +481,7 @@ export default function Page() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </div> */}
 
               <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
                 <div className="flex justify-between items-center mb-4">
@@ -614,7 +541,7 @@ export default function Page() {
                         <div className="flex justify-between">
                           <span className="font-medium flex items-center">
                             <span className="material-symbols-outlined text-green-500 mr-1">
-                              incoming_mail
+                              outgoing_mail                                         
                             </span>
                             Received
                           </span>

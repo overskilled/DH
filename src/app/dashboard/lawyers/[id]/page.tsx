@@ -1,10 +1,42 @@
+"use client";
+
+import { useAuth } from "@/components/context/auth-context";
+import getRealTimeQuery from "@/functions/query-a-collection";
+import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 export default function Page() {
+  const router = useRouter();
+  const { id } = useParams();
+  const [lawyer, setLawyer] = useState<any>({});
+  const [lawyerCases, setLawyerCases] = useState<any>([]);
+  const { lawyers, cases } = useAuth();
+
+  useEffect(() => {
+    console.log(lawyers?.find((lawyer: any) => lawyer.id === id));
+    setLawyer(lawyers?.find((lawyer: any) => lawyer.id === id));
+  }, [lawyers]);
+
+  useEffect(() => {
+    if (!lawyer.id) return;
+    const unsubscribe = getRealTimeQuery(
+      "cases",
+      "lawyers",
+      lawyer.id,
+      setLawyerCases
+    );
+
+    return () => unsubscribe(); // Cleanup on unmount
+  }, [lawyers, lawyer, id, cases]);
+
   return (
     <div className="bg-gray-50 shadow-md p-6">
       <header className="bg-white shadow-md p-6 rounded-lg mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-indigo-800">John Doe.</h1>
+            <h1 className="text-2xl font-bold text-indigo-800">
+              {lawyer?.full_name}
+            </h1>
             <nav className="text-sm text-gray-500 flex items-center gap-2 mt-1">
               <span className="hover:text-blue-600 transition cursor-pointer">
                 Dashboard
@@ -18,7 +50,7 @@ export default function Page() {
               <span className="material-symbols-outlined text-xs">
                 chevron_right
               </span>
-              <span className="text-gray-700">John Doe</span>
+              <span className="text-gray-700">{lawyer?.full_name}</span>
             </nav>
           </div>
           <div className="flex gap-3">
@@ -46,14 +78,14 @@ export default function Page() {
               alt="Sarah Johnson"
               className="h-32 w-32 rounded-full object-cover mb-4 border-4 border-white shadow-lg hover:scale-105 transition duration-300"
             />
-            <h3 className="text-xl font-semibold">Sarah Johnson</h3>
+            <h3 className="text-xl font-semibold">{lawyer?.full_name}</h3>
             <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-semibold mt-2">
-              Litigation
+              {lawyer?.department}
             </span>
 
             <div className="flex items-center mt-4">
               <span className="h-3 w-3 bg-green-500 rounded-full mr-2"></span>
-              <span className="text-sm text-gray-600">Available</span>
+              <span className="text-sm text-gray-600">{lawyer?.status}</span>
             </div>
           </div>
 
@@ -64,9 +96,7 @@ export default function Page() {
               </span>
               <div>
                 <div className="text-sm font-semibold">Email</div>
-                <div className="text-sm text-gray-600">
-                  s.johnson@lawfirm.com
-                </div>
+                <div className="text-sm text-gray-600">{lawyer?.email}</div>
               </div>
             </div>
 
@@ -76,7 +106,7 @@ export default function Page() {
               </span>
               <div>
                 <div className="text-sm font-semibold">Phone</div>
-                <div className="text-sm text-gray-600">+1 (555) 123-4567</div>
+                <div className="text-sm text-gray-600">{lawyer?.phone}</div>
               </div>
             </div>
 
@@ -86,7 +116,9 @@ export default function Page() {
               </span>
               <div>
                 <div className="text-sm font-semibold">Department</div>
-                <div className="text-sm text-gray-600">Litigation</div>
+                <div className="text-sm text-gray-600">
+                  {lawyer?.department}
+                </div>
               </div>
             </div>
           </div>
@@ -99,7 +131,9 @@ export default function Page() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm font-medium">Active Cases</span>
-                  <span className="text-sm text-gray-600">12</span>
+                  <span className="text-sm text-gray-600">
+                    {lawyerCases?.length ?? 0}
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
