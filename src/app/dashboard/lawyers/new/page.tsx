@@ -48,7 +48,7 @@ export default function Page() {
   const handleInputChange = (e: any) => {
     const { name, type, checked, options } = e.target;
 
-    let value;
+    let value: any;
     if (type === "checkbox") {
       value = checked;
     } else if (e.target.multiple) {
