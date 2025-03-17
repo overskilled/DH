@@ -16,7 +16,7 @@ export const addToCollection = async (collectionName: string, data: any) => {
       updatedAt: serverTimestamp(),
     });
     console.log("Document successfully added with ID:", docRef.id);
-    return docRef.id;
+    return docRef;
   } catch (error) {
     console.error("Error adding document : ", error);
     return null;

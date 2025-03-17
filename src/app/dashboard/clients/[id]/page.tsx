@@ -130,7 +130,7 @@ export default function Page() {
                     </span>
                     <div>
                       <p className="text-sm text-gray-500">Registration Date</p>
-                      <p className="font-medium">{client?.createdAt}</p>
+                      <p className="font-medium">{client?.createdAt?.toDate().toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -541,7 +541,7 @@ export default function Page() {
                         <div className="flex justify-between">
                           <span className="font-medium flex items-center">
                             <span className="material-symbols-outlined text-green-500 mr-1">
-                              incoming_mail
+                              outgoing_mail                                         
                             </span>
                             Received
                           </span>

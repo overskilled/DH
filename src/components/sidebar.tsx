@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-
+import Image from "next/image"
 export const Sidebar = () => {
   const pathname = usePathname();
 
@@ -18,10 +18,7 @@ export const Sidebar = () => {
     <div className="h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg relative">
       <div className="flex items-center justify-between p-4 bg-white">
         <div className="flex items-center space-x-2">
-          <span className="material-symbols-outlined text-blue-600">gavel</span>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            LawFirm CMS
-          </h1>
+          <Image src="/DHLogo.avif" alt="Logo" width={30} height={30} />
         </div>
         <span className="material-symbols-outlined cursor-pointer hover:scale-110 transition-all duration-300 hover:text-blue-600">
           menu

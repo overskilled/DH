@@ -1,4 +1,10 @@
+"use client"
+import { useRouter } from "next/navigation";
+
 export default function Page() {
+  const router = useRouter()
+
+
   return (
     <div className="w-full bg-gray-50 shadow-lg p-4 md:p-6 lg:p-8">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
@@ -48,7 +54,7 @@ export default function Page() {
                 </label>
               </div>
             </details>
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-sm hover:shadow flex items-center gap-1">
+            <button onClick={() => router.push("/dashboard/cases/new")} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-sm hover:shadow flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">add</span>
               <span className="hidden sm:inline">New Case</span>
             </button>
