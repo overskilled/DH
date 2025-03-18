@@ -1,11 +1,26 @@
+"use client";
+import { useAuth } from "@/components/context/auth-context";
+import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 export default function Page() {
+  const router = useRouter();
+  const { id } = useParams();
+  const [selectedCase, setSelectedCase] = useState<any>({});
+  const { clients, cases } = useAuth();
+
+  useEffect(() => {
+    console.log(cases?.find((caseItem: any) => caseItem?.id === id));
+    setSelectedCase(cases?.find((caseItem: any) => caseItem?.id === id));
+  }, [cases]);
+
   return (
     <div className="w-full bg-gray-50 font-sans p-4 md:p-6 lg:p-8">
       <header className="bg-white shadow-md p-6 rounded-lg mb-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              Smith vs. Johnson Inc.
+              {selectedCase?.caseName}
             </h1>
             <nav className="text-sm text-gray-500 flex items-center gap-2 mt-1">
               <span className="hover:text-blue-600 transition cursor-pointer">
@@ -20,7 +35,7 @@ export default function Page() {
               <span className="material-symbols-outlined text-xs">
                 chevron_right
               </span>
-              <span className="text-gray-700">Smith vs. Johnson Inc.</span>
+              <span className="text-gray-700">{selectedCase?.caseName}</span>
             </nav>
           </div>
           <div className="flex gap-3">
@@ -59,14 +74,14 @@ export default function Page() {
                   <span className="material-symbols-outlined mr-2 text-blue-600">
                     gavel
                   </span>
-                  Litigation
+                  {selectedCase?.caseType}
                 </p>
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">Status</p>
                 <p className="font-medium">
-                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
-                    Ongoing
+                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold capitalize">
+                    {selectedCase?.caseStatus}
                   </span>
                 </p>
               </div>
@@ -76,18 +91,32 @@ export default function Page() {
                   <span className="material-symbols-outlined mr-2 text-blue-600">
                     folder
                   </span>
-                  32 Files
+                  {selectedCase?.files?.length ?? 0} Files
                 </p>
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">Start Date</p>
-                <p className="font-medium">March 15, 2023</p>
+                <p className="font-medium">
+                  {selectedCase?.createdAt
+                    .toDate()
+                    .toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">
                   Expected Completion
                 </p>
-                <p className="font-medium">November 30, 2023</p>
+                <p className="font-medium">
+                  {selectedCase?.deadline.toDate().toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">Assigned Lawyers</p>
