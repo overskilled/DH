@@ -12,7 +12,7 @@ export default function Page() {
   useEffect(() => {
     console.log(cases?.find((caseItem: any) => caseItem?.id === id));
     setSelectedCase(cases?.find((caseItem: any) => caseItem?.id === id));
-  }, [cases]);
+  }, [cases, id]);
 
   return (
     <div className="w-full bg-gray-50 font-sans p-4 md:p-6 lg:p-8">

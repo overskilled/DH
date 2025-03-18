@@ -12,7 +12,7 @@ export default function Page() {
   useEffect(() => {
     console.log(clients?.find((client: any) => client?.id === id));
     setClient(clients?.find((client: any) => client?.id === id));
-  }, [clients]);
+  }, [clients, id]);
 
   return (
     <div id="webcrumbs">

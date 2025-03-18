@@ -15,7 +15,7 @@ export default function Page() {
   useEffect(() => {
     console.log(lawyers?.find((lawyer: any) => lawyer.id === id));
     setLawyer(lawyers?.find((lawyer: any) => lawyer.id === id));
-  }, [lawyers]);
+  }, [lawyers, id]);
 
   useEffect(() => {
     if (!lawyer.id) return;
