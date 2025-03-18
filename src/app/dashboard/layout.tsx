@@ -71,7 +71,7 @@ export default function DashboardLayout({
         if (unsubscribe) unsubscribe();
       };
     }
-  }, [userInfo, setCases]);
+  }, [user, userInfo, setCases]);
 
   return (
     <ProtectedRoute>

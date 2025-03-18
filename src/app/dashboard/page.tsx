@@ -72,7 +72,10 @@ export default function Page() {
             </div>
             <div className="space-y-3 md:space-y-4">
               {cases.map((caseItem: any) => (
-                <div className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer">
+                <div
+                  key={caseItem.id}
+                  className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+                >
                   <span className="material-symbols-outlined mr-3 text-blue-500">
                     description
                   </span>
