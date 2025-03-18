@@ -233,7 +233,7 @@ export default function Navbar() {
                     </div> */}
                     <Avatar>
                       <AvatarImage alt={userInfo?.name} />
-                      <AvatarFallback className="bg-stone-400">
+                      <AvatarFallback>
                         {userInfo?.name
                           .split(" ")
                           .slice(0, 2)

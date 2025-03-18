@@ -1,11 +1,19 @@
+"use client";
+import { useAuth } from "@/components/context/auth-context";
+import { getTimeAgo } from "@/functions/get-time-ago";
+import { useRouter } from "next/navigation";
+
 export default function Page() {
+  const { cases } = useAuth();
+  const router = useRouter();
+
   return (
     <div className="w-full bg-white p-4 sm:p-6 md:p-8">
       <header className="mb-6 md:mb-8">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">
-          Welcome to Sterling & Associates
+          Welcome to DH Avocats Panel
         </h1>
-        <p className="text-gray-600">Legal Case Management Dashboard</p>
+        <p className="text-gray-600">Our Case Management Dashboard</p>
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
@@ -13,28 +21,40 @@ export default function Page() {
           <span className="material-symbols-outlined text-3xl md:text-4xl text-blue-600">
             folder_open
           </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">247</h3>
+          <h3 className="text-xl md:text-2xl font-bold mt-2">
+            {cases?.length ?? 0}
+          </h3>
           <p className="text-gray-600">Total Cases</p>
         </div>
         <div className="bg-yellow-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
           <span className="material-symbols-outlined text-3xl md:text-4xl text-yellow-600">
             pending
           </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">84</h3>
+          <h3 className="text-xl md:text-2xl font-bold mt-2">
+            {cases?.filter((caseItem: any) => caseItem.caseStatus === "ongoing")
+              .length ?? 0}
+          </h3>
           <p className="text-gray-600">Pending Cases</p>
         </div>
         <div className="bg-green-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
           <span className="material-symbols-outlined text-3xl md:text-4xl text-green-600">
             task_alt
           </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">163</h3>
+          <h3 className="text-xl md:text-2xl font-bold mt-2">
+            {cases?.filter(
+              (caseItem: any) => caseItem.caseStatus === "completed"
+            ).length ?? 0}
+          </h3>
           <p className="text-gray-600">Completed Cases</p>
         </div>
         <div className="bg-purple-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
           <span className="material-symbols-outlined text-3xl md:text-4xl text-purple-600">
             schedule
           </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">12</h3>
+          <h3 className="text-xl md:text-2xl font-bold mt-2">
+            {cases?.filter((caseItem: any) => caseItem.caseStatus === "ongoing")
+              .length ?? 0}
+          </h3>
           <p className="text-gray-600">Upcoming Deadlines</p>
         </div>
       </div>
@@ -51,24 +71,19 @@ export default function Page() {
               </span>
             </div>
             <div className="space-y-3 md:space-y-4">
-              <div className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer">
-                <span className="material-symbols-outlined mr-3 text-blue-500">
-                  description
-                </span>
-                <div>
-                  <h4 className="font-semibold">Johnson vs. Smith Corp</h4>
-                  <p className="text-sm text-gray-600">Updated 2 hours ago</p>
+              {cases.map((caseItem: any) => (
+                <div className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer">
+                  <span className="material-symbols-outlined mr-3 text-blue-500">
+                    description
+                  </span>
+                  <div>
+                    <h4 className="font-semibold">{caseItem.caseName}</h4>
+                    <p className="text-sm text-gray-600">
+                      Updated {getTimeAgo(caseItem.updatedAt.toDate())}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer">
-                <span className="material-symbols-outlined mr-3 text-blue-500">
-                  description
-                </span>
-                <div>
-                  <h4 className="font-semibold">Roberts Estate Planning</h4>
-                  <p className="text-sm text-gray-600">Updated 5 hours ago</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -108,17 +123,26 @@ export default function Page() {
           <div className="bg-white border rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300">
             <h2 className="text-lg md:text-xl font-bold mb-4">Quick Actions</h2>
             <div className="space-y-3">
-              <button className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:shadow-md transform hover:-translate-y-0.5">
+              <button
+                onClick={() => router.push("/dashboard/cases/new")}
+                className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
+              >
                 <span className="material-symbols-outlined mr-2">add</span>
                 New Case
               </button>
-              <button className="w-full bg-green-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-green-700 transition-all hover:shadow-md transform hover:-translate-y-0.5">
+              <button
+                onClick={() => router.push("/dashboard/clients/new")}
+                className="w-full bg-green-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-green-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
+              >
                 <span className="material-symbols-outlined mr-2">
                   person_add
                 </span>
                 Add Client
               </button>
-              <button className="w-full bg-purple-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-purple-700 transition-all hover:shadow-md transform hover:-translate-y-0.5">
+              <button
+                onClick={() => router.push("/dashboard/lawyers/new")}
+                className="w-full bg-purple-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-purple-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
+              >
                 <span className="material-symbols-outlined mr-2">
                   group_add
                 </span>
