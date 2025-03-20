@@ -7,12 +7,28 @@ export default function Page() {
   const router = useRouter();
   const { id } = useParams();
   const [selectedCase, setSelectedCase] = useState<any>({});
-  const { clients, cases } = useAuth();
+  const [assignedLawyers, setAssignedLawyers] = useState<any[]>([]);
+  const [client, setClient] = useState<any>({});
+  const { clients, cases, lawyers } = useAuth();
 
   useEffect(() => {
-    console.log(cases?.find((caseItem: any) => caseItem?.id === id));
-    setSelectedCase(cases?.find((caseItem: any) => caseItem?.id === id));
-  }, [cases, id]);
+    const actualCase = cases?.find((caseItem: any) => caseItem?.id === id);
+    setSelectedCase(actualCase);
+    const actualClient = clients?.find(
+      (client: any) => client?.id === actualCase?.selectedClient?.id
+    );
+    setClient(actualClient);
+  }, [cases, id, clients]);
+
+  useEffect(() => {
+    if (!selectedCase || !selectedCase.assignedLawyers) return;
+
+    const assigned = lawyers?.filter((lawyer: any) =>
+      selectedCase?.assignedLawyers?.includes(lawyer.id)
+    );
+
+    setAssignedLawyers(assigned || []);
+  }, [selectedCase, lawyers]);
 
   return (
     <div className="w-full bg-gray-50 font-sans p-4 md:p-6 lg:p-8">
@@ -98,7 +114,7 @@ export default function Page() {
                 <p className="text-gray-500 text-sm mb-1">Start Date</p>
                 <p className="font-medium">
                   {selectedCase?.createdAt
-                    .toDate()
+                    ?.toDate()
                     .toLocaleDateString("en-US", {
                       month: "long",
                       day: "2-digit",
@@ -111,11 +127,15 @@ export default function Page() {
                   Expected Completion
                 </p>
                 <p className="font-medium">
-                  {selectedCase?.deadline.toDate().toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "2-digit",
-                    year: "numeric",
-                  })}
+                  {selectedCase?.deadline &&
+                    new Date(selectedCase.deadline).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "long",
+                        day: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
                 </p>
               </div>
               <div>
@@ -256,9 +276,9 @@ export default function Page() {
               />
               <div>
                 <h3 className="font-semibold text-lg hover:text-blue-600 cursor-pointer transition">
-                  Thomas Smith
+                  {client?.fullName}
                 </h3>
-                <p className="text-gray-500">Business Owner</p>
+                <p className="text-gray-500">{client?.clientType}</p>
               </div>
             </div>
             <div className="space-y-3">
@@ -267,7 +287,7 @@ export default function Page() {
                   <span className="material-symbols-outlined text-gray-500 mr-2">
                     call
                   </span>
-                  <span>(555) 123-4567</span>
+                  <span>{client?.phone}</span>
                 </div>
                 <button className="text-blue-600 px-3 py-1 rounded-md border border-blue-600 hover:bg-blue-50 transition">
                   Call
@@ -278,23 +298,26 @@ export default function Page() {
                   <span className="material-symbols-outlined text-gray-500 mr-2">
                     mail
                   </span>
-                  <span>tsmith@example.com</span>
+                  <span>{client?.email}</span>
                 </div>
                 <button className="text-blue-600 px-3 py-1 rounded-md border border-blue-600 hover:bg-blue-50 transition">
                   Email
                 </button>
               </div>
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <span className="material-symbols-outlined text-gray-500 mr-2">
                   business
                 </span>
                 <span>Smith Creative Studios</span>
-              </div>
+              </div> */}
               <div className="flex items-center">
                 <span className="material-symbols-outlined text-gray-500 mr-2">
                   location_on
                 </span>
-                <span>1234 Main St, Los Angeles, CA</span>
+                <span>
+                  {client?.zip} {client?.street}, {client?.city},{" "}
+                  {client?.country}
+                </span>
               </div>
             </div>
           </div>

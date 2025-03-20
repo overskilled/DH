@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/context/auth-context";
+import { DeleteDialog } from "@/components/deleteDialog";
 import getRealTimeQuery from "@/functions/query-a-collection";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ export default function Page() {
   const [lawyer, setLawyer] = useState<any>({});
   const [lawyerCases, setLawyerCases] = useState<any>([]);
   const { lawyers, cases } = useAuth();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   useEffect(() => {
     console.log(lawyers?.find((lawyer: any) => lawyer.id === id));
@@ -18,16 +20,24 @@ export default function Page() {
   }, [lawyers, id]);
 
   useEffect(() => {
-    if (!lawyer.id) return;
-    const unsubscribe = getRealTimeQuery(
-      "cases",
-      "lawyers",
-      lawyer.id,
-      setLawyerCases
+    if (!id && !cases) return;
+    const hisCase = cases.filter((caseItem: any) =>
+      caseItem?.assignedLawyers?.includes(id)
     );
+    setLawyerCases(hisCase);
+  }, [id, cases]);
 
-    return () => unsubscribe(); // Cleanup on unmount
-  }, [lawyers, lawyer, id, cases]);
+  // useEffect(() => {
+  //   if (!lawyer.id) return;
+  //   const unsubscribe = getRealTimeQuery(
+  //     "cases",
+  //     "lawyers",
+  //     lawyer.id,
+  //     setLawyerCases
+  //   );
+
+  //   return () => unsubscribe(); // Cleanup on unmount
+  // }, [lawyers, lawyer, id, cases]);
 
   return (
     <div className="bg-gray-50 shadow-md p-6">
@@ -54,11 +64,19 @@ export default function Page() {
             </nav>
           </div>
           <div className="flex gap-3">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1">
+            <button
+              onClick={() =>
+                router.push(`/dashboard/lawyers/${lawyer.id}/edit`)
+              }
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1"
+            >
               <span className="material-symbols-outlined text-sm">edit</span>
               Edit Lawyer
             </button>
-            <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+            <button
+              onClick={() => setIsDeleteOpen(!isDeleteOpen)}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1"
+            >
               <span className="material-symbols-outlined text-sm">delete</span>
               Delete Lawyer
             </button>
@@ -181,104 +199,91 @@ export default function Page() {
               </h3>
 
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-200">
-                    <tr>
-                      <th
-                        scope="col"
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        Case
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        Type
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        Status
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        Client
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {[
-                      {
-                        name: "Smith vs. Jones Corp",
-                        type: "Civil Litigation",
-                        status: "Ongoing",
-                        client: "M. Smith",
-                      },
-                      {
-                        name: "Trademark Infringement #45-B",
-                        type: "Intellectual Property",
-                        status: "Ongoing",
-                        client: "Acme Inc.",
-                      },
-                      {
-                        name: "Johnson Estate Settlement",
-                        type: "Probate",
-                        status: "Completed",
-                        client: "Johnson Family",
-                      },
-                      {
-                        name: "Downtown Property Dispute",
-                        type: "Real Estate",
-                        status: "Ongoing",
-                        client: "City Properties LLC",
-                      },
-                      {
-                        name: "Martinez Divorce",
-                        type: "Family Law",
-                        status: "Abandoned",
-                        client: "J. Martinez",
-                      },
-                    ].map((caseItem, index) => (
-                      <tr
-                        key={index}
-                        className="hover:bg-gray-200 transition duration-300 cursor-pointer"
-                      >
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition duration-300">
-                            {caseItem.name}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">
-                            {caseItem.type}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              caseItem.status === "Ongoing"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : caseItem.status === "Completed"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {caseItem.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="text-sm text-gray-500 hover:text-indigo-600 transition duration-300">
-                            {caseItem.client}
-                          </div>
-                        </td>
+                {lawyerCases.length === 0 ? (
+                  <div className="text-center py-12 px-4 bg-gray-50 rounded-lg">
+                    <div className="max-w-md mx-auto">
+                      <span className="material-symbols-outlined text-6xl text-indigo-300 mb-4">
+                        folder_off
+                      </span>
+                      <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                        No Cases Found
+                      </h3>
+                      <p className="text-gray-500 text-sm">
+                        It looks like there are no active cases at the moment.
+                        <br />
+                        Start by creating a new case or check your filters.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-200">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Case
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Type
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Status
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Client
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {lawyerCases.map((caseItem: any, index: number) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-200 transition duration-300 cursor-pointer"
+                        >
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition duration-300">
+                              {caseItem.caseName}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">
+                              {caseItem.caseType}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold capitalize rounded-full ${
+                                caseItem.caseStatus === "ongoing"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : caseItem.caseStatus === "completed"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {caseItem.caseStatus}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-sm text-gray-500 hover:text-indigo-600 transition duration-300">
+                              {caseItem.selectedClient.fullName}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
 
@@ -291,30 +296,40 @@ export default function Page() {
                   Upcoming Deadlines
                 </h4>
                 <ul className="space-y-3">
-                  <li className="border-l-2 border-indigo-500 pl-3 py-1 hover:bg-white transition duration-300 cursor-pointer">
-                    <div className="text-sm font-medium">
-                      Motion Filing - Smith vs. Jones
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Tomorrow, 5:00 PM
-                    </div>
-                  </li>
-                  <li className="border-l-2 border-yellow-500 pl-3 py-1 hover:bg-white transition duration-300 cursor-pointer">
-                    <div className="text-sm font-medium">
-                      Client Meeting - Acme Inc.
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Wed, Aug 18 - 10:00 AM
-                    </div>
-                  </li>
-                  <li className="border-l-2 border-red-500 pl-3 py-1 hover:bg-white transition duration-300 cursor-pointer">
-                    <div className="text-sm font-medium">
-                      Court Hearing - Property Dispute
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Fri, Aug 20 - 9:30 AM
-                    </div>
-                  </li>
+                  {lawyerCases.length === 0 ? (
+                    <li className="text-center py-6 rounded-lg bg-gray-100">
+                      <span className="material-symbols-outlined text-4xl text-indigo-300 mb-3 inline-block">
+                        event_available
+                      </span>
+                      <h3 className="text-lg font-semibold text-gray-700 mb-1">
+                        No Upcoming Deadlines
+                      </h3>
+                      <p className="text-gray-500 text-sm">
+                        All caught up! Enjoy your clear schedule.
+                      </p>
+                    </li>
+                  ) : (
+                    lawyerCases.map((caseItem: any) => (
+                      <li
+                        key={caseItem.id}
+                        className="border-l-2 border-indigo-500 pl-3 py-1 hover:bg-white transition duration-300 cursor-pointer"
+                      >
+                        <div className="text-sm font-medium">
+                          {caseItem.caseName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(caseItem.deadline).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "long",
+                              day: "2-digit",
+                              year: "numeric",
+                            }
+                          )}
+                        </div>
+                      </li>
+                    ))
+                  )}
                 </ul>
               </div>
 
@@ -381,54 +396,88 @@ export default function Page() {
                 Recent Documents
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[
-                  {
-                    name: "Motion to Dismiss - Smith Case.pdf",
-                    date: "Aug 16, 2023",
-                    icon: "picture_as_pdf",
-                    color: "text-red-500",
-                  },
-                  {
-                    name: "Trademark Evidence - Acme Inc.docx",
-                    date: "Aug 15, 2023",
-                    icon: "article",
-                    color: "text-blue-500",
-                  },
-                  {
-                    name: "Johnson Estate Inventory.xlsx",
-                    date: "Aug 14, 2023",
-                    icon: "table_chart",
-                    color: "text-green-500",
-                  },
-                  {
-                    name: "Property Survey - Downtown.jpg",
-                    date: "Aug 12, 2023",
-                    icon: "image",
-                    color: "text-purple-500",
-                  },
-                ].map((doc, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center p-3 border border-gray-200 rounded-md hover:shadow-md hover:border-indigo-300 transition duration-300 cursor-pointer bg-white"
-                  >
-                    <span
-                      className={`material-symbols-outlined ${doc.color} mr-3`}
+                {lawyerCases.map((caseItem: any) => {
+                  // Get the most recent file based on uploadedAt timestamp
+                  const latestFile = caseItem.files?.sort(
+                    (a: any, b: any) =>
+                      b.uploadedAt?.seconds - a.uploadedAt?.seconds
+                  )[0];
+
+                  if (!latestFile) return null; // Skip cases with no files
+
+                  // Determine icon and color based on file type
+                  const getFileTypeDetails = (type: string) => {
+                    if (type.startsWith("image/"))
+                      return { icon: "image", color: "text-purple-500" };
+                    if (type === "application/pdf")
+                      return { icon: "picture_as_pdf", color: "text-red-500" };
+                    if (type.includes("spreadsheet"))
+                      return { icon: "table_chart", color: "text-green-500" };
+                    if (type.includes("document"))
+                      return { icon: "article", color: "text-blue-500" };
+                    return { icon: "description", color: "text-gray-500" }; // default
+                  };
+
+                  const { icon, color } = getFileTypeDetails(latestFile.type);
+                  const uploadedDate = new Date(
+                    latestFile.uploadedAt
+                  ).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+
+                  return (
+                    <div
+                      key={latestFile.id} // Use actual file ID if available
+                      className="flex items-center p-3 border border-gray-200 rounded-md hover:shadow-md hover:border-indigo-300 transition duration-300 cursor-pointer bg-white"
                     >
-                      {doc.icon}
-                    </span>
-                    <div className="overflow-hidden">
-                      <div className="text-sm font-medium truncate">
-                        {doc.name}
+                      <span
+                        className={`material-symbols-outlined ${color} mr-3`}
+                      >
+                        {icon}
+                      </span>
+                      <div className="overflow-hidden">
+                        <div className="text-sm font-medium truncate">
+                          {latestFile.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {uploadedDate || "No upload date"}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500">{doc.date}</div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {lawyerCases.filter((c: any) => c.files?.length > 0).length ===
+                0 && (
+                <div className="text-center p-6 rounded-lg bg-gray-50 border-2 border-dashed border-gray-200">
+                  <div className="max-w-md mx-auto">
+                    <span className="material-symbols-outlined text-4xl text-indigo-300 mb-3 inline-block">
+                      folder_off
+                    </span>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-1">
+                      No Recent Files Found
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      It looks like there are no files across any cases.
+                      <br />
+                      Upload your first document to get started.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+      <DeleteDialog
+        onOpen={isDeleteOpen}
+        element={lawyer}
+        table="lawyers"
+        setElement={setIsDeleteOpen}
+      />
     </div>
   );
 }
