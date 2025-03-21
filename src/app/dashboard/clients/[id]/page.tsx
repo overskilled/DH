@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/components/context/auth-context";
+import { DeleteDialog } from "@/components/deleteDialog";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -7,12 +8,20 @@ export default function Page() {
   const router = useRouter();
   const { id } = useParams();
   const [client, setClient] = useState<any>({});
-  const { clients, cases } = useAuth();
-
+  const [clientCases, setClientCases] = useState<any>([]);
+  const { clients, cases, lawyers } = useAuth();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   useEffect(() => {
     console.log(clients?.find((client: any) => client?.id === id));
     setClient(clients?.find((client: any) => client?.id === id));
   }, [clients, id]);
+
+  useEffect(() => {
+    const allClientCases = cases?.filter(
+      (caseItem: any) => caseItem?.selectedClient.id === id
+    );
+    setClientCases(allClientCases);
+  }, [cases, id]);
 
   return (
     <div id="webcrumbs">
@@ -40,25 +49,31 @@ export default function Page() {
               </nav>
             </div>
             <div className="flex gap-3">
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1">
+              <button
+                onClick={() => router.push(`/dashboard/clients/${id}/edit`)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1"
+              >
                 <span className="material-symbols-outlined text-sm">edit</span>
-                Edit Client
+                <span className="hidden sm:inline">Edit Client</span>
               </button>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+              <button
+                onClick={() => setIsDeleteOpen(true)}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1"
+              >
                 <span className="material-symbols-outlined text-sm">
                   delete
                 </span>
-                Delete Client
+                <span className="hidden sm:inline">Delete Client</span>
               </button>
               <button className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">
                   receipt
                 </span>
-                Generate Invoice
+                <span className="hidden sm:inline">Generate Invoice</span>
               </button>
               <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">mail</span>
-                Email Client
+                <span className="hidden sm:inline">Email Client</span>
               </button>
             </div>
           </div>
@@ -141,7 +156,7 @@ export default function Page() {
                     </span>
                     <div>
                       <p className="text-sm text-gray-500">Total Cases</p>
-                      <p className="font-medium">4 Cases</p>
+                      <p className="font-medium">{clientCases?.length} Cases</p>
                     </div>
                   </div>
                 </div>
@@ -194,7 +209,7 @@ export default function Page() {
                 </div>
               </div> */}
 
-              <div className="bg-white rounded-lg shadow-md p-6 mt-6 hover:shadow-lg transition-shadow duration-300">
+              {/* <div className="bg-white rounded-lg shadow-md p-6 mt-6 hover:shadow-lg transition-shadow duration-300">
                 <h2 className="text-xl font-semibold mb-4 border-b pb-2">
                   Case Actions & Reminders
                 </h2>
@@ -234,7 +249,7 @@ export default function Page() {
                     Send Client Notification
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="lg:col-span-2 space-y-6">
@@ -302,6 +317,9 @@ export default function Page() {
                     <thead>
                       <tr className="bg-gray-50">
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Case
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Type
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -316,42 +334,43 @@ export default function Page() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {cases.map((caseItem: any, index: any) => (
+                      {clientCases.map((caseItem: any, index: any) => (
                         <tr
                           key={index}
                           className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
                         >
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-indigo-600">
-                              {caseItem?.name}
+                              {caseItem?.caseName}
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                              {caseItem?.type}
+                              {caseItem?.caseType}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                              {caseItem?.status}
+                              {caseItem?.caseStatus}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="flex -space-x-2">
-                              <img
-                                className="h-8 w-8 rounded-full border-2 border-white"
-                                src="https://randomuser.me/api/portraits/women/42.jpg"
-                                alt="Sarah Johnson"
-                              />
-                              <img
-                                className="h-8 w-8 rounded-full border-2 border-white"
-                                src="https://randomuser.me/api/portraits/men/32.jpg"
-                                alt="Michael Brown"
-                              />
+                              {lawyers
+                                ?.filter((lawyer: any) =>
+                                  caseItem?.assignedLawyers?.includes(lawyer.id)
+                                )
+                                .map((lawyer: any) => (
+                                  <img
+                                    className="h-8 w-8 rounded-full border-2 border-white"
+                                    src={lawyer.profileImage}
+                                    alt={lawyer.full_name}
+                                  />
+                                ))}
                             </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {caseItem?.createdAt}
+                            {caseItem?.createdAt?.toDate().toLocaleDateString()}
                           </td>
                         </tr>
                       ))}
@@ -623,6 +642,12 @@ export default function Page() {
           </div>
         </main>
       </div>
+      <DeleteDialog
+        onOpen={isDeleteOpen}
+        element={client}
+        table={"client"}
+        setElement={setIsDeleteOpen}
+      />
     </div>
   );
 }

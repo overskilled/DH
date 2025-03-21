@@ -8,6 +8,7 @@ import {
 import { uploadFile } from "@/functions/upload-file";
 import Loader from "@/components/loader";
 import { toast } from "sonner";
+import { useAuth } from "@/components/context/auth-context";
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ export default function Page() {
   const profileRef = useRef<HTMLInputElement | null>(null);
   const certsRef = useRef<HTMLInputElement | null>(null);
   const resumeRef = useRef<HTMLInputElement | null>(null);
-
+  const { cases } = useAuth();
   const handleInputChange = (e: any) => {
     const { name, type, checked, options } = e.target;
 
@@ -785,21 +786,11 @@ export default function Page() {
                         disabled={loading}
                         className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-32"
                       >
-                        <option value="case1">
-                          #1234 - Johnson vs. Smith (Corporate Dispute)
-                        </option>
-                        <option value="case2">
-                          #1235 - Miller Estate Planning
-                        </option>
-                        <option value="case3">
-                          #1236 - ABC Corp Merger Review
-                        </option>
-                        <option value="case4">
-                          #1237 - Intellectual Property Claim - XYZ Tech
-                        </option>
-                        <option value="case5">
-                          #1238 - Employment Dispute - Acme Inc.
-                        </option>
+                        {cases.map((caseItem: any) => (
+                          <option value={caseItem.id}>
+                            Case - {caseItem.caseName}
+                          </option>
+                        ))}
                       </select>
                       <p className="text-xs text-white0 mt-1">
                         Hold Ctrl/Cmd to select multiple cases
