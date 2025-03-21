@@ -1,20 +1,48 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/context/auth-context";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { DeleteDialog } from "@/components/deleteDialog";
 
 export default function Page() {
   const router = useRouter();
-  const { clients } = useAuth();
+  const { clients, cases } = useAuth();
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<any>({});
   // Calculate total pages
   const totalPages = Math.ceil((clients.length ?? 0) / itemsPerPage);
 
+  // Filter and search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCaseTypes, setSelectedCaseTypes] = useState<string[]>([]);
+  const [activeCasesFilter, setActiveCasesFilter] = useState(false);
+  const [overdueInvoicesFilter, setOverdueInvoicesFilter] = useState(false);
+
+  // Filtered clients calculation
+  const filteredClients = (clients || []).filter((client: any) => {
+    const searchMatches = [client.fullName, client.email].some((value) =>
+      value?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const clientCases = cases.filter(
+      (caseItem: any) => caseItem.selectedClient?.id === client.id
+    );
+
+    const caseTypeMatch =
+      selectedCaseTypes.length === 0 ||
+      clientCases.some((c: any) => selectedCaseTypes.includes(c.caseType));
+
+    const activeCasesMatch = !activeCasesFilter || clientCases.length > 0;
+    const overdueMatch = !overdueInvoicesFilter || client.hasOverdue;
+
+    return searchMatches && caseTypeMatch && activeCasesMatch && overdueMatch;
+  });
+
   // Slice data for pagination
-  const displayedClients = clients?.slice(
+  const displayedClients = filteredClients?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -26,6 +54,27 @@ export default function Page() {
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  // Reset pagination on filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchQuery,
+    selectedCaseTypes,
+    activeCasesFilter,
+    overdueInvoicesFilter,
+  ]);
+
+  const handleOpenDelete = (client: any) => {
+    setSelectedClient(client);
+    setIsDeleteOpen(true);
+  };
+
+  const handleCaseTypeChange = (type: string) => {
+    setSelectedCaseTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
   };
 
   return (
@@ -48,13 +97,13 @@ export default function Page() {
               <span className="material-symbols-outlined mr-1 text-sm">
                 person_add
               </span>
-              Add New Client
+              <span className="hidden sm:inline">Add New Client</span>
             </button>
             <button className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center transition-all duration-200 transform hover:scale-105">
               <span className="material-symbols-outlined mr-1 text-sm">
                 download
               </span>
-              Export Client List
+              <span className="hidden sm:inline">Export Client List</span>
             </button>
           </div>
         </div>
@@ -63,7 +112,9 @@ export default function Page() {
           <div className="relative w-96">
             <input
               type="text"
-              placeholder="Search clients..."
+              placeholder="Search clients by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
             />
             <span className="material-symbols-outlined absolute left-3 top-2 text-gray-400">
@@ -87,6 +138,8 @@ export default function Page() {
                   <input
                     type="checkbox"
                     className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                    checked={activeCasesFilter}
+                    onChange={(e) => setActiveCasesFilter(e.target.checked)}
                   />
                   <span>Clients with active cases</span>
                 </label>
@@ -94,44 +147,30 @@ export default function Page() {
                   <input
                     type="checkbox"
                     className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                    checked={overdueInvoicesFilter}
+                    onChange={(e) => setOverdueInvoicesFilter(e.target.checked)}
                   />
                   <span>Clients with overdue invoices</span>
                 </label>
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Case type:</p>
-                  <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600 rounded"
-                    />
-                    <span>Consulting</span>
-                  </label>
-                  <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600 rounded"
-                    />
-                    <span>Litigation</span>
-                  </label>
-                  <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600 rounded"
-                    />
-                    <span>Customs</span>
-                  </label>
-                  <label className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600 rounded"
-                    />
-                    <span>Tax</span>
-                  </label>
-                </div>
-                <div className="pt-2 flex justify-end">
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition-colors duration-200">
-                    Apply
-                  </button>
+                  {["consulting", "litigation", "customs", "tax"].map(
+                    (type) => (
+                      <label
+                        key={type}
+                        className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                          value={type}
+                          checked={selectedCaseTypes.includes(type)}
+                          onChange={(e) => handleCaseTypeChange(type)}
+                        />
+                        <span className="capitalize">{type}</span>
+                      </label>
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -183,7 +222,7 @@ export default function Page() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {clients.map((client: any) => (
+              {displayedClients.map((client: any) => (
                 <tr
                   key={client.id}
                   className="hover:bg-gray-50 transition-colors duration-150"
@@ -236,11 +275,14 @@ export default function Page() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {client?.assignCases?.length ?? 0}
+                      {cases.filter(
+                        (caseItem: any) =>
+                          caseItem.selectedClient.id === client.id
+                      ).length ?? 0}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {client.CreateAt}
+                    {client?.createdAt?.toDate().toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
@@ -254,10 +296,18 @@ export default function Page() {
                           visibility
                         </span>
                       </button>
-                      <button className="text-blue-600 hover:text-blue-900 transition-transform hover:scale-110">
+                      <button
+                        onClick={() =>
+                          router.push(`/dashboard/clients/${client.id}/edit`)
+                        }
+                        className="text-blue-600 hover:text-blue-900 transition-transform hover:scale-110"
+                      >
                         <span className="material-symbols-outlined">edit</span>
                       </button>
-                      <button className="text-red-600 hover:text-red-900 transition-transform hover:scale-110">
+                      <button
+                        onClick={() => handleOpenDelete(client)}
+                        className="text-red-600 hover:text-red-900 transition-transform hover:scale-110"
+                      >
                         <span className="material-symbols-outlined">
                           delete
                         </span>
@@ -315,6 +365,12 @@ export default function Page() {
           </div>
         </div>
       </main>
+      <DeleteDialog
+        onOpen={isDeleteOpen}
+        element={selectedClient}
+        setElement={setIsDeleteOpen}
+        table={"clients"}
+      />
     </div>
   );
 }

@@ -119,11 +119,11 @@ export default function Page() {
                 <span className="material-symbols-outlined mr-2">
                   person_add
                 </span>
-                Add New Lawyer
+                <span className="hidden sm:inline">Add New Lawyer</span>
               </button>
               <button className="flex items-center border border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-md transition duration-300 transform hover:scale-105">
                 <span className="material-symbols-outlined mr-2">download</span>
-                Export Lawyer List
+                <span className="hidden sm:inline">Export Lawyer List</span>
               </button>
             </div>
           </div>

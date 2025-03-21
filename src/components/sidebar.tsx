@@ -1,14 +1,24 @@
 "use client";
-
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "./context/auth-context";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useEffect } from "react";
-export const Sidebar = () => {
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { X, ChevronDown, LogOut } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export const Sidebar = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}) => {
   const pathname = usePathname();
   const { user, userInfo } = useAuth();
+
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
     { href: "/dashboard/cases", label: "Cases", icon: "folder" },
@@ -16,147 +26,149 @@ export const Sidebar = () => {
     { href: "/dashboard/lawyers", label: "Lawyers", icon: "person" },
     { href: "/dashboard/search", label: "Search", icon: "search" },
   ];
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
-  return (
-    <div className="h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg relative">
-      <div className="flex items-center justify-between p-4 bg-white">
-        <div className="flex items-center space-x-2">
-          <Image src="/DHLogo.avif" alt="Logo" width={150} height={100} />
-        </div>
-        <span className="material-symbols-outlined cursor-pointer hover:scale-110 transition-all duration-300 hover:text-blue-600">
-          menu
+  const renderNavItem = ({ href, label, icon }: (typeof navLinks)[0]) => (
+    <li key={href}>
+      <Link
+        href={href}
+        className={cn(
+          "flex items-center p-3 rounded-lg transition-all duration-300 group min-h-[48px]",
+          pathname === href ? "bg-blue-50 text-blue-600" : "hover:bg-gray-100"
+        )}
+      >
+        <span className="material-symbols-outlined mr-3">{icon}</span>
+        <span className="font-medium group-hover:translate-x-1 transition-transform">
+          {label}
         </span>
-      </div>
+      </Link>
+    </li>
+  );
 
-      <nav className="mt-6 px-4">
-        <ul className="space-y-2">
-          {navLinks.map(({ href, label, icon }) => (
-            <li key={href}>
+  const renderDropdown = (
+    title: string,
+    icon: string,
+    items: { href: string; label: string }[]
+  ) => (
+    <li>
+      <details className="group">
+        <summary className="flex items-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer list-none">
+          <span className="material-symbols-outlined text-blue-600 mr-3">
+            {icon}
+          </span>
+          <span className="font-semibold flex-1">{title}</span>
+          <ChevronDown className="h-4 w-4 ml-auto transition-transform group-open:rotate-180" />
+        </summary>
+        <ul className="pl-12 mt-2 space-y-2">
+          {items.map((item) => (
+            <li key={item.href}>
               <Link
-                href={href}
-                className={`flex items-center p-3 rounded-lg transition-all duration-300 group ${
-                  pathname === href
-                    ? "bg-blue-50 text-blue-600"
-                    : "hover:bg-gray-100"
-                }`}
+                href={item.href}
+                className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
               >
-                <span
-                  className={`material-symbols-outlined mr-3 ${
-                    pathname === href ? "text-blue-600" : ""
-                  }`}
-                >
-                  {icon}
-                </span>
-                <span className="font-medium group-hover:translate-x-1 transition-transform">
-                  {label}
-                </span>
+                {item.label}
               </Link>
             </li>
           ))}
-
-          {/* Communication Dropdown */}
-          <li>
-            <details className="group">
-              <summary className="flex items-center p-4 rounded-lg hover:bg-gray-50/80 transition-all duration-300 cursor-pointer group">
-                <span className="material-symbols-outlined text-blue-600 mr-3">
-                  mail
-                </span>
-                <span className="font-semibold">Communication</span>
-                <span className="material-symbols-outlined ml-auto group-open:rotate-180 transition-transform text-gray-500">
-                  expand_more
-                </span>
-              </summary>
-              <ul className="pl-12 mt-2 space-y-2">
-                <li>
-                  <Link
-                    href="/email"
-                    className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
-                  >
-                    Email
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/invoice"
-                    className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
-                  >
-                    Invoice
-                  </Link>
-                </li>
-              </ul>
-            </details>
-          </li>
-
-          {/* Settings Dropdown */}
-          <li>
-            <details className="group">
-              <summary className="flex items-center p-4 rounded-lg hover:bg-gray-50/80 transition-all duration-300 cursor-pointer group">
-                <span className="material-symbols-outlined text-blue-600 mr-3">
-                  settings
-                </span>
-                <span className="font-semibold">Settings</span>
-                <span className="material-symbols-outlined ml-auto group-open:rotate-180 transition-transform text-gray-500">
-                  expand_more
-                </span>
-              </summary>
-              <ul className="pl-12 mt-2 space-y-2">
-                <li>
-                  <Link
-                    href="/profile"
-                    className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
-                  >
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/security"
-                    className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
-                  >
-                    Security
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/preferences"
-                    className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
-                  >
-                    Preferences
-                  </Link>
-                </li>
-              </ul>
-            </details>
-          </li>
         </ul>
-      </nav>
+      </details>
+    </li>
+  );
 
-      {/* User Info & Logout */}
-      <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200">
-        <div className="flex justify-between items-center space-x-3 group cursor-pointer">
-          <div className="flex gap-5">
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg relative w-64">
+        <div className="flex items-center justify-between p-4 bg-white">
+          <Image src="/DHLogo.avif" alt="Logo" width={150} height={100} />
+        </div>
+
+        <nav className="mt-6 px-4">
+          <ul className="space-y-2">
+            {navLinks.map(renderNavItem)}
+
+            {renderDropdown("Communication", "mail", [
+              { href: "/email", label: "Email" },
+              { href: "/invoice", label: "Invoice" },
+            ])}
+
+            {renderDropdown("Settings", "settings", [
+              { href: "/profile", label: "Profile" },
+              { href: "/security", label: "Security" },
+              { href: "/preferences", label: "Preferences" },
+            ])}
+          </ul>
+        </nav>
+
+        <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200">
+          <div className="flex items-center gap-3 group cursor-pointer">
             <Avatar>
-              <AvatarImage alt={userInfo?.name} />
+              <AvatarImage src={userInfo?.photoURL} />
               <AvatarFallback className="bg-stone-400">
                 {userInfo?.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((name: any) => name.charAt(0).toUpperCase())
+                  ?.split(" ")
+                  .map((n: any) => n[0])
                   .join("")}
               </AvatarFallback>
             </Avatar>
-            <div className="group-hover:translate-x-1 transition-transform">
-              <p className="font-medium">{userInfo?.name}</p>
-              <p className="text-sm text-gray-500">{userInfo?.role}</p>
+            <div>
+              <p className="font-medium">{userInfo?.name || "User"}</p>
+              <p className="text-sm text-gray-500">
+                {userInfo?.role || "Role"}
+              </p>
             </div>
+            <LogOut className="ml-auto h-4 w-4 text-gray-400 group-hover:text-blue-600" />
           </div>
-          <span className="material-symbols-outlined ml-auto text-gray-400 group-hover:text-blue-600 transition-colors">
-            logout
-          </span>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Sidebar */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent side="left" className="w-64 p-0">
+          <div className="h-full bg-gradient-to-b from-white to-gray-50">
+            <div className="flex items-center justify-between p-4 bg-white">
+              <Image src="/DHLogo.avif" alt="Logo" width={150} height={100} />
+            </div>
+
+            <nav className="mt-6 px-4">
+              <ul className="space-y-2">
+                {navLinks.map(renderNavItem)}
+
+                {renderDropdown("Communication", "mail", [
+                  { href: "/email", label: "Email" },
+                  { href: "/invoice", label: "Invoice" },
+                ])}
+
+                {renderDropdown("Settings", "settings", [
+                  { href: "/profile", label: "Profile" },
+                  { href: "/security", label: "Security" },
+                  { href: "/preferences", label: "Preferences" },
+                ])}
+              </ul>
+            </nav>
+
+            <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage src={userInfo?.photoURL} />
+                  <AvatarFallback className="bg-stone-400">
+                    {userInfo?.name
+                      ?.split(" ")
+                      .map((n: any) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{userInfo?.name || "User"}</p>
+                  <p className="text-sm text-gray-500">
+                    {userInfo?.role || "Role"}
+                  </p>
+                </div>
+                <LogOut className="ml-auto h-4 w-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };

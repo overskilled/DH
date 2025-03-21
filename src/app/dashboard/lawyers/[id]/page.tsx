@@ -71,18 +71,18 @@ export default function Page() {
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-sm">edit</span>
-              Edit Lawyer
+              <span className="hidden sm:inline">Edit Lawyer</span>
             </button>
             <button
               onClick={() => setIsDeleteOpen(!isDeleteOpen)}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-sm">delete</span>
-              Delete Lawyer
+              <span className="hidden sm:inline">Delete Lawyer</span>
             </button>
             <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">mail</span>
-              Email Lawyer
+              <span className="hidden sm:inline">Email Lawyer</span>
             </button>
           </div>
         </div>

@@ -81,8 +81,8 @@ export function DeleteDialog({
 
         <AlertDialogDescription className="text-left pl-4">
           Are you sure you want to delete the {table}{" "}
-          {element?.fullName || element?.full_name} record? This action cannot
-          be undone.
+          {element?.fullName || element?.full_name} ? This action cannot be
+          undone.
         </AlertDialogDescription>
 
         <AlertDialogFooter className="sm:justify-start pt-4">
