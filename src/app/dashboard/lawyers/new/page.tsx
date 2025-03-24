@@ -787,7 +787,7 @@ export default function Page() {
                         className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-32"
                       >
                         {cases.map((caseItem: any) => (
-                          <option value={caseItem.id}>
+                          <option key={caseItem.id} value={caseItem.id}>
                             Case - {caseItem.caseName}
                           </option>
                         ))}
