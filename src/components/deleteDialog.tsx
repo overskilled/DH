@@ -34,7 +34,7 @@ export function DeleteDialog({
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await deleteFirestoreDocument(table, element.id);
+      await deleteFirestoreDocument(`${table}s`, element.id);
       toast.success(`${table} successfully deleted`, {
         description: `The ${table} ${
           element.fullName || element.full_name || element.caseName
