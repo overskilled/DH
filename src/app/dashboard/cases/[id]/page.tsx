@@ -246,6 +246,7 @@ export default function Page() {
                       className="w-8 h-8 rounded-full border-2 border-white hover:z-10 hover:scale-110 transition"
                       src={lawyer.profileImage}
                       alt={lawyer.full_name}
+                      key={lawyer.id}
                     />
                   ))}
                   {assignedLawyers?.length > 3 && (
