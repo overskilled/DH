@@ -37,11 +37,11 @@ export function DeleteDialog({
       await deleteFirestoreDocument(table, element.id);
       toast.success(`${table} successfully deleted`, {
         description: `The ${table} ${
-          element.fullName || element.full_name
+          element.fullName || element.full_name || element.caseName
         } has been successfully deleted`,
       });
       setElement(false);
-      router.push(`/dashboard/${table}`);
+      router.push(`/dashboard/${table}s`);
     } catch (error) {
       console.error("Delete failed:", error);
       toast.success(`An error occured`, {
@@ -81,8 +81,8 @@ export function DeleteDialog({
 
         <AlertDialogDescription className="text-left pl-4">
           Are you sure you want to delete the {table}{" "}
-          {element?.fullName || element?.full_name} ? This action cannot be
-          undone.
+          {element?.fullName || element?.full_name || element?.caseName} ? This
+          action cannot be undone.
         </AlertDialogDescription>
 
         <AlertDialogFooter className="sm:justify-start pt-4">

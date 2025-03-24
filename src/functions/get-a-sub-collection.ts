@@ -29,6 +29,6 @@ export const listenToSubCollection = (
     return unsubscribe;
   } catch (error) {
     console.error("Error listening to subcollection:", error);
-    return null; // Return null in case of an error
+    return callback([]); // Pass an empty array in case of error
   }
 };

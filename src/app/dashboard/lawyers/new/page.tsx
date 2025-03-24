@@ -211,19 +211,19 @@ export default function Page() {
                 <span className="material-symbols-outlined text-sm mr-1 align-middle">
                   add
                 </span>
-                Save & Add Another
+                <span className="hidden sm:inline">Save & Add Another</span>
               </button>
               <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all transform hover:scale-105 shadow">
                 <span className="material-symbols-outlined text-sm mr-1 align-middle">
                   save
                 </span>
-                Save & Exit
+                <span className="hidden sm:inline">Save & Exit</span>
               </button>
               <button className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-all transform hover:scale-105 shadow">
                 <span className="material-symbols-outlined text-sm mr-1 align-middle">
                   close
                 </span>
-                Cancel
+                <span className="hidden sm:inline">Cancel</span>
               </button>
             </div>
           </div>

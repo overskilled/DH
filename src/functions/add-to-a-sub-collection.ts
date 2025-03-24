@@ -13,7 +13,7 @@ export async function addToSubCollection(
   collectionName: string,
   documentId: string,
   table: string
-): Promise<string | null> {
+): Promise<any | null> {
   try {
     // Reference the Firestore collection
     const collectionRef = collection(db, collectionName, documentId, table);
@@ -25,7 +25,7 @@ export async function addToSubCollection(
       updatedAt: serverTimestamp(),
     });
 
-    return docRef.id; // Return the document ID
+    return docRef; // Return the document ID
   } catch (error) {
     console.error("Error adding document:", error); // Log detailed error for debugging
     return null; // Indicate failure

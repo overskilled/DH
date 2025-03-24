@@ -100,9 +100,28 @@ export default function Page() {
     <div id="webcrumbs">
       <div className="w-full bg-gray-50 min-h-screen p-6 font-sans">
         <header className="bg-white shadow-md p-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">Lawyers</h1>
+          <div className="flex w-full justify-between items-center">
+            <div className="w-full">
+              <div className="flex w-full justify-between">
+                <h1 className="text-2xl font-bold">Lawyers</h1>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => router.push("/dashboard/lawyers/new")}
+                    className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-300 transform hover:scale-105"
+                  >
+                    <span className="material-symbols-outlined sm:mr-2">
+                      person_add
+                    </span>
+                    <span className="hidden sm:inline">Add New Lawyer</span>
+                  </button>
+                  <button className="flex items-center border border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-md transition duration-300 transform hover:scale-105">
+                    <span className="material-symbols-outlined sm:mr-2">
+                      download
+                    </span>
+                    <span className="hidden sm:inline">Export Lawyer List</span>
+                  </button>
+                </div>
+              </div>
               <div className="text-sm text-gray-500 flex items-center mt-1">
                 <span className="hover:text-indigo-600 transition duration-300 cursor-pointer">
                   Dashboard
@@ -111,7 +130,7 @@ export default function Page() {
                 <span className="text-indigo-600">Lawyers</span>
               </div>
             </div>
-            <div className="flex gap-3">
+            {/* <div className="flex gap-3">
               <button
                 onClick={() => router.push("/dashboard/lawyers/new")}
                 className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-300 transform hover:scale-105"
@@ -125,7 +144,7 @@ export default function Page() {
                 <span className="material-symbols-outlined mr-2">download</span>
                 <span className="hidden sm:inline">Export Lawyer List</span>
               </button>
-            </div>
+            </div> */}
           </div>
         </header>
 
