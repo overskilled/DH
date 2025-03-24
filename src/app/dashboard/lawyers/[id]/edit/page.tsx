@@ -670,7 +670,7 @@ export default function UpdateLawyerPage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-blue-500 h-32"
                       >
                         {cases.map((caseItem: any) => (
-                          <option value={caseItem.id}>
+                          <option key={caseItem.id} value={caseItem.id}>
                             Case - {caseItem.caseName}
                           </option>
                         ))}

@@ -365,6 +365,7 @@ export default function Page() {
                                     className="h-8 w-8 rounded-full border-2 border-white"
                                     src={lawyer.profileImage}
                                     alt={lawyer.full_name}
+                                    key={lawyer.id}
                                   />
                                 ))}
                             </div>
