@@ -1,34 +1,122 @@
 "use client";
 import { useAuth } from "@/components/context/auth-context";
+import { listenToSubCollection } from "@/functions/get-a-sub-collection";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DeleteDialog } from "@/components/deleteDialog";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
+
+import { db, storage } from "@/functions/firebase";
+import { LawyersBox } from "@/components/caseDetailPage/lawyersBox";
+import { CaseNotesAndComments } from "@/components/caseDetailPage/caseNotesAndComments";
+import CaseFilesBox from "@/components/caseDetailPage/caseFilesBox";
+import { UploadFileDialog } from "@/components/caseDetailPage/uploadFileDialog";
 
 export default function Page() {
   const router = useRouter();
   const { id } = useParams();
+  const [loading, setLoading] = useState(false);
   const [selectedCase, setSelectedCase] = useState<any>({});
   const [assignedLawyers, setAssignedLawyers] = useState<any[]>([]);
   const [client, setClient] = useState<any>({});
   const { clients, cases, lawyers } = useAuth();
+  const [notes, setNotes] = useState<any[]>([]);
+  const [timeline, setTimeline] = useState<any[]>([]);
+  const [emails, setEmails] = useState<any[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[] | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   useEffect(() => {
-    const actualCase = cases?.find((caseItem: any) => caseItem?.id === id);
-    setSelectedCase(actualCase);
-    const actualClient = clients?.find(
-      (client: any) => client?.id === actualCase?.selectedClient?.id
+    if (!id || !cases) return;
+    async function getDatas() {
+      setLoading(true);
+      const caseData = cases.find((c: any) => c.id === id);
+
+      setSelectedCase(caseData);
+      setClient(clients?.find((c: any) => c.id === caseData.selectedClient.id));
+      setAssignedLawyers(
+        lawyers?.filter((l: any) => caseData.assignedLawyers?.includes(l.id)) ||
+          []
+      );
+
+      const unsubscribeNotes = listenToSubCollection(
+        "cases",
+        id as string,
+        "notes",
+        setNotes
+      );
+
+      const unsubscribeTimeline = listenToSubCollection(
+        "cases",
+        id as string,
+        "notes",
+        setTimeline
+      );
+
+      setLoading(false);
+
+      return () => {
+        if (unsubscribeNotes) unsubscribeNotes();
+        if (unsubscribeTimeline) unsubscribeTimeline();
+      };
+    }
+
+    getDatas();
+  }, [id, cases, clients, lawyers, router]);
+
+  const addTimelineEvent = async (event: {
+    title: string;
+    description: string;
+    date: Date;
+  }) => {
+    try {
+      const docRef = await addDoc(
+        collection(db, "cases", id as string, "timeline"),
+        {
+          ...event,
+          createdAt: Timestamp.now(),
+          createdBy: "currentUserID",
+        }
+      );
+      setTimeline((prev) => [...prev, { id: docRef.id, ...event }]);
+    } catch (error) {
+      console.error("Error adding timeline event:", error);
+    }
+  };
+
+  if (loading || !selectedCase) {
+    return (
+      <div className="w-full bg-gray-50 font-sans p-4 md:p-6 lg:p-8">
+        <header className="bg-white shadow-md p-6 rounded-lg mb-6">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-8 w-[200px]" />
+            <div className="flex gap-3">
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-3 gap-6 mb-6">
+          <div className="col-span-2 space-y-6">
+            <Skeleton className="h-64 w-full rounded-lg" />
+            <Skeleton className="h-96 w-full rounded-lg" />
+          </div>
+          <div className="space-y-6">
+            <Skeleton className="h-64 w-full rounded-lg" />
+            <Skeleton className="h-64 w-full rounded-lg" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 mb-6">
+          <Skeleton className="h-96 w-full rounded-lg" />
+          <Skeleton className="h-96 w-full rounded-lg" />
+        </div>
+      </div>
     );
-    setClient(actualClient);
-  }, [cases, id, clients]);
-
-  useEffect(() => {
-    if (!selectedCase || !selectedCase.assignedLawyers) return;
-
-    const assigned = lawyers?.filter((lawyer: any) =>
-      selectedCase?.assignedLawyers?.includes(lawyer.id)
-    );
-
-    setAssignedLawyers(assigned || []);
-  }, [selectedCase, lawyers]);
+  }
 
   return (
     <div className="w-full bg-gray-50 font-sans p-4 md:p-6 lg:p-8">
@@ -55,11 +143,17 @@ export default function Page() {
             </nav>
           </div>
           <div className="flex gap-3">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1">
+            <button
+              onClick={() => router.push(`/dashboard/cases/${id}/edit`)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1"
+            >
               <span className="material-symbols-outlined text-sm">edit</span>
               Edit Case
             </button>
-            <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1">
+            <button
+              onClick={() => setIsDeleteOpen(true)}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1"
+            >
               <span className="material-symbols-outlined text-sm">delete</span>
               Delete Case
             </button>
@@ -76,6 +170,12 @@ export default function Page() {
           </div>
         </div>
       </header>
+      <DeleteDialog
+        onOpen={isDeleteOpen}
+        setElement={setIsDeleteOpen}
+        table={"case"}
+        element={selectedCase}
+      />
 
       <div className="grid grid-cols-3 gap-6 mb-6">
         <div className="col-span-2">
@@ -141,24 +241,18 @@ export default function Page() {
               <div>
                 <p className="text-gray-500 text-sm mb-1">Assigned Lawyers</p>
                 <div className="flex -space-x-2 mt-1">
-                  <img
-                    className="w-8 h-8 rounded-full border-2 border-white hover:z-10 hover:scale-110 transition"
-                    src="https://randomuser.me/api/portraits/women/12.jpg"
-                    alt="Lawyer"
-                  />
-                  <img
-                    className="w-8 h-8 rounded-full border-2 border-white hover:z-10 hover:scale-110 transition"
-                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                    alt="Lawyer"
-                  />
-                  <img
-                    className="w-8 h-8 rounded-full border-2 border-white hover:z-10 hover:scale-110 transition"
-                    src="https://randomuser.me/api/portraits/women/45.jpg"
-                    alt="Lawyer"
-                  />
-                  <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-blue-600 text-xs font-bold hover:bg-blue-200 transition cursor-pointer">
-                    +2
-                  </div>
+                  {assignedLawyers.map((lawyer: any) => (
+                    <img
+                      className="w-8 h-8 rounded-full border-2 border-white hover:z-10 hover:scale-110 transition"
+                      src={lawyer.profileImage}
+                      alt={lawyer.full_name}
+                    />
+                  ))}
+                  {assignedLawyers?.length > 3 && (
+                    <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-blue-600 text-xs font-bold hover:bg-blue-200 transition cursor-pointer">
+                      {assignedLawyers?.length - 3}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -322,328 +416,35 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="flex justify-between items-center mb-4 border-b pb-3">
-              <h2 className="text-xl font-semibold">Assigned Lawyers</h2>
-              <button className="text-blue-600 hover:text-blue-800 transition">
-                <span className="material-symbols-outlined">add_circle</span>
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex gap-3 p-3 hover:bg-gray-50 rounded-lg transition">
-                <img
-                  className="w-12 h-12 rounded-full"
-                  src="https://randomuser.me/api/portraits/women/12.jpg"
-                  alt="Lawyer"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <h4 className="font-semibold">Sarah Williams</h4>
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                      Lead Attorney
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    Intellectual Property Specialist
-                  </p>
-                  <div className="flex gap-2 mt-1">
-                    <button className="text-gray-500 hover:text-blue-600 transition">
-                      <span className="material-symbols-outlined text-sm">
-                        call
-                      </span>
-                    </button>
-                    <button className="text-gray-500 hover:text-blue-600 transition">
-                      <span className="material-symbols-outlined text-sm">
-                        mail
-                      </span>
-                    </button>
-                    <span className="text-xs text-gray-500 ml-auto mt-1">
-                      Assigned until Dec 2023
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3 p-3 hover:bg-gray-50 rounded-lg transition">
-                <img
-                  className="w-12 h-12 rounded-full"
-                  src="https://randomuser.me/api/portraits/men/32.jpg"
-                  alt="Lawyer"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <h4 className="font-semibold">Robert Chen</h4>
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
-                      Associate
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-500">Litigation Support</p>
-                  <div className="flex gap-2 mt-1">
-                    <button className="text-gray-500 hover:text-blue-600 transition">
-                      <span className="material-symbols-outlined text-sm">
-                        call
-                      </span>
-                    </button>
-                    <button className="text-gray-500 hover:text-blue-600 transition">
-                      <span className="material-symbols-outlined text-sm">
-                        mail
-                      </span>
-                    </button>
-                    <span className="text-xs text-gray-500 ml-auto mt-1">
-                      Assigned until Nov 2023
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3 p-3 hover:bg-gray-50 rounded-lg transition">
-                <img
-                  className="w-12 h-12 rounded-full"
-                  src="https://randomuser.me/api/portraits/women/45.jpg"
-                  alt="Lawyer"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <h4 className="font-semibold">Emily Rodriguez</h4>
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
-                      Paralegal
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    Research & Documentation
-                  </p>
-                  <div className="flex gap-2 mt-1">
-                    <button className="text-gray-500 hover:text-blue-600 transition">
-                      <span className="material-symbols-outlined text-sm">
-                        call
-                      </span>
-                    </button>
-                    <button className="text-gray-500 hover:text-blue-600 transition">
-                      <span className="material-symbols-outlined text-sm">
-                        mail
-                      </span>
-                    </button>
-                    <span className="text-xs text-gray-500 ml-auto mt-1">
-                      Assigned until Dec 2023
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LawyersBox
+            selectedCase={selectedCase}
+            assignedLawyers={assignedLawyers}
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 border-b pb-3">
-            Documents & Attachments
-          </h2>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-4 hover:bg-gray-50 transition cursor-pointer">
-            <span className="material-symbols-outlined text-4xl text-gray-400 mb-2">
-              cloud_upload
-            </span>
-            <p className="text-gray-600 mb-1">
-              Drag & drop files here or click to browse
-            </p>
-            <p className="text-xs text-gray-500">Maximum file size: 25MB</p>
-          </div>
+        <CaseFilesBox
+          files={selectedCase?.files}
+          caseId={id as string}
+          setSelectedFiles={setSelectedFiles}
+          setShowUploadDialog={setShowUploadDialog}
+        />
 
-          <div className="space-y-3">
-            <div className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
-              <span className="material-symbols-outlined text-blue-600 mr-3">
-                description
-              </span>
-              <div className="flex-1">
-                <h4 className="font-medium">
-                  Copyright_Claim_Initial_Filing.pdf
-                </h4>
-                <p className="text-xs text-gray-500">
-                  Uploaded May 3, 2023 • 2.4MB
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button className="text-gray-500 hover:text-blue-600 transition">
-                  <span className="material-symbols-outlined">visibility</span>
-                </button>
-                <button className="text-gray-500 hover:text-blue-600 transition">
-                  <span className="material-symbols-outlined">download</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 transition">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </div>
+        <UploadFileDialog
+          opened={showUploadDialog}
+          setOpened={setShowUploadDialog}
+          selectedFiles={selectedFiles}
+          caseId={id as string}
+          setSelectedFiles={setSelectedFiles}
+          setShowUploadDialog={setShowUploadDialog}
+        />
 
-            <div className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
-              <span className="material-symbols-outlined text-green-600 mr-3">
-                table_chart
-              </span>
-              <div className="flex-1">
-                <h4 className="font-medium">Financial_Damages_Analysis.xlsx</h4>
-                <p className="text-xs text-gray-500">
-                  Uploaded June 15, 2023 • 1.8MB
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button className="text-gray-500 hover:text-blue-600 transition">
-                  <span className="material-symbols-outlined">visibility</span>
-                </button>
-                <button className="text-gray-500 hover:text-blue-600 transition">
-                  <span className="material-symbols-outlined">download</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 transition">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
-              <span className="material-symbols-outlined text-red-600 mr-3">
-                picture_as_pdf
-              </span>
-              <div className="flex-1">
-                <h4 className="font-medium">Expert_Witness_Statement.pdf</h4>
-                <p className="text-xs text-gray-500">
-                  Uploaded July 28, 2023 • 5.1MB
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button className="text-gray-500 hover:text-blue-600 transition">
-                  <span className="material-symbols-outlined">visibility</span>
-                </button>
-                <button className="text-gray-500 hover:text-blue-600 transition">
-                  <span className="material-symbols-outlined">download</span>
-                </button>
-                <button className="text-gray-500 hover:text-red-600 transition">
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center mt-4">
-              <button className="text-blue-600 hover:text-blue-800 transition flex items-center">
-                <span className="material-symbols-outlined mr-1">
-                  expand_more
-                </span>
-                View All Documents (29 more)
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 border-b pb-3">
-            Case Notes & Comments
-          </h2>
-
-          <div className="flex gap-4 mb-4">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md flex-1 hover:bg-blue-700 transition">
-              Internal Notes
-            </button>
-            <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md flex-1 hover:bg-gray-300 transition">
-              Client Communications
-            </button>
-          </div>
-
-          <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex justify-between mb-2">
-                <div className="flex items-center">
-                  <img
-                    className="w-8 h-8 rounded-full mr-2"
-                    src="https://randomuser.me/api/portraits/women/12.jpg"
-                    alt="Attorney"
-                  />
-                  <span className="font-medium">Sarah Williams</span>
-                </div>
-                <span className="text-xs text-gray-500">Today at 10:23 AM</span>
-              </div>
-              <p className="text-gray-700 mb-2">
-                Opposing counsel reached out to discuss a potential settlement.
-                Their initial offer is significantly lower than our target. I
-                recommend we counter with our previously discussed amount and
-                prepare for a potential mediation session.
-              </p>
-              <div className="flex gap-2 text-sm">
-                <button className="text-blue-600 hover:text-blue-800 transition">
-                  Reply
-                </button>
-                <button className="text-gray-500 hover:text-gray-700 transition">
-                  Edit
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex justify-between mb-2">
-                <div className="flex items-center">
-                  <img
-                    className="w-8 h-8 rounded-full mr-2"
-                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                    alt="Attorney"
-                  />
-                  <span className="font-medium">Robert Chen</span>
-                </div>
-                <span className="text-xs text-gray-500">
-                  Yesterday at 4:17 PM
-                </span>
-              </div>
-              <p className="text-gray-700 mb-2">
-                {`Reviewed the latest evidence package from Johnson Inc. Their
-                financial records don't match up with their claims about
-                damages. We should highlight this discrepancy in our next
-                filing.`}
-              </p>
-              <div className="flex gap-2 text-sm">
-                <button className="text-blue-600 hover:text-blue-800 transition">
-                  Reply
-                </button>
-                <button className="text-gray-500 hover:text-gray-700 transition">
-                  Edit
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex justify-between mb-2">
-                <div className="flex items-center">
-                  <img
-                    className="w-8 h-8 rounded-full mr-2"
-                    src="https://randomuser.me/api/portraits/women/45.jpg"
-                    alt="Paralegal"
-                  />
-                  <span className="font-medium">Emily Rodriguez</span>
-                </div>
-                <span className="text-xs text-gray-500">Aug 27, 2023</span>
-              </div>
-              <p className="text-gray-700 mb-2">
-                {`Finished compiling all the evidence of prior use of our client's
-                trademarked logo. Found 17 instances dating back to 2015, which
-                should solidify our position on first use in commerce.`}
-              </p>
-              <div className="flex gap-2 text-sm">
-                <button className="text-blue-600 hover:text-blue-800 transition">
-                  Reply
-                </button>
-                <button className="text-gray-500 hover:text-gray-700 transition">
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 relative">
-            <textarea
-              className="w-full border rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              placeholder="Add a note or comment..."
-            ></textarea>
-            <button className="absolute right-3 bottom-3 text-blue-600 hover:text-blue-800 transition">
-              <span className="material-symbols-outlined">send</span>
-            </button>
-          </div>
-        </div>
+        <CaseNotesAndComments
+          caseId={id as string}
+          notes={notes}
+          emails={emails}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 mb-6">

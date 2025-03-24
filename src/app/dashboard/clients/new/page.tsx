@@ -143,7 +143,7 @@ export default function Page() {
                     clipRule="evenodd"
                   />
                 </svg>
-                Cancel
+                <span className="hidden sm:inline">Cancel</span>
               </button>
               <button
                 type="submit"
@@ -162,7 +162,7 @@ export default function Page() {
                     clipRule="evenodd"
                   />
                 </svg>
-                Save & Exit
+                <span className="hidden sm:inline">Save & Exit</span>
               </button>
             </div>
           </div>

@@ -43,10 +43,44 @@ export default function Page() {
     <div className="bg-gray-50 shadow-md p-6">
       <header className="bg-white shadow-md p-6 rounded-lg mb-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-indigo-800">
-              {lawyer?.full_name}
-            </h1>
+          <div className="w-full">
+            <div className="flex justify-between w-full">
+              <h1 className="text-xl sm:text-2xl font-bold text-indigo-800">
+                {lawyer?.full_name}
+              </h1>
+
+              <div className="flex gap-2 sm:gap-3">
+                <button
+                  onClick={() =>
+                    router.push(`/dashboard/lawyers/${lawyer.id}/edit`)
+                  }
+                  className="bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-xs sm:text-sm">
+                    edit
+                  </span>
+                  <span className="hidden sm:inline">Edit Lawyer</span>
+                </button>
+
+                <button
+                  onClick={() => setIsDeleteOpen(!isDeleteOpen)}
+                  className="bg-red-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-xs sm:text-sm">
+                    delete
+                  </span>
+                  <span className="hidden sm:inline">Delete Lawyer</span>
+                </button>
+
+                <button className="bg-green-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-md hover:bg-green-700 transition flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs sm:text-sm">
+                    mail
+                  </span>
+                  <span className="hidden sm:inline">Email Lawyer</span>
+                </button>
+              </div>
+            </div>
+
             <nav className="text-sm text-gray-500 flex items-center gap-2 mt-1">
               <span className="hover:text-blue-600 transition cursor-pointer">
                 Dashboard
@@ -62,28 +96,6 @@ export default function Page() {
               </span>
               <span className="text-gray-700">{lawyer?.full_name}</span>
             </nav>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() =>
-                router.push(`/dashboard/lawyers/${lawyer.id}/edit`)
-              }
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center gap-1"
-            >
-              <span className="material-symbols-outlined text-sm">edit</span>
-              <span className="hidden sm:inline">Edit Lawyer</span>
-            </button>
-            <button
-              onClick={() => setIsDeleteOpen(!isDeleteOpen)}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition flex items-center gap-1"
-            >
-              <span className="material-symbols-outlined text-sm">delete</span>
-              <span className="hidden sm:inline">Delete Lawyer</span>
-            </button>
-            <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm">mail</span>
-              <span className="hidden sm:inline">Email Lawyer</span>
-            </button>
           </div>
         </div>
       </header>
