@@ -119,6 +119,7 @@ export const InvoiceCreationDialog = ({
         notes,
         status: "sent",
       };
+      console.log(invoiceData);
 
       // Send email using Resend
       const response = await fetch("/api/send-invoice", {
@@ -141,11 +142,12 @@ export const InvoiceCreationDialog = ({
             day: "numeric",
           }),
           totalAmount: `$${total.toFixed(2)}`,
-          firmName: "Lawson & Partners, LLP", // From your config
-          firmAddress: "123 Legal Avenue, Suite 500\nNew York, NY 10001",
+          firmName: "DH Avocats",
+          firmAddress:
+            "Makepeace, Inc.\n123 Legal Avenue, Suite 500\nNew York, NY 10001",
           firmTaxId: "12-3456789",
-          billingEmail: "billing@lawsonpartners.com",
-          billingPhone: "(555) 123-4567",
+          billingEmail: "billing@dhavocats.com",
+          billingPhone: "670166661",
         }),
       });
 
