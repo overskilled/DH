@@ -203,7 +203,10 @@ export default function Page() {
                   (client: any) => client.email == email.recipientEmail
                 ).fullName;
                 return (
-                  <tr className="hover:bg-gray-50 transition-colors cursor-pointer">
+                  <tr
+                    key={email.id}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-medium">{clientName}</span>

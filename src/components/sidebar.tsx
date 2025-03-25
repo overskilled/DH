@@ -92,9 +92,9 @@ export const Sidebar = ({
               ])}
 
               {renderDropdown("Settings", "settings", [
-                { href: "/profile", label: "Profile" },
-                { href: "/security", label: "Security" },
-                { href: "/preferences", label: "Preferences" },
+                { href: "/dashboard/profile", label: "Profile" },
+                { href: "/dashboard/security", label: "Security" },
+                { href: "/dashboard/preferences", label: "Preferences" },
               ])}
             </ul>
           </nav>
@@ -135,8 +135,8 @@ export const Sidebar = ({
                 {navLinks.map(renderNavItem)}
 
                 {renderDropdown("Communication", "mail", [
-                  { href: "/dashboard/email", label: "Email" },
-                  { href: "/dashboard/invoice", label: "Invoice" },
+                  { href: "/dashboard/emails", label: "Email" },
+                  { href: "/dashboard/invoices", label: "Invoice" },
                 ])}
 
                 {renderDropdown("Settings", "settings", [
