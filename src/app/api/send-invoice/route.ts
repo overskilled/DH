@@ -21,8 +21,22 @@ export async function POST(request: Request) {
       billingPhone,
     } = await request.json();
 
+    console.log({
+      to,
+      clientName,
+      invoiceNumber,
+      issueDate,
+      dueDate,
+      totalAmount,
+      firmName,
+      firmAddress,
+      firmTaxId,
+      billingEmail,
+      billingPhone,
+    });
+
     const { data, error } = await resend.emails.send({
-      from: "Billing <billing@yourdomain.com>",
+      from: "DH Billing <billing@onevisaplace.com>",
       to: [to],
       subject: `Invoice ${invoiceNumber} from ${firmName}`,
       react: InvoiceEmailTemplate({
