@@ -31,6 +31,7 @@ export const Sidebar = ({
     <li key={href}>
       <Link
         href={href}
+        onClick={() => setIsOpen(false)}
         className={cn(
           "flex items-center p-3 rounded-lg transition-all duration-300 group min-h-[48px]",
           pathname === href ? "bg-blue-50 text-blue-600" : "hover:bg-gray-100"
@@ -63,6 +64,7 @@ export const Sidebar = ({
             <li key={item.href}>
               <Link
                 href={item.href}
+                onClick={() => setIsOpen(false)}
                 className="block py-2 hover:translate-x-1 transition-transform hover:text-blue-600"
               >
                 {item.label}

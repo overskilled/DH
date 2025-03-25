@@ -82,7 +82,7 @@ export default function Page() {
             <h1 className="text-2xl font-bold text-gray-800">Invoices</h1>
             <div className="flex space-x-3">
               <div className="relative">
-                <button className="flex items-center space-x-1 px-4 py-2 bg-primary-50 hover:bg-primary-100 rounded-md transition-colors duration-200 text-primary-700">
+                <button className="flex items-center space-x-1 px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors duration-200 text-blue-700">
                   <span className="material-symbols-outlined text-sm">
                     file_download
                   </span>
@@ -92,7 +92,10 @@ export default function Page() {
                   </span>
                 </button>
               </div>
-              <button className="flex items-center space-x-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors duration-200">
+              <button
+                onClick={() => setIsCreateInvoiceOpened(true)}
+                className="flex items-center space-x-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200"
+              >
                 <span className="material-symbols-outlined text-sm">add</span>
                 <span>New Invoice</span>
               </button>
@@ -104,7 +107,7 @@ export default function Page() {
               <input
                 type="text"
                 placeholder="Search invoices..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -119,7 +122,7 @@ export default function Page() {
             <div className="flex flex-wrap gap-3">
               <div className="relative">
                 <select
-                  className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white cursor-pointer"
+                  className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer"
                   value={selectedClient}
                   onChange={(e) => {
                     setSelectedClient(e.target.value);
@@ -140,7 +143,7 @@ export default function Page() {
 
               <div className="relative">
                 <select
-                  className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white cursor-pointer"
+                  className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer"
                   value={selectedStatus}
                   onChange={(e) => {
                     setSelectedStatus(e.target.value);
@@ -159,7 +162,7 @@ export default function Page() {
 
               <div className="relative">
                 <select
-                  className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white cursor-pointer"
+                  className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer"
                   value={sortBy}
                   onChange={(e) => {
                     setSortBy(e.target.value);
@@ -235,7 +238,7 @@ export default function Page() {
                   className="hover:bg-gray-50 transition-colors duration-150"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-primary-700">
+                    <div className="text-sm font-medium text-blue-700">
                       {invoice.id}
                     </div>
                   </td>
@@ -276,7 +279,7 @@ export default function Page() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      <button className="text-primary-600 hover:text-primary-900 transition-colors">
+                      <button className="text-blue-600 hover:text-blue-900 transition-colors">
                         <span className="material-symbols-outlined text-base">
                           visibility
                         </span>
@@ -318,7 +321,7 @@ export default function Page() {
                 key={number}
                 className={`px-3 py-1 border rounded-md ${
                   currentPage === number
-                    ? "border-primary-500 bg-primary-50 text-primary-700 font-medium"
+                    ? "border-blue-500 bg-blue-50 text-blue-700 font-medium"
                     : "border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
                 }`}
                 onClick={() => paginate(number)}
