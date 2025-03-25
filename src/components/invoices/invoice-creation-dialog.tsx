@@ -220,14 +220,14 @@ export const InvoiceCreationDialog = ({
                     <input
                       type="text"
                       placeholder="Search clients..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <ul className="max-h-60 overflow-y-auto py-1">
                     {clients.map((client: any) => (
                       <li
                         key={client.id}
-                        className="px-4 py-2 hover:bg-primary-50 cursor-pointer transition-colors"
+                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer transition-colors"
                         onClick={() => {
                           setSelectedClientEmail(client.email);
                           setSelectedClientName(client.fullName);
@@ -266,14 +266,14 @@ export const InvoiceCreationDialog = ({
                     <input
                       type="text"
                       placeholder="Search cases..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <ul className="max-h-60 overflow-y-auto py-1">
                     {cases.map((caseItem: any) => (
                       <li
                         key={caseItem.id}
-                        className="px-4 py-2 hover:bg-primary-50 cursor-pointer transition-colors"
+                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer transition-colors"
                         onClick={() => {
                           setSelectedCaseId(caseItem.id);
                           setSelectedCaseName(caseItem.caseName);
@@ -297,7 +297,7 @@ export const InvoiceCreationDialog = ({
                     type="text"
                     value={invoiceNumber}
                     readOnly
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -309,7 +309,7 @@ export const InvoiceCreationDialog = ({
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -381,7 +381,7 @@ export const InvoiceCreationDialog = ({
                             e.target.value
                           )
                         }
-                        className="w-full border-none focus:ring-2 focus:ring-primary-500 bg-transparent"
+                        className="w-full border-none focus:ring-2 focus:ring-blue-500 bg-transparent"
                       />
                     </td>
                     <td className="px-6 py-4">
@@ -396,7 +396,7 @@ export const InvoiceCreationDialog = ({
                             parseInt(e.target.value)
                           )
                         }
-                        className="w-20 border-none focus:ring-2 focus:ring-primary-500 bg-transparent"
+                        className="w-20 border-none focus:ring-2 focus:ring-blue-500 bg-transparent"
                       />
                     </td>
                     <td className="px-6 py-4">
@@ -414,7 +414,7 @@ export const InvoiceCreationDialog = ({
                               parseFloat(e.target.value)
                             )
                           }
-                          className="w-24 border-none focus:ring-2 focus:ring-primary-500 bg-transparent"
+                          className="w-24 border-none focus:ring-2 focus:ring-blue-500 bg-transparent"
                         />
                       </div>
                     </td>
@@ -452,7 +452,7 @@ export const InvoiceCreationDialog = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Enter any additional notes..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -468,7 +468,7 @@ export const InvoiceCreationDialog = ({
                   step="0.01"
                   value={taxRate}
                   onChange={(e) => setTaxRate(parseFloat(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -481,7 +481,7 @@ export const InvoiceCreationDialog = ({
                     min="0"
                     value={discount}
                     onChange={(e) => setDiscount(parseFloat(e.target.value))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>

@@ -72,7 +72,7 @@ export default function Page() {
                   expand_more
                 </span>
               </summary>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl p-2 z-10 border border-gray-100">
+              <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl p-2 z-10 border border-gray-100">
                 {["ongoing", "pending", "completed"].map((status) => (
                   <label
                     key={status}

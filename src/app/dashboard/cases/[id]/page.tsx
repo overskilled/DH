@@ -99,8 +99,8 @@ export default function Page() {
           </div>
         </header>
 
-        <div className="grid grid-cols-3 gap-6 mb-6">
-          <div className="col-span-2 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="col-span-1 md:col-span-2">
             <Skeleton className="h-64 w-full rounded-lg" />
             <Skeleton className="h-96 w-full rounded-lg" />
           </div>
@@ -110,7 +110,7 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Skeleton className="h-96 w-full rounded-lg" />
           <Skeleton className="h-96 w-full rounded-lg" />
         </div>
@@ -177,13 +177,13 @@ export default function Page() {
         element={selectedCase}
       />
 
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="col-span-1 md:col-span-2">
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4 border-b pb-3">
               Case Overview
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-gray-500 text-sm mb-1">Case Type</p>
                 <p className="font-medium flex items-center">
@@ -424,7 +424,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <CaseFilesBox
           files={selectedCase?.files}
           caseId={id as string}
