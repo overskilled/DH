@@ -20,6 +20,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [lawyers, setLawyers] = useState<any>([]); // Initialize lawyers
   const [cases, setCases] = useState<any>([]); // Initialize cases
   const [clients, setClients] = useState<any>([]); // Initialize clients
+  const [emails, setEmails] = useState<any>([]); // Initialize clients
+  const [invoices, setInvoices] = useState<any>([]); // Initialize clients
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -38,10 +40,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         lawyers,
         cases,
         clients,
+        emails,
+        invoices,
         setUserInfo,
         setLawyers,
         setCases,
         setClients,
+        setEmails,
+        setInvoices,
       }}
     >
       {children}

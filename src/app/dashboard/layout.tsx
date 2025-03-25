@@ -12,8 +12,15 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, userInfo, setLawyers, setClients, setUserInfo, setCases } =
-    useAuth();
+  const {
+    user,
+    userInfo,
+    setLawyers,
+    setClients,
+    setUserInfo,
+    setCases,
+    setEmails,
+  } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -66,6 +73,22 @@ export default function DashboardLayout({
 
     if (userInfo.role === "admin") {
       const unsubscribe = getACollection("cases", setCases);
+
+      // Cleanup listener on component unmount
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }
+  }, [user, userInfo, setCases]);
+
+  React.useEffect(() => {
+    if (!user || !userInfo) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    if (userInfo.role === "admin") {
+      const unsubscribe = getACollection("emails", setEmails);
 
       // Cleanup listener on component unmount
       return () => {

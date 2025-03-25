@@ -77,27 +77,28 @@ export const Sidebar = ({
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden md:block h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg relative w-64">
+      <div className="hidden md:flex flex-col h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-lg relative w-64">
         <div className="flex items-center justify-between p-4 bg-white">
           <Image src="/DHLogo.avif" alt="Logo" width={150} height={100} />
         </div>
+        <div className="flex-1 overflow-y-auto px-4 mt-6">
+          <nav>
+            <ul className="space-y-2">
+              {navLinks.map(renderNavItem)}
 
-        <nav className="mt-6 px-4">
-          <ul className="space-y-2">
-            {navLinks.map(renderNavItem)}
+              {renderDropdown("Communication", "mail", [
+                { href: "/dashboard/emails", label: "Email" },
+                { href: "/dashboard/invoices", label: "Invoice" },
+              ])}
 
-            {renderDropdown("Communication", "mail", [
-              { href: "/email", label: "Email" },
-              { href: "/invoice", label: "Invoice" },
-            ])}
-
-            {renderDropdown("Settings", "settings", [
-              { href: "/profile", label: "Profile" },
-              { href: "/security", label: "Security" },
-              { href: "/preferences", label: "Preferences" },
-            ])}
-          </ul>
-        </nav>
+              {renderDropdown("Settings", "settings", [
+                { href: "/dashboard/profile", label: "Profile" },
+                { href: "/dashboard/security", label: "Security" },
+                { href: "/dashboard/preferences", label: "Preferences" },
+              ])}
+            </ul>
+          </nav>
+        </div>
 
         <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200">
           <div className="flex items-center gap-3 group cursor-pointer">
@@ -134,8 +135,8 @@ export const Sidebar = ({
                 {navLinks.map(renderNavItem)}
 
                 {renderDropdown("Communication", "mail", [
-                  { href: "/email", label: "Email" },
-                  { href: "/invoice", label: "Invoice" },
+                  { href: "/dashboard/emails", label: "Email" },
+                  { href: "/dashboard/invoices", label: "Invoice" },
                 ])}
 
                 {renderDropdown("Settings", "settings", [
