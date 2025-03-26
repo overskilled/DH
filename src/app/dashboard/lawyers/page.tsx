@@ -465,7 +465,7 @@ export default function Page() {
         onOpen={isDeleteOpen}
         element={elementToDelete}
         setElement={setIsDeleteOpen}
-        table={"lawyers"}
+        table={"lawyer"}
       />
     </div>
   );

@@ -369,7 +369,7 @@ export default function Page() {
         onOpen={isDeleteOpen}
         element={selectedClient}
         setElement={setIsDeleteOpen}
-        table={"clients"}
+        table={"client"}
       />
     </div>
   );
