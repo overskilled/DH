@@ -20,6 +20,7 @@ export default function DashboardLayout({
     setUserInfo,
     setCases,
     setEmails,
+    setInvoices,
   } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
@@ -96,6 +97,22 @@ export default function DashboardLayout({
       };
     }
   }, [user, userInfo, setCases]);
+  
+  React.useEffect(() => {
+    if (!user || !userInfo) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    if (userInfo.role === "admin") {
+      const unsubscribe = getACollection("invoices", setInvoices);
+
+      // Cleanup listener on component unmount
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }
+  }, [user, userInfo, setInvoices]);
 
   return (
     <ProtectedRoute>
