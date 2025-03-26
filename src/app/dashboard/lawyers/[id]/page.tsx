@@ -487,7 +487,7 @@ export default function Page() {
       <DeleteDialog
         onOpen={isDeleteOpen}
         element={lawyer}
-        table="lawyers"
+        table="lawyer"
         setElement={setIsDeleteOpen}
       />
     </div>
