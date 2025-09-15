@@ -34,6 +34,7 @@ export function DeleteDialog({
   const handleDelete = async () => {
     try {
       setLoading(true);
+
       await deleteFirestoreDocument(`${table}s`, element.id);
       toast.success(`${table} successfully deleted`, {
         description: `The ${table} ${
@@ -58,14 +59,14 @@ export function DeleteDialog({
 
   return (
     <AlertDialog open={onOpen}>
-      <AlertDialogTrigger asChild>
+      {/* <AlertDialogTrigger asChild>
         <Button
           variant="ghost"
           className="hover:bg-red-50 hover:text-red-600 p-2"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-      </AlertDialogTrigger>
+      </AlertDialogTrigger> */}
 
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>

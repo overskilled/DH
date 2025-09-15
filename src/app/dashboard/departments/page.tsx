@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type React from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,8 +32,11 @@ import {
   X,
   Building2,
   Crown,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/components/context/auth-context";
+import { departmentsApi } from "@/functions/api";
+import { DeleteDialog } from "@/components/deleteDialog";
 
 interface Department {
   id: string;
@@ -48,66 +51,13 @@ interface Department {
 
 export default function DepartmentManagement() {
   const { lawyers } = useAuth();
-  const [departments, setDepartments] = useState<Department[]>([
-    {
-      id: "1",
-      name: "Litigation",
-      color: "#ef4444",
-      headOfDepartment: lawyers.length > 0 ? lawyers[0]?.id : undefined,
-      members: lawyers
-        .slice(0, 3)
-        .map((l: any) => l.id)
-        .filter(Boolean),
-      description: "Handles all litigation and court proceedings",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "2",
-      name: "Corporate Law",
-      color: "#3b82f6",
-      headOfDepartment: lawyers.length > 3 ? lawyers[3]?.id : undefined,
-      members: lawyers
-        .slice(3, 5)
-        .map((l: any) => l.id)
-        .filter(Boolean),
-      description: "Corporate transactions, mergers, and acquisitions",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "3",
-      name: "Tax Law",
-      color: "#10b981",
-      headOfDepartment: lawyers.length > 5 ? lawyers[5]?.id : undefined,
-      members: lawyers
-        .slice(5, 8)
-        .map((l: any) => l.id)
-        .filter(Boolean),
-      description: "Tax planning, compliance, and disputes",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "4",
-      name: "Family Law",
-      color: "#f59e0b",
-      headOfDepartment: lawyers.length > 8 ? lawyers[8]?.id : undefined,
-      members: lawyers
-        .slice(8, 10)
-        .map((l: any) => l.id)
-        .filter(Boolean),
-      description: "Divorce, custody, and family-related legal matters",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ]);
-
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isManageMembersOpen, setIsManageMembersOpen] = useState(false);
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(
-    null
-  );
+  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
+  const [deletingDepartment, setDeletingDepartment] = useState<Department | null>(null);
+  const [onOpenDelete, setOnOpenDelete] = useState(false)
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
   const [formData, setFormData] = useState({
@@ -117,10 +67,20 @@ export default function DepartmentManagement() {
     headOfDepartment: "",
   });
 
+  useEffect(() => {
+    const unsubscribe = departmentsApi.listenAll(setDepartments);
+
+    // Later, stop listening:
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [])
+
+
   // Show loading if lawyers haven't loaded yet
   if (!lawyers || lawyers.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 p-4 lg:p-6">
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold flex items-center gap-2">
@@ -148,29 +108,24 @@ export default function DepartmentManagement() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true)
     if (editingDepartment) {
       // Update existing department
-      setDepartments((prev) =>
-        prev.map((dept) =>
-          dept.id === editingDepartment.id
-            ? { ...dept, ...formData, updatedAt: new Date() }
-            : dept
-        )
-      );
+      await departmentsApi.update(editingDepartment.id, {
+        ...formData,
+      });
     } else {
       // Create new department
-      const newDepartment: Department = {
-        id: Date.now().toString(),
+      const newDepartment: Omit<Department, "createdAt" | "updatedAt" | "id"> = {
         ...formData,
-        members: formData.headOfDepartment ? [formData.headOfDepartment] : [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        members: formData.headOfDepartment ? [formData.headOfDepartment] : []
       };
-      setDepartments((prev) => [...prev, newDepartment]);
-    }
 
+      await departmentsApi.create(newDepartment);
+    }
+    setIsLoading(false)
     resetForm();
   };
 
@@ -196,10 +151,9 @@ export default function DepartmentManagement() {
     setIsCreateOpen(true);
   };
 
-  const handleDelete = (departmentId: string) => {
-    if (confirm("Are you sure you want to delete this department?")) {
-      setDepartments((prev) => prev.filter((dept) => dept.id !== departmentId));
-    }
+  const handleDelete = async (department: Department) => {
+    setDeletingDepartment(department)
+    setOnOpenDelete(true)
   };
 
   const handleManageMembers = (department: Department) => {
@@ -283,11 +237,11 @@ export default function DepartmentManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 lg:p-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold flex items-center gap-2">
-            <Building2 className="h-8 w-8" />
+            {/* <Building2 className="h-8 w-8" /> */}
             Department Management
           </h2>
           <p className="text-gray-600 mt-1">
@@ -395,7 +349,8 @@ export default function DepartmentManagement() {
                 <Button type="button" variant="outline" onClick={resetForm}>
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button disabled={isLoading} type="submit">
+                  {isLoading && <Loader2 className="animate-spin"/>}
                   {editingDepartment ? "Update" : "Create"} Department
                 </Button>
               </div>
@@ -454,7 +409,7 @@ export default function DepartmentManagement() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(department.id)}
+                      onClick={() => handleDelete(department)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -667,6 +622,8 @@ export default function DepartmentManagement() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <DeleteDialog element={deletingDepartment} onOpen={onOpenDelete} table="department" setElement={setOnOpenDelete}/>
     </div>
   );
 }

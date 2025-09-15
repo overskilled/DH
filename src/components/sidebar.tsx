@@ -24,6 +24,7 @@ export const Sidebar = ({
     { href: "/dashboard/cases", label: "Cases", icon: "folder" },
     { href: "/dashboard/clients", label: "Clients", icon: "groups" },
     { href: "/dashboard/lawyers", label: "Lawyers", icon: "person" },
+    { href: "/dashboard/staff", label: "Staff", icon: "person" },
     { href: "/dashboard/search", label: "Search", icon: "search" },
   ];
 
