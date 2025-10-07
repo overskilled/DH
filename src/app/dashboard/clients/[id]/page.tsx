@@ -194,7 +194,7 @@ export default function Page() {
                     </div>
                     <p className="text-sm mt-1">
                       Client may need additional support for upcoming hearing.
-                      Consider assigning a second attorney.
+                      Consider assigning a second lawyer.
                     </p>
                   </div>
                 </div>

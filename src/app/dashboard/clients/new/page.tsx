@@ -41,70 +41,7 @@ export default function Page() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    const response = await fetch("/api/createUser", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: formData.email,
-        displayName: formData.fullName,
-      }),
-    });
-
-    const data = await response.json();
-
-    try {
-      // Create lawyer document
-      const clientData = {
-        ...formData,
-        createdAt: new Date(),
-      };
-
-      await setToCollection("users", data.userId, {
-        email: formData.email,
-        name: formData.fullName,
-        role: "client",
-        phone: formData.phone,
-      });
-      await setToCollection("clients", data.userId, clientData);
-
-      toast.success("Successful", {
-        description: "New Client successfully created",
-      });
-      // Reset form
-      setFormData({
-        clientType: "personal",
-        fullName: "",
-        email: "",
-        phone: "",
-        gender: "",
-        dob: "",
-        idNumber: "",
-        companyReg: "",
-        street: "",
-        city: "",
-        state: "",
-        zip: "",
-        country: "",
-        contactMethod: "",
-        assignedCases: [],
-        companyName: "",
-        clientTypeDetail: "",
-        notes: "",
-        welcomeEmail: false,
-        invoiceGeneration: false,
-      });
-    } catch (error) {
-      console.error("Error adding client:", error);
-      toast.error("Error", {
-        description: "Please try again",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    
   };
 
   return (

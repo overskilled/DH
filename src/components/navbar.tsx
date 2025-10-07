@@ -1,5 +1,4 @@
 "use client";
-import { useAuth } from "./context/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Menu, Bell, Settings, Globe, Sun, LogOut } from "lucide-react";
@@ -9,13 +8,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function Navbar({
   setIsSidebarOpen,
 }: {
   setIsSidebarOpen: (open: boolean) => void;
 }) {
-  const { userInfo } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter()
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   return (
     <nav className="w-full bg-white border-b shadow-sm">
@@ -61,18 +68,26 @@ export default function Navbar({
 
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={userInfo?.photoURL} />
-                  <AvatarFallback>
-                    {userInfo?.name
-                      ?.split(" ")
-                      .map((n: any) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-10 w-10 ring-2">
+                    <AvatarImage src={ "/placeholder.svg"} alt={user?.name} />
+                    <AvatarFallback
+                      className="text-xs font-bold"
+                    >
+                      {user?.name
+                        ?.split(" ")
+                        .map((n: any) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div
+                    className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
+                    style={{ backgroundColor: "#c2a349", borderColor: "var(--sidebar-background)" }}
+                  />
+                </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-sm font-medium">{userInfo?.name}</p>
-                  <p className="text-xs text-gray-500">{userInfo?.role}</p>
+                  <p className="text-sm font-medium">{user?.name}</p>
+                  <p className="text-xs text-gray-500">{user?.role}</p>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -85,8 +100,15 @@ export default function Navbar({
                   Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className={`w-full text-muted-foreground hover:text-foreground justify-start`}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="ml-2">Logout</span>
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

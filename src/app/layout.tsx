@@ -1,7 +1,8 @@
 // import { Geist, Geist_Mono } from "next/font/google";
+import { AuthProvider } from "@/hooks/useAuth";
 import "./globals.css";
-import { AuthProvider } from "@/components/context/auth-context";
 import { Toaster } from "@/components/ui/sonner";
+import { InitAuthProvider } from "@/components/context/auth-context";
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -13,11 +14,11 @@ import { Toaster } from "@/components/ui/sonner";
 // });
 
 export const metadata = {
-  title: "Next app",
-  description: "Law firm.",
-  // icons: {
-  //   icon: "/logo.png"
-  // }
+  title: "D. HAPPI",
+  description: "Customisized company management software",
+  icons: {
+    icon: "/Logo blue.png"
+  }
 };
 
 export default function RootLayout({
@@ -35,10 +36,13 @@ export default function RootLayout({
         />
       </head>
       <body className={` antialiased`}>
-        <AuthProvider>
-          {children}
-          <Toaster richColors toastOptions={{}} />
-        </AuthProvider>
+        <InitAuthProvider>
+
+          <AuthProvider>
+            {children}
+            <Toaster richColors toastOptions={{}} />
+          </AuthProvider>
+        </InitAuthProvider>
       </body>
     </html>
   );

@@ -1,0 +1,260 @@
+import { Department, User, Client, Dossier, Case, Milestone, Task, TimeEntry, Invoice, DepartmentId, Role } from './types';
+
+// Departments
+export const DEPARTMENTS: Department[] = [
+  { id: 'corporate', name: 'Corporate Law', color: 'hsl(221 83% 53%)', description: 'M&A, Corporate Governance' },
+  { id: 'litigation', name: 'Litigation', color: 'hsl(348 83% 47%)', description: 'Court Representation' },
+  { id: 'tax', name: 'Tax Law', color: 'hsl(142 71% 45%)', description: 'Tax Planning & Compliance' },
+  { id: 'realestate', name: 'Real Estate', color: 'hsl(280 67% 47%)', description: 'Property Transactions' },
+  { id: 'ip', name: 'Intellectual Property', color: 'hsl(199 89% 48%)', description: 'Patents & Trademarks' },
+  { id: 'employment', name: 'Employment Law', color: 'hsl(32 95% 44%)', description: 'Labor Relations' },
+  { id: 'criminal', name: 'Criminal Law', color: 'hsl(262 52% 47%)', description: 'Criminal Defense' },
+];
+
+// Seed Users
+export const SEED_USERS: User[] = [
+  { id: 'u1', name: 'Sarah Mitchell', email: 'sarah.mitchell@firm.com', role: 'partner', departmentId: 'corporate', hourlyRate: 450 },
+  { id: 'u2', name: 'James Chen', email: 'james.chen@firm.com', role: 'partner', departmentId: 'litigation', hourlyRate: 425 },
+  { id: 'u3', name: 'Emily Rodriguez', email: 'emily.rodriguez@firm.com', role: 'senior', departmentId: 'tax', hourlyRate: 350 },
+  { id: 'u4', name: 'Michael Brown', email: 'michael.brown@firm.com', role: 'senior', departmentId: 'corporate', hourlyRate: 340 },
+  { id: 'u5', name: 'Lisa Anderson', email: 'lisa.anderson@firm.com', role: 'mid', departmentId: 'realestate', hourlyRate: 250 },
+  { id: 'u6', name: 'David Park', email: 'david.park@firm.com', role: 'mid', departmentId: 'ip', hourlyRate: 260 },
+  { id: 'u7', name: 'Rachel Green', email: 'rachel.green@firm.com', role: 'junior', departmentId: 'employment', hourlyRate: 180 },
+  { id: 'u8', name: 'Thomas Wilson', email: 'thomas.wilson@firm.com', role: 'junior', departmentId: 'criminal', hourlyRate: 175 },
+  { id: 'u9', name: 'Amanda Foster', email: 'amanda.foster@firm.com', role: 'collaborator', departmentId: 'litigation', hourlyRate: 150 },
+  { id: 'u10', name: 'Robert Taylor', email: 'robert.taylor@firm.com', role: 'admin', departmentId: 'corporate', hourlyRate: 0 },
+  { id: 'u11', name: 'Jennifer White', email: 'jennifer.white@firm.com', role: 'accounting', departmentId: 'corporate', hourlyRate: 0 },
+];
+
+// Seed Clients
+export const SEED_CLIENTS: Client[] = [
+  { id: 'c1', name: 'TechVentures Inc.', email: 'legal@techventures.com', phone: '555-0101', company: 'TechVentures Inc.', createdAt: new Date('2024-01-15') },
+  { id: 'c2', name: 'GlobalCorp Ltd.', email: 'contact@globalcorp.com', phone: '555-0102', company: 'GlobalCorp Ltd.', createdAt: new Date('2024-02-20') },
+  { id: 'c3', name: 'Innovation Partners', email: 'info@innovationpartners.com', phone: '555-0103', company: 'Innovation Partners', createdAt: new Date('2024-03-10') },
+  { id: 'c4', name: 'Metro Properties', email: 'legal@metropolit.com', phone: '555-0104', company: 'Metro Properties', createdAt: new Date('2024-01-05') },
+  { id: 'c5', name: 'John Smith', email: 'john.smith@email.com', phone: '555-0105', createdAt: new Date('2024-04-12') },
+];
+
+// Seed Dossiers
+export const SEED_DOSSIERS: Dossier[] = [
+  {
+    id: 'd1',
+    title: 'TechVentures Acquisition',
+    clientId: 'c1',
+    departmentId: 'corporate',
+    status: 'active',
+    referentId: 'u1',
+    budget: 250000,
+    spent: 125000,
+    createdAt: new Date('2024-03-01'),
+    updatedAt: new Date('2025-01-02'),
+    tags: ['M&A', 'Tech', 'High Priority'],
+    description: 'Acquisition of startup by TechVentures including due diligence and regulatory compliance.',
+  },
+  {
+    id: 'd2',
+    title: 'GlobalCorp Contract Dispute',
+    clientId: 'c2',
+    departmentId: 'litigation',
+    status: 'active',
+    referentId: 'u2',
+    budget: 180000,
+    spent: 95000,
+    createdAt: new Date('2024-04-15'),
+    updatedAt: new Date('2025-01-01'),
+    tags: ['Litigation', 'Contract'],
+    description: 'Commercial litigation regarding breach of contract claims.',
+  },
+  {
+    id: 'd3',
+    title: 'Innovation Partners Tax Strategy',
+    clientId: 'c3',
+    departmentId: 'tax',
+    status: 'active',
+    referentId: 'u3',
+    budget: 75000,
+    spent: 42000,
+    createdAt: new Date('2024-05-20'),
+    updatedAt: new Date('2024-12-30'),
+    tags: ['Tax Planning', 'Corporate'],
+    description: 'International tax planning and restructuring for optimal efficiency.',
+  },
+  {
+    id: 'd4',
+    title: 'Metro Commercial Property',
+    clientId: 'c4',
+    departmentId: 'realestate',
+    status: 'pending',
+    referentId: 'u5',
+    budget: 120000,
+    spent: 15000,
+    createdAt: new Date('2024-12-10'),
+    updatedAt: new Date('2024-12-28'),
+    tags: ['Real Estate', 'Commercial'],
+    description: 'Commercial property acquisition and lease negotiations.',
+  },
+  {
+    id: 'd5',
+    title: 'Smith Criminal Defense',
+    clientId: 'c5',
+    departmentId: 'criminal',
+    status: 'active',
+    referentId: 'u8',
+    budget: 45000,
+    spent: 28000,
+    createdAt: new Date('2024-06-01'),
+    updatedAt: new Date('2025-01-03'),
+    tags: ['Criminal', 'Defense'],
+    description: 'Criminal defense case preparation and representation.',
+  },
+];
+
+// Seed Cases
+export const SEED_CASES: Case[] = [
+  {
+    id: 'case1',
+    dossierId: 'd1',
+    title: 'Due Diligence Phase',
+    description: 'Comprehensive due diligence review of target company',
+    status: 'active',
+    budget: 100000,
+    spent: 65000,
+    assignees: ['u1', 'u4', 'u7'],
+    createdAt: new Date('2024-03-05'),
+    updatedAt: new Date('2025-01-02'),
+  },
+  {
+    id: 'case2',
+    dossierId: 'd1',
+    title: 'Regulatory Compliance',
+    description: 'Ensure all regulatory requirements are met',
+    status: 'active',
+    budget: 80000,
+    spent: 35000,
+    assignees: ['u1', 'u4'],
+    createdAt: new Date('2024-04-10'),
+    updatedAt: new Date('2024-12-20'),
+  },
+  {
+    id: 'case3',
+    dossierId: 'd2',
+    title: 'Discovery & Evidence',
+    description: 'Document collection and evidence preparation',
+    status: 'active',
+    budget: 90000,
+    spent: 55000,
+    assignees: ['u2', 'u9'],
+    createdAt: new Date('2024-04-20'),
+    updatedAt: new Date('2024-12-30'),
+  },
+];
+
+// Seed Milestones
+export const SEED_MILESTONES: Milestone[] = [
+  { id: 'm1', caseId: 'case1', title: 'Financial Review', description: 'Review financial statements and records', dueDate: new Date('2025-01-15'), order: 0, completed: false },
+  { id: 'm2', caseId: 'case1', title: 'Legal Documentation', description: 'Review all legal contracts and agreements', dueDate: new Date('2025-02-01'), order: 1, completed: false },
+  { id: 'm3', caseId: 'case1', title: 'Regulatory Checks', description: 'Verify regulatory compliance', dueDate: new Date('2025-02-15'), order: 2, completed: false },
+  { id: 'm4', caseId: 'case3', title: 'Document Production', description: 'Produce relevant documents', dueDate: new Date('2025-01-20'), order: 0, completed: false },
+];
+
+// Seed Tasks
+export const SEED_TASKS: Task[] = [
+  {
+    id: 't1',
+    milestoneId: 'm1',
+    title: 'Review Q4 Financial Statements',
+    description: 'Analyze quarterly financial reports',
+    status: 'in_progress',
+    priority: 'high',
+    assignees: ['u4'],
+    maxTime: 20,
+    spentTime: 12,
+    createdAt: new Date('2024-12-28'),
+    updatedAt: new Date('2025-01-02'),
+    order: 0,
+  },
+  {
+    id: 't2',
+    milestoneId: 'm1',
+    title: 'Audit Trail Verification',
+    description: 'Verify audit trails for all transactions',
+    status: 'todo',
+    priority: 'medium',
+    assignees: ['u7'],
+    maxTime: 15,
+    spentTime: 0,
+    createdAt: new Date('2024-12-29'),
+    updatedAt: new Date('2024-12-29'),
+    order: 1,
+  },
+  {
+    id: 't3',
+    milestoneId: 'm1',
+    title: 'Asset Valuation Check',
+    description: 'Validate asset valuations',
+    status: 'todo',
+    priority: 'medium',
+    assignees: ['u4'],
+    maxTime: 10,
+    spentTime: 0,
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-01'),
+    order: 2,
+  },
+  {
+    id: 't4',
+    milestoneId: 'm2',
+    title: 'Contract Database Review',
+    description: 'Review all active contracts in database',
+    status: 'completed',
+    priority: 'high',
+    assignees: ['u1'],
+    maxTime: 25,
+    spentTime: 24,
+    createdAt: new Date('2024-12-15'),
+    updatedAt: new Date('2024-12-28'),
+    order: 0,
+  },
+  {
+    id: 't5',
+    milestoneId: 'm4',
+    title: 'Email Discovery',
+    description: 'Search and organize relevant emails',
+    status: 'in_progress',
+    priority: 'urgent',
+    assignees: ['u9'],
+    maxTime: 30,
+    spentTime: 18,
+    createdAt: new Date('2024-12-20'),
+    updatedAt: new Date('2025-01-01'),
+    order: 0,
+  },
+];
+
+// Seed Time Entries
+export const SEED_TIME_ENTRIES: TimeEntry[] = [
+  { id: 'te1', taskId: 't1', userId: 'u4', duration: 8, description: 'Initial financial analysis', date: new Date('2024-12-28'), hourlyRate: 340, invoiced: false },
+  { id: 'te2', taskId: 't1', userId: 'u4', duration: 4, description: 'Deep dive into revenue streams', date: new Date('2025-01-02'), hourlyRate: 340, invoiced: false },
+  { id: 'te3', taskId: 't4', userId: 'u1', duration: 16, description: 'Contract review and analysis', date: new Date('2024-12-20'), hourlyRate: 450, invoiced: true },
+  { id: 'te4', taskId: 't4', userId: 'u1', duration: 8, description: 'Final contract review', date: new Date('2024-12-28'), hourlyRate: 450, invoiced: true },
+  { id: 'te5', taskId: 't5', userId: 'u9', duration: 12, description: 'Email search and categorization', date: new Date('2024-12-30'), hourlyRate: 150, invoiced: false },
+  { id: 'te6', taskId: 't5', userId: 'u9', duration: 6, description: 'Priority email review', date: new Date('2025-01-01'), hourlyRate: 150, invoiced: false },
+];
+
+// Seed Invoices
+export const SEED_INVOICES: Invoice[] = [
+  {
+    id: 'inv1',
+    dossierId: 'd1',
+    number: 'INV-2024-001',
+    status: 'paid',
+    clientId: 'c1',
+    timeEntries: ['te3', 'te4'],
+    subtotal: 10800,
+    tax: 2160,
+    total: 12960,
+    createdAt: new Date('2024-12-28'),
+    dueDate: new Date('2025-01-28'),
+    paidAt: new Date('2025-01-15'),
+  },
+];

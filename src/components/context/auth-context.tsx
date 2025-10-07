@@ -13,7 +13,7 @@ import { auth } from "@/functions/firebase";
 
 const AuthContext = createContext<any>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const InitAuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null); // Initialize user infos

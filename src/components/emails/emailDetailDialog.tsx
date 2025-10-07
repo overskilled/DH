@@ -98,67 +98,6 @@ export function EmailDetailDialog({
       return;
     }
 
-    setIsSending(true);
-    try {
-      // Convert attachments to base64
-      const attachmentData = await Promise.all(
-        attachments.map(async (file) => {
-          const buffer = await file.arrayBuffer();
-          return {
-            content: Buffer.from(buffer).toString("base64"),
-            filename: file.name,
-            type: file.type,
-            size: file.size,
-          };
-        })
-      );
-
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: formData.recipient,
-          subject: formData.subject,
-          html: formData.message.replace(/\n/g, "<br>"),
-          attachments: attachmentData,
-          priority: formData.priority,
-        }),
-      });
-
-      if (response.ok) {
-        // Save to mock database
-        const emailRecord = {
-          id: Date.now().toString(),
-          recipient: formData.recipient,
-          subject: formData.subject,
-          message: formData.message,
-          attachments: attachments.map((f) => f.name),
-          status: "sent",
-          sentAt: new Date(),
-          priority: formData.priority,
-        };
-
-        // Reset form
-        setFormData({
-          recipient: "",
-          recipientType: "client",
-          subject: "",
-          message: "",
-          priority: "normal",
-          template: "",
-        });
-        setAttachments([]);
-        onOpenChange(false);
-        alert("Email sent successfully!");
-      } else {
-        throw new Error("Failed to send email");
-      }
-    } catch (error) {
-      console.error("Error sending email:", error);
-      alert("Failed to send email. Please try again.");
-    } finally {
-      setIsSending(false);
-    }
   };
 
   const getFileIcon = (file: File) => {

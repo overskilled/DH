@@ -83,7 +83,7 @@ export const CaseNotesAndComments = ({
                         note.createdBy?.profileImage ||
                         "https://randomuser.me/api/portraits/women/12.jpg"
                       }
-                      alt="Attorney"
+                      alt="lawyer"
                     /> */}
                     <span className="font-medium">
                       {note.createdBy?.name || "Unknown User"}

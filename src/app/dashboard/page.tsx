@@ -1,176 +1,238 @@
-"use client";
-import { useAuth } from "@/components/context/auth-context";
-import { getTimeAgo } from "@/functions/get-time-ago";
-import { useRouter } from "next/navigation";
+"use client"
 
-export default function Page() {
-  const { cases } = useAuth();
-  const router = useRouter();
+import { motion } from 'framer-motion';
+import { FolderOpen, Clock, DollarSign, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/hooks/useAuth';
+import { useStore } from '@/hooks/useStore';
+import { hasPermission } from '@/lib/permissions';
+import { SEED_USERS } from '@/lib/seed-data';
+import { StatusBadge } from '@/components/StatusBadge';
+import { DepartmentBadge } from '@/components/DepartmentBadge';
+
+
+
+const Dashboard = () => {
+  const { user } = useAuth();
+  const { dossiers, tasks, timeEntries } = useStore();
+
+  if (!user) return null;
+
+  // Filter data based on user permissions
+  const userDossiers = hasPermission(user, 'dossier:view')
+    ? dossiers.filter((d: any) => 
+        user.role === 'admin' || user.role === 'partner' || d.departmentId === user.departmentId
+      )
+    : [];
+
+  const activeDossiers = userDossiers.filter((d: any) => d.status === 'active');
+  const myTasks = tasks.filter((t: any) => t.assignees.includes(user.id));
+  const pendingTasks = myTasks.filter((t: any) => t.status !== 'completed');
+  const userTimeEntries = timeEntries.filter((te: any) => te.userId === user.id);
+  
+  const totalBillableHours = userTimeEntries.reduce((sum: any, te: any) => sum + te.duration, 0);
+  const totalRevenue = userTimeEntries.reduce((sum: any, te: any) => sum + (te.duration * te.hourlyRate), 0);
+
+  const stats = [
+    {
+      title: 'Active Dossiers',
+      value: activeDossiers.length,
+      description: 'Currently in progress',
+      icon: FolderOpen,
+      color: 'text-[hsl(var(--status-active))]',
+      bg: 'bg-[hsl(var(--status-active))]/10',
+    },
+    {
+      title: 'Pending Tasks',
+      value: pendingTasks.length,
+      description: 'Assigned to you',
+      icon: AlertCircle,
+      color: 'text-[hsl(var(--status-pending))]',
+      bg: 'bg-[hsl(var(--status-pending))]/10',
+    },
+    {
+      title: 'Billable Hours',
+      value: totalBillableHours.toFixed(1),
+      description: 'This month',
+      icon: Clock,
+      color: 'text-[hsl(var(--dept-ip))]',
+      bg: 'bg-[hsl(var(--dept-ip))]/10',
+    },
+    {
+      title: 'Revenue',
+      value: `${totalRevenue.toLocaleString()} FCFA`,
+      description: 'Total generated',
+      icon: DollarSign,
+      color: 'text-[hsl(var(--status-completed))]',
+      bg: 'bg-[hsl(var(--status-completed))]/10',
+    },
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
 
   return (
-    <div className="w-full bg-white p-4 sm:p-6 md:p-8">
-      <header className="mb-6 md:mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 md:mb-2">
-          Welcome to DH Avocats Panel
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-4xl font-bold mb-2">
+          Welcome back, {user.name.split(' ')[0]}
         </h1>
-        <p className="text-gray-600">Our Case Management Dashboard</p>
-      </header>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-        <div className="bg-blue-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          <span className="material-symbols-outlined text-3xl md:text-4xl text-blue-600">
-            folder_open
-          </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">
-            {cases?.length ?? 0}
-          </h3>
-          <p className="text-gray-600">Total Cases</p>
-        </div>
-        <div className="bg-yellow-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          <span className="material-symbols-outlined text-3xl md:text-4xl text-yellow-600">
-            pending
-          </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">
-            {cases?.filter((caseItem: any) => caseItem.caseStatus === "ongoing")
-              .length ?? 0}
-          </h3>
-          <p className="text-gray-600">Pending Cases</p>
-        </div>
-        <div className="bg-green-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          <span className="material-symbols-outlined text-3xl md:text-4xl text-green-600">
-            task_alt
-          </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">
-            {cases?.filter(
-              (caseItem: any) => caseItem.caseStatus === "completed"
-            ).length ?? 0}
-          </h3>
-          <p className="text-gray-600">Completed Cases</p>
-        </div>
-        <div className="bg-purple-50 p-4 md:p-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          <span className="material-symbols-outlined text-3xl md:text-4xl text-purple-600">
-            schedule
-          </span>
-          <h3 className="text-xl md:text-2xl font-bold mt-2">
-            {cases?.filter((caseItem: any) => caseItem.caseStatus === "ongoing")
-              .length ?? 0}
-          </h3>
-          <p className="text-gray-600">Upcoming Deadlines</p>
-        </div>
+        <p className="text-muted-foreground">
+          Here's what's happening with your cases today
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <div className="lg:col-span-2 space-y-4 md:space-y-6">
-          <div className="bg-white border rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg md:text-xl font-bold">
-                Recent Case Updates
-              </h2>
-              <span className="material-symbols-outlined cursor-pointer hover:text-blue-600 hover:rotate-180 transition-all duration-500">
-                refresh
-              </span>
-            </div>
-            <div className="space-y-3 md:space-y-4">
-              {cases.map((caseItem: any) => (
-                <div
-                  key={caseItem.id}
-                  className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
-                >
-                  <span className="material-symbols-outlined mr-3 text-blue-500">
-                    description
-                  </span>
-                  <div>
-                    <h4 className="font-semibold">{caseItem.caseName}</h4>
-                    <p className="text-sm text-gray-600">
-                      Updated {getTimeAgo(caseItem.updatedAt.toDate())}
-                    </p>
+      {/* Stats Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      >
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <motion.div key={stat.title} variants={itemVariants}>
+              <Card className="hover:shadow-lg transition-shadow duration-200">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </CardTitle>
+                  <div className={`p-2 rounded-lg ${stat.bg}`}>
+                    <Icon className={`h-4 w-4 ${stat.color}`} />
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
+      </motion.div>
 
-          <div className="bg-white border rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg md:text-xl font-bold">
-                Upcoming Deadlines
-              </h2>
-              <span className="material-symbols-outlined cursor-pointer hover:text-blue-600 hover:scale-110 transition-all duration-300">
-                calendar_today
-              </span>
-            </div>
-            <div className="space-y-3 md:space-y-4">
-              <div className="flex items-center p-3 bg-red-50 rounded-lg hover:bg-red-100 transition-all cursor-pointer">
-                <span className="material-symbols-outlined text-red-600 mr-3 animate-pulse">
-                  warning
-                </span>
-                <div>
-                  <h4 className="font-semibold">Davis Appeal Filing</h4>
-                  <p className="text-sm text-gray-600">Due in 2 days</p>
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Dossiers */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Dossiers</CardTitle>
+              <CardDescription>
+                Your most recently updated cases
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {activeDossiers.slice(0, 5).map((dossier: any) => {
+                  const referent = SEED_USERS.find(u => u.id === dossier.referentId);
+                  const progress = (dossier.spent / dossier.budget) * 100;
+                  
+                  return (
+                    <div key={dossier.id} className="space-y-3 pb-4 border-b last:border-0 last:pb-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm mb-1">{dossier.title}</h4>
+                          <p className="text-xs text-muted-foreground mb-2">
+                            Ref: {referent?.name}
+                          </p>
+                          <DepartmentBadge departmentId={dossier.departmentId} />
+                        </div>
+                        <StatusBadge status={dossier.status} type="dossier" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-muted-foreground">Budget Usage</span>
+                          <span className="font-medium">{progress.toFixed(0)}%</span>
+                        </div>
+                        {/* <Progress value={progress} className="h-2" /> */}
+                        <div className="flex justify-between text-xs mt-1 text-muted-foreground">
+                          <span>{dossier.spent.toLocaleString()} FCFA</span>
+                          <span>{dossier.budget.toLocaleString()} FCFA</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="flex items-center p-3 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-all cursor-pointer">
-                <span className="material-symbols-outlined text-yellow-600 mr-3">
-                  schedule
-                </span>
-                <div>
-                  <h4 className="font-semibold">Thompson Discovery</h4>
-                  <p className="text-sm text-gray-600">Due in 5 days</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <div className="space-y-4 md:space-y-6">
-          <div className="bg-white border rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300">
-            <h2 className="text-lg md:text-xl font-bold mb-4">Quick Actions</h2>
-            <div className="space-y-3">
-              <button
-                onClick={() => router.push("/dashboard/cases/new")}
-                className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
-              >
-                <span className="material-symbols-outlined mr-2">add</span>
-                New Case
-              </button>
-              <button
-                onClick={() => router.push("/dashboard/clients/new")}
-                className="w-full bg-green-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-green-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
-              >
-                <span className="material-symbols-outlined mr-2">
-                  person_add
-                </span>
-                Add Client
-              </button>
-              <button
-                onClick={() => router.push("/dashboard/lawyers/new")}
-                className="w-full bg-purple-600 text-white py-2 sm:py-3 px-4 rounded-lg flex items-center justify-center hover:bg-purple-700 transition-all hover:shadow-md transform hover:-translate-y-0.5"
-              >
-                <span className="material-symbols-outlined mr-2">
-                  group_add
-                </span>
-                Assign Lawyer
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white border rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300">
-            <h2 className="text-lg md:text-xl font-bold mb-4">Notifications</h2>
-            <div className="space-y-3">
-              <div className="p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all cursor-pointer">
-                <p className="font-semibold">New case assigned</p>
-                <p className="text-sm text-gray-600">Williams vs. Tech Corp</p>
+        {/* My Tasks */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>My Tasks</CardTitle>
+              <CardDescription>
+                Tasks assigned to you
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {myTasks.slice(0, 5).map((task: any) => {
+                  const timeProgress = (task.spentTime / task.maxTime) * 100;
+                  const isOvertime = timeProgress > 100;
+                  
+                  return (
+                    <div key={task.id} className="space-y-2 pb-4 border-b last:border-0 last:pb-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm mb-1">{task.title}</h4>
+                          <div className="flex gap-2 items-center">
+                            <StatusBadge status={task.status} type="task" />
+                            <StatusBadge status={task.priority} type="priority" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-muted-foreground">Time Spent</span>
+                          <span className={`font-medium ${isOvertime ? 'text-destructive' : ''}`}>
+                            {task.spentTime}h / {task.maxTime}h
+                          </span>
+                        </div>
+                        {/* <Progress 
+                          value={Math.min(timeProgress, 100)} 
+                          className={`h-2 ${isOvertime ? '[&>div]:bg-destructive' : ''}`}
+                        /> */}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-all cursor-pointer">
-                <p className="font-semibold">Document update</p>
-                <p className="text-sm text-gray-600">
-                  Johnson case brief updated
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

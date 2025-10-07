@@ -71,42 +71,7 @@ export const CreateAndSendEmailDialog = ({
     setIsSending(true);
     setError("");
 
-    try {
-      const convertedAttachments = await convertAttachments(attachments);
-
-      const response = await fetch("/api/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: recipient,
-          subject,
-          html: editor.getHTML(),
-          attachments: convertedAttachments,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || "Failed to send email");
-      }
-
-      await addToCollection("emails", {
-        recipientEmail: recipient,
-        content: editor.getHTML(),
-        subject,
-        status: "sent",
-      });
-
-      setOpened(false);
-      setRecipient("");
-      setSubject("");
-      editor.commands.clearContent();
-      setAttachments([]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send email");
-    } finally {
-      setIsSending(false);
-    }
+    
   };
 
   return (

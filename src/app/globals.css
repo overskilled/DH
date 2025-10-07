@@ -2,85 +2,237 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 222 47% 11%;
+
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 222 47% 11%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 215 20% 65%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
+
     --radius: 0.5rem;
+
+    /* Department Colors - Professional Palette */
+    --dept-corporate: 221 83% 53%;
+    --dept-litigation: 348 83% 47%;
+    --dept-tax: 142 71% 45%;
+    --dept-realestate: 280 67% 47%;
+    --dept-ip: 199 89% 48%;
+    --dept-employment: 32 95% 44%;
+    --dept-criminal: 262 52% 47%;
+
+    /* Status Colors */
+    --status-active: 142 76% 36%;
+    --status-pending: 48 96% 53%;
+    --status-completed: 221 83% 53%;
+    --status-overdue: 0 84% 60%;
+    --status-draft: 215 16% 47%;
+
+    /* Priority Colors */
+    --priority-urgent: 0 84% 60%;
+    --priority-high: 32 95% 44%;
+    --priority-medium: 48 96% 53%;
+    --priority-low: 142 71% 45%;
+
+    /* Sidebar */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 18%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 18%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(222 47% 18%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(222 47% 11% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(222 47% 11% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(222 47% 11% / 0.1);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 15%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 222 47% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 47% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 222 47% 18%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 47% 18%;
+    --input: 222 47% 18%;
+    --ring: 221 83% 53%;
+
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 47% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 15%;
+    --sidebar-ring: 221 83% 53%;
+
+    --gradient-card: linear-gradient(180deg, hsl(222 47% 15%) 0%, hsl(222 47% 12%) 100%);
   }
 }
-
-
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom Animations */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
+  }
+
+  /* Department Color Classes */
+  .dept-corporate {
+    background-color: hsl(var(--dept-corporate) / 0.1);
+    color: hsl(var(--dept-corporate));
+    border-color: hsl(var(--dept-corporate) / 0.3);
+  }
+
+  .dept-litigation {
+    background-color: hsl(var(--dept-litigation) / 0.1);
+    color: hsl(var(--dept-litigation));
+    border-color: hsl(var(--dept-litigation) / 0.3);
+  }
+
+  .dept-tax {
+    background-color: hsl(var(--dept-tax) / 0.1);
+    color: hsl(var(--dept-tax));
+    border-color: hsl(var(--dept-tax) / 0.3);
+  }
+
+  .dept-realestate {
+    background-color: hsl(var(--dept-realestate) / 0.1);
+    color: hsl(var(--dept-realestate));
+    border-color: hsl(var(--dept-realestate) / 0.3);
+  }
+
+  .dept-ip {
+    background-color: hsl(var(--dept-ip) / 0.1);
+    color: hsl(var(--dept-ip));
+    border-color: hsl(var(--dept-ip) / 0.3);
+  }
+
+  .dept-employment {
+    background-color: hsl(var(--dept-employment) / 0.1);
+    color: hsl(var(--dept-employment));
+    border-color: hsl(var(--dept-employment) / 0.3);
+  }
+
+  .dept-criminal {
+    background-color: hsl(var(--dept-criminal) / 0.1);
+    color: hsl(var(--dept-criminal));
+    border-color: hsl(var(--dept-criminal) / 0.3);
   }
 }

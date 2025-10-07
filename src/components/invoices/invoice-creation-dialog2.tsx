@@ -172,49 +172,7 @@ export function InvoiceCreationDialog({
     }
 
     setIsSending(true);
-    try {
-      const invoiceData = {
-        ...formData,
-        billingItems,
-        subtotal,
-        discountAmount,
-        taxAmount,
-        total,
-        status: "sent",
-        createdAt: new Date(),
-      };
-
-      const response = await fetch("/api/send-invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(invoiceData),
-      });
-
-      if (response.ok) {
-        // Reset form
-        setFormData({
-          clientId: "",
-          caseId: "",
-          department: "",
-          invoiceNumber: `INV-${Date.now()}`,
-          dueDate: "",
-          taxRate: 10,
-          discount: 0,
-          notes: "",
-          paymentTerms: "Net 30",
-        });
-        setBillingItems([]);
-        onOpenChange(false);
-        alert("Invoice sent successfully!");
-      } else {
-        throw new Error("Failed to send invoice");
-      }
-    } catch (error) {
-      console.error("Error sending invoice:", error);
-      alert("Failed to send invoice. Please try again.");
-    } finally {
-      setIsSending(false);
-    }
+    
   };
 
   const handleDownloadPDF = () => {

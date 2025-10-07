@@ -1,18 +1,20 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/context/auth-context";
 import { EditCaseLawyersDialog } from "@/components/caseDetailPage/editCaseLawyersDialog";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Page() {
   const router = useRouter();
-  const { cases, lawyers } = useAuth();
+  const { user } = useAuth();
   const [isEditLawyerOpened, setIsEditLawyerOpened] = useState(false);
   const [selectedCase, setSelectedCase] = useState<any>({});
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [visibleCases, setVisibleCases] = useState<number>(5);
+  const [cases, setCases]= useState([]) 
+  const [lawyers, setLawyer]= useState([]) 
 
   // Filter cases based on search and status
   const filteredCases = cases
