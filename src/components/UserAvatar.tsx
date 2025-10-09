@@ -15,7 +15,7 @@ const sizeClasses = {
 };
 
 export const UserAvatar = ({ user, size = 'md', className }: UserAvatarProps) => {
-  const initials = user.name
+  const initials = user.firstName
     .split(' ')
     .map(n => n[0])
     .join('')

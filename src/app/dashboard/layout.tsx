@@ -13,7 +13,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
   // Close sidebar on resize (for mobile to desktop transition)

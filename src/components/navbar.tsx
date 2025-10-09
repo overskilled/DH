@@ -8,15 +8,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function Navbar({
   setIsSidebarOpen,
 }: {
   setIsSidebarOpen: (open: boolean) => void;
 }) {
-  const { user, logout } = useAuth();
+  const { user, accessToken, logout } = useAuthStore();
+
   const router = useRouter()
 
   const handleLogout = () => {
@@ -70,23 +71,23 @@ export default function Navbar({
               <DropdownMenuTrigger className="flex items-center gap-2">
                 <div className="relative">
                   <Avatar className="h-10 w-10 ring-2">
-                    <AvatarImage src={ "/placeholder.svg"} alt={user?.name} />
+                    <AvatarImage src={user?.profilePic || "/placeholder.svg"} alt={user?.firstName} />
                     <AvatarFallback
                       className="text-xs font-bold"
                     >
-                      {user?.name
+                      {user?.firstName
                         ?.split(" ")
                         .map((n: any) => n[0])
                         .join("")}
                     </AvatarFallback>
-                  </Avatar>
+                  </Avatar> 
                   <div
                     className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-                    style={{ backgroundColor: "#c2a349", borderColor: "var(--sidebar-background)" }}
+                    style={{ backgroundColor: "#69eb48ff", borderColor: "var(--sidebar-background)" }}
                   />
                 </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-sm font-medium">{user?.name}</p>
+                  <p className="text-sm font-medium">{`${user?.firstName} ${user?.lastName}`}</p>
                   <p className="text-xs text-gray-500">{user?.role}</p>
                 </div>
               </DropdownMenuTrigger>

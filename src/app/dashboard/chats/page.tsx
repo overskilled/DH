@@ -103,10 +103,10 @@ export default function TeamChat() {
   ];
 
   const users = [
-    { id: "1", name: "Sarah Williams", status: "online", avatar: "" },
-    { id: "2", name: "John Smith", status: "away", avatar: "" },
-    { id: "3", name: "Emily Rodriguez", status: "online", avatar: "" },
-    { id: "4", name: "Michael Brown", status: "offline", avatar: "" },
+    { id: "1", firstName: "Sarah Williams", status: "online", avatar: "" },
+    { id: "2", firstName: "John Smith", status: "away", avatar: "" },
+    { id: "3", firstName: "Emily Rodriguez", status: "online", avatar: "" },
+    { id: "4", firstName: "Michael Brown", status: "offline", avatar: "" },
   ];
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function TeamChat() {
     const mentions = [];
     let match: any;
     while ((match = mentionRegex.exec(text)) !== null) {
-      const user = users.find((u) => u.name === match[1]);
+      const user = users.find((u) => u.firstName === match[1]);
       if (user) mentions.push(user.id);
     }
     return mentions;
@@ -219,7 +219,7 @@ export default function TeamChat() {
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatar || "/placeholder.svg"} />
                     <AvatarFallback>
-                      {user.name
+                      {user.firstName
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
@@ -232,7 +232,7 @@ export default function TeamChat() {
                   />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-sm">{user.name}</p>
+                  <p className="font-medium text-sm">{`${user.firstName}`}</p>
                   <p className="text-xs text-gray-500 capitalize">
                     {user.status}
                   </p>

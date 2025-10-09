@@ -110,10 +110,10 @@ export default function TaskManagement() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const users = [
-    { id: "1", name: "Sarah Williams", role: "Senior Lawyer" },
-    { id: "2", name: "John Smith", role: "Associate" },
-    { id: "3", name: "Emily Rodriguez", role: "Paralegal" },
-    { id: "4", name: "Michael Brown", role: "Assistant" },
+    { id: "1", firstName: "Sarah Williams", role: "Senior Lawyer" },
+    { id: "2", firstName: "John Smith", role: "Associate" },
+    { id: "3", firstName: "Emily Rodriguez", role: "Paralegal" },
+    { id: "4", firstName: "Michael Brown", role: "Assistant" },
   ];
 
   const cases = [
@@ -301,7 +301,7 @@ export default function TaskManagement() {
                   <SelectItem value="all">All Assignees</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
-                      {user.name}
+                      {`${user.firstName} `}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -399,7 +399,7 @@ export default function TaskManagement() {
                             return (
                               <Avatar key={userId} className="h-6 w-6">
                                 <AvatarFallback className="text-xs">
-                                  {user?.name
+                                  {user?.firstName
                                     .split(" ")
                                     .map((n) => n[0])
                                     .join("")}

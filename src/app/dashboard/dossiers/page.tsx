@@ -40,8 +40,8 @@ const Dossiers = () => {
             dossier.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesDepartment = filterDepartment === 'all' || dossier.departmentId === filterDepartment;
         const matchesStatus = filterStatus === 'all' || dossier.status === filterStatus;
-        const hasAccess = user.role === 'admin' || user.role === 'partner' ||
-            user.role === 'accounting' || dossier.departmentId === user.departmentId;
+        const hasAccess = user.role === 'ADMIN' || user.role === 'ASSOCIATE' ||
+            user.role === 'BOARD' || dossier.departmentId === user.departmentId;
 
         return matchesSearch && matchesDepartment && matchesStatus && hasAccess;
     });
@@ -162,7 +162,7 @@ const Dossiers = () => {
                                         <div className="flex items-center gap-2">
                                             <UserAvatar user={referent} size="sm" />
                                             <div className="flex-1 min-w-0">
-                                                <div className="text-sm font-medium truncate">{referent.name}</div>
+                                                <div className="text-sm font-medium truncate">{referent.firstName}</div>
                                                 <div className="text-xs text-muted-foreground">Referent</div>
                                             </div>
                                         </div>

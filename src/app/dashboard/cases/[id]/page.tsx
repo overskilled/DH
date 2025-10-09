@@ -710,7 +710,7 @@ const CaseDetail = () => {
                       <div key={assignee.id} className="flex items-center gap-2">
                         <UserAvatar user={assignee} size="sm" />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{assignee.name}</div>
+                          <div className="text-sm font-medium truncate">{`${assignee.firstName} ${assignee.lastName}`}</div>
                           <div className="text-xs text-muted-foreground">
                             {assignee.role.toUpperCase()}
                           </div>

@@ -149,10 +149,10 @@ const DossierDetail = () => {
                         <div className="flex items-center gap-3">
                             <UserAvatar user={referent} size="lg" />
                             <div className="min-w-0 flex-1">
-                                <div className="font-semibold truncate">{referent.name}</div>
+                                <div className="font-semibold truncate">{referent.firstName}</div>
                                 <div className="text-sm text-muted-foreground truncate">{referent.email}</div>
                                 <div className="text-xs text-muted-foreground mt-1">
-                                    {referent.role.toUpperCase()} • {referent.hourlyRate} FCFA/hr
+                                    {referent.role.toUpperCase()} • {referent.pricingPerHour} FCFA/hr
                                 </div>
                             </div>
                         </div>

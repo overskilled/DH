@@ -15,19 +15,31 @@ export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
 export interface Department {
   id: DepartmentId;
   name: string;
-  color: string;
+  colorHex: string;
   description: string;
 }
 
+
+
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  role: Role;
-  departmentId: DepartmentId;
-  avatar?: string;
-  hourlyRate: number;
+  role: "ADMIN" | "ASSOCIATE" | "SENIOR" | "MID" | "JUNIOR" | "BOARD";
+  departmentId: string | null;
+  pricingPerHour: number | null;
+  createdAt: string;
+  updatedAt: string;
+  department?: Department | null;
+  managedDepartments: Department[];
+  assignedTasks: Task[];
+
+  profilePic: string | null;
+  notifications: boolean;
+
 }
+
 
 export interface Client {
   id: string;
@@ -98,7 +110,7 @@ export interface TimeEntry {
   duration: number;
   description: string;
   date: Date;
-  hourlyRate: number;
+  pricingPerHour: number;
   invoiced: boolean;
 }
 

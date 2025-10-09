@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { useAuth } from "./context/auth-context"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
@@ -28,6 +27,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useMemo, useState } from "react"
+import { useAuthStore } from "@/stores/useAuthStore"
+import Loader from "./loader"
 
 const DEPARTMENTS = {
   litigation: {
@@ -84,7 +85,7 @@ const DEPARTMENTS = {
 type DepartmentKey = keyof typeof DEPARTMENTS
 
 const ROLE_PERMISSIONS = {
-  partner: [
+  ADMIN: [
     "dashboard",
     // "cases",
     "dossiers",
@@ -96,7 +97,7 @@ const ROLE_PERMISSIONS = {
     "settings",
     "documents",
   ],
-  senior_lawyer: [
+  BOARD: [
     "dashboard",
     // "cases",
     "dossiers",
@@ -108,24 +109,16 @@ const ROLE_PERMISSIONS = {
     "settings",
     "documents",
   ],
-  lawyer: ["dashboard", "dossiers", "clients", "billing", "documents", "settings"],
-  paralegal: ["dashboard", "dossiers", "clients", "documents", "settings"],
-  legal_assistant: ["dashboard", "dossiers", "clients", "documents"],
+  ASSOCIATE: ["dashboard", "dossiers", "clients", "billing", "documents", "settings"],
+  SENIOR: ["dashboard", "dossiers", "clients", "documents", "settings"],
+  MID: ["dashboard", "dossiers", "clients", "documents", "settings"],
+  JUNIOR: ["dashboard", "dossiers", "clients", "documents"],
   admin: ["dashboard", "staff", "billing", "settings", "reports"],
-  billing_specialist: ["dashboard", "billing", "clients", "reports"],
+  ACCOUNTANT: ["dashboard", "billing", "clients", "reports"],
 } as const
 
 type UserRole = keyof typeof ROLE_PERMISSIONS
 
-const MOCK_USER = {
-  name: "Sarah Mitchell",
-  email: "sarah.mitchell@lawfirm.com",
-  role: "senior_lawyer" as UserRole,
-  department: "litigation" as DepartmentKey,
-  photoURL: "/professional-woman-diverse.png",
-  caseLoad: 12,
-  notifications: 3,
-}
 
 export const Sidebar = ({
   isOpen,
@@ -135,19 +128,31 @@ export const Sidebar = ({
   setIsOpen: (open: boolean) => void
 }) => {
   const pathname = usePathname()
-  const { user, userInfo } = useAuth()
   const [expandedSections, setExpandedSections] = useState<string[]>(["main", "workspace"])
 
-  const currentUser = userInfo || MOCK_USER
-  const userRole = (currentUser.role as UserRole) || "lawyer"
-  const userDepartment = (currentUser.department as DepartmentKey) || "litigation"
-  const departmentConfig = DEPARTMENTS[userDepartment]
+  const { user, accessToken, logout } = useAuthStore();
+
+  if (!user) {
+    return (<Loader />)
+  }
+
+  const currentUser = user
+  const userRole = (currentUser.role as UserRole)
+  const userDepartment = (currentUser.department?.name)
+  const userDepartmentData = (currentUser.department)
 
   const allowedPages = ROLE_PERMISSIONS[userRole] || []
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => (prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]))
   }
+
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
 
   const navigationSections = useMemo(() => {
     const allSections = [
@@ -175,14 +180,14 @@ export const Sidebar = ({
             label: "Dossiers",
             icon: FolderOpen,
             permission: "dossiers",
-            badge: currentUser.caseLoad || null,
+            // badge: currentUser.caseLoad || null,
           },
           {
             href: "/dashboard/cases",
             label: "Cases",
             icon: FolderOpen,
             permission: "cases",
-            badge: currentUser.caseLoad || null,
+            // badge: currentUser.caseLoad || null,
           },
           {
             href: "/dashboard/clients",
@@ -257,7 +262,7 @@ export const Sidebar = ({
         items: section.items.filter((item) => allowedPages.includes(item.permission as any)),
       }))
       .filter((section) => section.items.length > 0)
-  }, [allowedPages, currentUser.caseLoad])
+  }, [allowedPages])
 
   const renderNavItem = (item: {
     href: string
@@ -282,10 +287,10 @@ export const Sidebar = ({
         style={
           isActive
             ? {
-                backgroundColor: departmentConfig.bgColor,
-                color: departmentConfig.color,
-                borderLeft: `3px solid ${departmentConfig.color}`,
-              }
+              backgroundColor: hexToRgba(userDepartmentData?.colorHex!, 0.5),
+              color: "white",
+              borderLeft: `3px solid ${userDepartmentData?.colorHex}`,
+            }
             : undefined
         }
       >
@@ -299,9 +304,9 @@ export const Sidebar = ({
             style={
               isActive
                 ? {
-                    backgroundColor: departmentConfig.color,
-                    color: "white",
-                  }
+                  backgroundColor: userDepartmentData?.colorHex,
+                  color: "white",
+                }
                 : undefined
             }
           >
@@ -322,7 +327,7 @@ export const Sidebar = ({
           <div>
             <h1 className="text-[15px] font-bold tracking-tight" style={{ color: "#152438" }}>
               D. HAPPI
-            </h1> 
+            </h1>
             <p className="text-[11px] font-medium" style={{ color: "#c2a349" }}>
               Avocats - lawyers
             </p>
@@ -332,27 +337,27 @@ export const Sidebar = ({
 
       <div className="px-4 pt-5 pb-4">
         <div
-          className="flex items-center gap-3 px-3.5 py-3 rounded-lg border transition-all hover:shadow-sm cursor-pointer"
+          className="flex items-center gap-3 px-5 py-3 rounded-lg border transition-all hover:shadow-sm cursor-pointer"
           style={{
-            backgroundColor: departmentConfig.bgColor,
-            borderColor: departmentConfig.borderColor,
+            backgroundColor: userDepartmentData?.colorHex,
+            borderColor: userDepartmentData?.colorHex,
           }}
         >
-          <div
-            className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0 shadow-sm"
-            style={{ backgroundColor: departmentConfig.color }}
+          {/* <div
+            className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0 shadow-sm text-white"
+            style={{ backgroundColor: userDepartmentData?.colorHex }}
           >
-            <departmentConfig.icon className="w-[18px] h-[18px] text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-bold truncate" style={{ color: departmentConfig.color }}>
-              {departmentConfig.name}
+            <userDepartmentData?.icon className="w-[18px] h-[18px] text-white" />
+          </div> */}
+          <div className="flex-1 min-w-0 text-white">
+            <p className="text-[13px] font-bold truncate ">
+              {userDepartmentData?.name} Departement
             </p>
-            <p className="text-[11px] capitalize font-medium" style={{ color: "var(--sidebar-muted)" }}>
+            <p className="text-[11px] capitalize font-medium">
               {userRole.replace("_", " ")}
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 shrink-0" style={{ color: departmentConfig.color }} />
+          <ChevronRight className="w-4 h-4 shrink-0" style={{ color: userDepartmentData?.colorHex }} />
         </div>
       </div>
 
@@ -409,10 +414,10 @@ export const Sidebar = ({
                 style={
                   pathname === "/dashboard/search"
                     ? {
-                        backgroundColor: departmentConfig.bgColor,
-                        color: departmentConfig.color,
-                        borderLeft: `3px solid ${departmentConfig.color}`,
-                      }
+                      backgroundColor: hexToRgba(userDepartmentData?.colorHex!, 0.5),
+                      color: userDepartmentData?.colorHex,
+                      borderLeft: `3px solid ${userDepartmentData?.colorHex}`,
+                    }
                     : undefined
                 }
               >
@@ -437,10 +442,10 @@ export const Sidebar = ({
                 style={
                   pathname === "/dashboard/settings"
                     ? {
-                        backgroundColor: departmentConfig.bgColor,
-                        color: departmentConfig.color,
-                        borderLeft: `3px solid ${departmentConfig.color}`,
-                      }
+                      backgroundColor: hexToRgba(userDepartmentData?.colorHex!, 0.5),
+                      color: userDepartmentData?.colorHex,
+                      borderLeft: `3px solid ${userDepartmentData?.colorHex}`,
+                    }
                     : undefined
                 }
               >
@@ -455,13 +460,13 @@ export const Sidebar = ({
       <div className="border-t p-4">
         <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg transition-all hover:bg-[var(--sidebar-accent-hover)] group">
           <div className="relative">
-            <Avatar className="h-10 w-10 ring-2" style={{ boxShadow: `0 0 0 2px ${departmentConfig.color}` }}>
-              <AvatarImage src={currentUser.photoURL || "/placeholder.svg"} alt={currentUser.name} />
+            <Avatar className="h-10 w-10 ring-2" style={{ boxShadow: `0 0 0 2px ${userDepartmentData?.colorHex}` }}>
+              <AvatarImage src={currentUser.profilePic || "/placeholder.svg"} alt={currentUser.firstName} />
               <AvatarFallback
                 className="text-xs font-bold"
-                style={{ backgroundColor: departmentConfig.color, color: "white" }}
+                style={{ backgroundColor: userDepartmentData?.colorHex, color: "white" }}
               >
-                {currentUser.name
+                {currentUser.firstName
                   ?.split(" ")
                   .map((n: any) => n[0])
                   .join("")}
@@ -469,20 +474,20 @@ export const Sidebar = ({
             </Avatar>
             <div
               className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-              style={{ backgroundColor: "#c2a349", borderColor: "var(--sidebar-background)" }}
+              style={{ backgroundColor: "#7cf047ff", borderColor: "var(--sidebar-background)" }}
             />
           </div>
 
           <div className="flex-1 min-w-0 text-left">
             <p className="text-[13px] font-semibold truncate" style={{ color: "var(--sidebar-foreground)" }}>
-              {currentUser.name}
+              {`${currentUser.firstName} ${currentUser.lastName}`}
             </p>
             <p className="text-[11px] truncate font-medium" style={{ color: "var(--sidebar-muted)" }}>
               {currentUser.email}
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          {/* <div className="flex items-center gap-1.5">
             {currentUser.notifications > 0 && (
               <div className="relative">
                 <Bell className="w-[18px] h-[18px]" style={{ color: "var(--sidebar-muted)" }} />
@@ -496,7 +501,7 @@ export const Sidebar = ({
               className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
               style={{ color: "var(--sidebar-muted)" }}
             />
-          </div>
+          </div> */}
         </button>
       </div>
     </div>

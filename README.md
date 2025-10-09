@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ⚖️ DH-Avocat Platform – Law Firm Management System
 
-## Getting Started
+## 📘 Overview
 
-First, run the development server:
+**DH-Avocat Platform** is a modern backend system designed to streamline the operations of a **top-tier law firm**.  
+It centralizes document management, invoicing, task assignment, client relations, and reporting — all in one unified platform.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun run dev
-```
+Built with:
+- **NestJS** – Scalable backend framework for Node.js
+- **Prisma ORM** – Elegant database modeling and querying
+- **PostgreSQL** – Reliable, ACID-compliant relational database
+- **TypeScript** – Full type safety and maintainable code
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 👥 User & Role Management
+- Supports different roles: `ADMIN`, `BOARD`, `SENIOR`, `MID`, `JUNIOR`, `ASSOCIATE`
+- Role-based access and department associations
+- Customizable pricing per hour and profiles with avatars
 
-## Learn More
+### 🏢 Department Structure
+- Manage multiple departments (e.g., Conseil, Fiscalité, Audit)
+- Assign managers and collaborators to departments
+- Each department has color tagging and internal organization
 
-To learn more about Next.js, take a look at the following resources:
+### 📂 Document Lifecycle Management
+- Replace traditional dossiers with **digital documents**
+- Link each document to:
+  - **Referent** (external reference contact)
+  - **Responsable** (internal lawyer or staff)
+  - **Client**
+  - **Department**
+- Upload and reference multiple files per document (contracts, reports, legal notes, etc.)
+- Real-time version tracking and audit logs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📑 Invoicing & Finance
+- Track **time entries** (hours worked per user/task)
+- Automatically generate **invoices** with tax calculation
+- Associate invoices to clients, documents, and responsible lawyers
+- Monitor **invoice status** (paid/unpaid)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 📆 Task & Time Management
+- Assign tasks to collaborators per document (formerly “Milestones”)
+- Track task progress and completion
+- Record time entries for each task
+- Auto-link time entries to invoices
 
-## Deploy on Vercel
+### 📊 Reports & Analytics
+- Generate on-demand reports for:
+  - A specific document
+  - All documents in a department
+  - User performance
+- Reports include revenue summaries, working hours, and task status
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 📁 File Handling
+- Secure file uploads for documents
+- Metadata stored in DB (uploader, timestamps, related document)
+- Configurable cloud or local storage provider (e.g., AWS S3, Firebase, Cloudinary)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+---
+
+## 🧩 System Architecture
+

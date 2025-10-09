@@ -17,7 +17,7 @@ export const metadata = {
   title: "D. HAPPI",
   description: "Customisized company management software",
   icons: {
-    icon: "/Logo blue.png"
+    icon: "/Logo blue.webp"
   }
 };
 

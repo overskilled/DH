@@ -10,11 +10,12 @@ import { hasPermission } from '@/lib/permissions';
 import { SEED_USERS } from '@/lib/seed-data';
 import { StatusBadge } from '@/components/StatusBadge';
 import { DepartmentBadge } from '@/components/DepartmentBadge';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, accessToken, logout } = useAuthStore();
   const { dossiers, tasks, timeEntries } = useStore();
 
   if (!user) return null;
@@ -22,7 +23,7 @@ const Dashboard = () => {
   // Filter data based on user permissions
   const userDossiers = hasPermission(user, 'dossier:view')
     ? dossiers.filter((d: any) => 
-        user.role === 'admin' || user.role === 'partner' || d.departmentId === user.departmentId
+        user.role === 'ADMIN' || user.role === 'BOARD' || d.departmentId === user.departmentId
       )
     : [];
 
@@ -89,7 +90,7 @@ const Dashboard = () => {
       {/* Header */}
       <div>
         <h1 className="text-4xl font-bold mb-2">
-          Welcome back, {user.name.split(' ')[0]}
+          Welcome back, {`${user.firstName} ${user.lastName}`}
         </h1>
         <p className="text-muted-foreground">
           Here's what's happening with your cases today
@@ -154,7 +155,7 @@ const Dashboard = () => {
                         <div className="flex-1">
                           <h4 className="font-semibold text-sm mb-1">{dossier.title}</h4>
                           <p className="text-xs text-muted-foreground mb-2">
-                            Ref: {referent?.name}
+                            Ref: {referent?.firstName}
                           </p>
                           <DepartmentBadge departmentId={dossier.departmentId} />
                         </div>

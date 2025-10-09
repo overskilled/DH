@@ -89,20 +89,20 @@ export default function HandoverSystem() {
   const users = [
     {
       id: "1",
-      name: "Sarah Williams",
+      firstName: "Sarah Williams",
       role: "Senior Lawyer",
       department: "Litigation",
     },
-    { id: "2", name: "John Smith", role: "Associate", department: "Corporate" },
+    { id: "2", firstName: "John Smith", role: "Associate", department: "Corporate" },
     {
       id: "3",
-      name: "Emily Rodriguez",
+      firstName: "Emily Rodriguez",
       role: "Tax Specialist",
       department: "Tax",
     },
     {
       id: "4",
-      name: "Michael Brown",
+      firstName: "Michael Brown",
       role: "Paralegal",
       department: "General",
     },
@@ -154,7 +154,7 @@ export default function HandoverSystem() {
       fromUserId: "current-user",
       fromUserName: "Current User",
       toUserId: newHandover.toUserId,
-      toUserName: users.find((u) => u.id === newHandover.toUserId)?.name || "",
+      toUserName: users.find((u) => u.id === newHandover.toUserId)?.firstName || "",
       caseId: newHandover.caseId,
       caseName: cases.find((c) => c.id === newHandover.caseId)?.name || "",
       taskIds: newHandover.taskIds,
@@ -226,14 +226,14 @@ export default function HandoverSystem() {
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
                             <AvatarFallback className="text-xs">
-                              {user.name
+                              {user.firstName
                                 .split(" ")
                                 .map((n) => n[0])
                                 .join("")}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{user.name}</p>
+                            <p className="font-medium">{`${user.firstName}`}</p>
                             <p className="text-xs text-gray-500">{user.role}</p>
                           </div>
                         </div>
