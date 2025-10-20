@@ -236,3 +236,37 @@ All colors MUST be HSL.
     border-color: hsl(var(--dept-criminal) / 0.3);
   }
 }
+
+/* Custom scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(219 234 254) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(219 234 254);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(191 219 254);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgb(147 197 253);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

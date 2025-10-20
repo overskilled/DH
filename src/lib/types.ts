@@ -1,5 +1,7 @@
 // Core Types for Legal Case Management System
 
+import { LucideIcon } from "lucide-react";
+
 export type DepartmentId = 'corporate' | 'litigation' | 'tax' | 'realestate' | 'ip' | 'employment' | 'criminal';
 
 export type Role = 'partner' | 'senior' | 'mid' | 'junior' | 'collaborator' | 'admin' | 'accounting';
@@ -12,12 +14,7 @@ export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'completed';
 
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
 
-export interface Department {
-  id: DepartmentId;
-  name: string;
-  colorHex: string;
-  description: string;
-}
+
 
 
 
@@ -138,4 +135,19 @@ export interface RunningTimer {
   taskId: string;
   startTime: Date;
   description: string;
+}
+
+
+export interface Department {
+  id?: string;
+  name: string;
+  colorHex: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export interface DepartmentNavigatorProps {
+  userDepartment: any;
+  userRole: string;
+  onDepartmentChange?: (department: Department) => void;
 }

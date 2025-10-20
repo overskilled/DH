@@ -8,8 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useEffect, useState } from "react";
+import { DepartmentService } from "@/services/departement.service";
+import DepartmentNavigator from "./DepartmentNavigator";
 
 export default function Navbar({
   setIsSidebarOpen,
@@ -18,11 +21,49 @@ export default function Navbar({
 }) {
   const { user, accessToken, logout } = useAuthStore();
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
+  const [departement, setDepartement] = useState<any | null>(null);
+  const searchParams = useSearchParams()
+
+  // Fetch function with proper error handling
+  const fetchDepartementInfo = async () => {
+    // Check if user and departmentId exist
+    if (!user?.departmentId) {
+      setError("No department ID available");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await DepartmentService.getById(user.departmentId);
+      console.log("Fetched department: ", response);
+      setDepartement(response); // Fixed typo from 'reponse' to 'response'
+    } catch (error: any) {
+      console.error("Error fetching department:", error);
+      setError(error.message || "Failed to fetch department information");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch on component mount and when user/departmentId changes
+  useEffect(() => {
+    if (user?.departmentId) {
+      fetchDepartementInfo();
+    }
+  }, [user?.departmentId]);
+
   const router = useRouter()
 
   const handleLogout = () => {
-    logout();
-    router.push('/');
+    // Avoid triggering re-renders in the middle of hook calls
+    logout(); // clear localStorage, Zustand state, etc.
+    // Wait for re-render to settle
+    setTimeout(() => router.push("/"), 0);
   };
 
   return (
@@ -47,9 +88,20 @@ export default function Navbar({
               <Bell className="h-5 w-5" />
             </Button>
 
-            <Button variant="ghost" size="icon">
+            {/* <Button variant="ghost" size="icon">
               <Sun className="h-5 w-5" />
-            </Button>
+            </Button> */}
+
+            {departement ? (
+              <DepartmentNavigator
+                currentDepartment={searchParams.get('department') || user?.department?.name}
+                onDepartmentChange={(dept) => {
+                  router.push(`/dashboard?department=${encodeURIComponent(dept.name)}`)
+                }}
+              />
+            ) : (
+              <div>Loading departments...</div>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -80,7 +132,7 @@ export default function Navbar({
                         .map((n: any) => n[0])
                         .join("")}
                     </AvatarFallback>
-                  </Avatar> 
+                  </Avatar>
                   <div
                     className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
                     style={{ backgroundColor: "#69eb48ff", borderColor: "var(--sidebar-background)" }}
