@@ -27,7 +27,7 @@ export default function LoginPage() {
     try {
       const response = await AuthService.login(email, password)
       loginStore.login(response.user, response.accessToken)
-      
+
       toast.success("Log In Successful!", {
         description: "You have been successfully logged in, welcome back.",
       })
@@ -61,23 +61,20 @@ export default function LoginPage() {
         <div className="w-full max-w-sm sm:max-w-md space-y-6 sm:space-y-8">
           {/* Logo and Header */}
           <div className="space-y-3 sm:space-y-4">
-            <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 rounded-lg bg-white">
-                <Image 
-                  src={"/Logo blue.png"} 
-                  alt={"logo"} 
-                  width={80} 
-                  height={80}
-                  className="object-contain w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
+            <div className="flex flex-col items-center justify-center mb-6 sm:mb-8">
+              <div className="flex items-center justify-center w-full">
+                <Image
+                  src="/Logo blue.png"
+                  alt="logo"
+                  width={240}
+                  height={240}
+                  className="object-contain w-36 h-3 sm:w-56 sm:h-56 lg:w-36 lg:h-36"
                   priority
                 />
               </div>
-              <div className="text-center">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Cabinet D'Avocat</h1>
-                <p className="text-sm sm:text-md font-semibold text-[#c2a349]">D. HAPPI</p>
-              </div>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground text-center lg:text-left">
+
+            <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground text-center lg:text-left">
               Welcome back
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground text-center lg:text-left">
@@ -104,10 +101,10 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="text-xs sm:text-sm text-[#c2a349] hover:text-[#d4b55f] transition-colors"
-                  onClick={() => {/* Add forgot password logic */}}
+                  onClick={() => {/* Add forgot password logic */ }}
                 >
                   Forgot password?
                 </button>
@@ -228,7 +225,7 @@ export default function LoginPage() {
           {/* Decorative elements - Hidden on mobile, visible on larger screens */}
           <div className="hidden lg:block absolute top-10 right-10 w-32 h-32 border-2 border-[#c2a349]/20 rounded-full" />
           <div className="hidden lg:block absolute bottom-20 right-32 w-20 h-20 border-2 border-[#c2a349]/20 rounded-full" />
-          
+
           {/* Mobile decorative elements */}
           <div className="lg:hidden absolute top-4 right-4 w-16 h-16 border-2 border-[#c2a349]/20 rounded-full" />
           <div className="lg:hidden absolute bottom-8 right-8 w-12 h-12 border-2 border-[#c2a349]/20 rounded-full" />

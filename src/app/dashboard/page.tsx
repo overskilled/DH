@@ -1,14 +1,8 @@
 "use client"
 
-import { motion } from 'framer-motion';
-import { FolderOpen, Clock, DollarSign, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { FolderOpen, Clock, DollarSign, AlertCircle } from 'lucide-react';
 import { useStore } from '@/hooks/useStore';
 import { hasPermission } from '@/lib/permissions';
-import { SEED_USERS } from '@/lib/seed-data';
-import { StatusBadge } from '@/components/StatusBadge';
-import { DepartmentBadge } from '@/components/DepartmentBadge';
 import { useAuthStore } from '@/stores/useAuthStore';
 import DashboardRouter from '@/components/DashboardRouter';
 

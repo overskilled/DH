@@ -3,7 +3,7 @@ import { Role, User } from './types';
 // Permission definitions (all roles capitalized to match Prisma enum)
 export const PERMISSIONS = {
   'dossier:create': ['ASSOCIATE', 'SENIOR', 'ADMIN'],
-  'dossier:view': ['ASSOCIATE', 'SENIOR', 'MID', 'JUNIOR', 'COLLABORATOR', 'ADMIN', 'ACCOUNTING'],
+  'dossier:view': ['ASSOCIATE', 'BOARD', 'SENIOR', 'MID', 'JUNIOR', 'COLLABORATOR', 'ADMIN', 'ACCOUNTING'],
   'dossier:edit': ['ASSOCIATE', 'SENIOR', 'ADMIN'],
   'dossier:delete': ['ASSOCIATE', 'ADMIN'],
   'dossier:assign': ['ASSOCIATE', 'SENIOR', 'ADMIN'],

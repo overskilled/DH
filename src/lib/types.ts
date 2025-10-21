@@ -23,6 +23,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  position: string;
   role: "ADMIN" | "ASSOCIATE" | "SENIOR" | "MID" | "JUNIOR" | "BOARD";
   departmentId: string | null;
   pricingPerHour: number | null;

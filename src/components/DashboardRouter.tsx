@@ -43,7 +43,9 @@ export default function DashboardRouter() {
     const fetchDepartmentData = async () => {
       if (!departmentParam) {
         // If no department in URL, use user's department
+        console.log("Dep PAram: ", departmentParam)
         if (user?.departmentId) {
+            console.log("Dep user: ", user?.departmentId)
           await fetchUserDepartment(user.departmentId)
         } else {
           setLoading(false)
@@ -97,7 +99,7 @@ export default function DashboardRouter() {
       'Corporate': <CorporateDashboard department={department} stats={stats} />,
     //   'Litigation': <LitigationDashboard department={department} stats={stats} />,
       'Conseil': <ConseilDashboard department={department} stats={stats} />,
-      'Legal': <LegalDashboard department={department} stats={stats} />
+    //   'Legal': <LegalDashboard department={department} stats={stats} />
     }
 
     return dashboardMap[department.name] || <DefaultDashboard department={department} stats={stats} />
