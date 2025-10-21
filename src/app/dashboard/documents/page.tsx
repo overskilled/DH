@@ -227,10 +227,10 @@ const page = () => {
                                                         {progress.toFixed(0)}%
                                                     </span>
                                                 </div>
-                                                <Progress
+                                                {/* <Progress
                                                     value={Math.min(progress, 100)}
                                                     className={`h-2 ${isOverBudget ? '[&>div]:bg-destructive' : ''}`}
-                                                />
+                                                /> */}
                                                 <div className="flex justify-between text-xs mt-1 text-muted-foreground">
                                                     <span>{spent.toLocaleString()} FCFA</span>
                                                     <span>{budget.toLocaleString()} FCFA</span>

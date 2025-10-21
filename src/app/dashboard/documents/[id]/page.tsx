@@ -215,7 +215,7 @@ const DocumentDetail = () => {
   );
 
   // Use Progress component safely
-  const ProgressComponent = Progress || SimpleProgress;
+  // const ProgressComponent = Progress || SimpleProgress;
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
@@ -313,10 +313,10 @@ const DocumentDetail = () => {
             <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${isOverBudget ? 'text-destructive' : ''}`}>
               {budgetProgress.toFixed(0)}%
             </div>
-            <ProgressComponent
+            {/* <ProgressComponent
               value={Math.min(budgetProgress, 100)}
               className={`mt-2 h-2 ${isOverBudget ? '[&>div]:bg-destructive' : ''}`}
-            />
+            /> */}
             <p className="text-xs text-muted-foreground mt-1">
               {spentAmount.toLocaleString()} FCFA / {budgetAmount.toLocaleString()} FCFA
             </p>
@@ -334,10 +334,10 @@ const DocumentDetail = () => {
             <div className="text-lg sm:text-xl lg:text-2xl font-bold">
               {completedTasks}/{totalTasks}
             </div>
-            <ProgressComponent
+            {/* <ProgressComponent
               value={totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0}
               className="mt-2 h-2"
-            />
+            /> */}
             <p className="text-xs text-muted-foreground mt-1">
               {pendingTasks} pending • {document.totalHours || 0}h total
             </p>
@@ -355,10 +355,10 @@ const DocumentDetail = () => {
             <div className="text-lg sm:text-xl lg:text-2xl font-bold">
               {paidInvoices}/{document.invoices?.length || 0}
             </div>
-            <ProgressComponent
+            {/* <ProgressComponent
               value={(document.invoices?.length || 0) > 0 ? (paidInvoices / (document.invoices?.length || 1)) * 100 : 0}
               className="mt-2 h-2"
-            />
+            /> */}
             <p className="text-xs text-muted-foreground mt-1">
               {totalInvoiced.toLocaleString()} FCFA total
             </p>
@@ -512,7 +512,7 @@ const DocumentDetail = () => {
                               <span className="text-muted-foreground">Progress</span>
                               <span className="font-medium">{listProgress.toFixed(0)}%</span>
                             </div>
-                            <ProgressComponent value={Math.min(listProgress, 100)} className="h-2" />
+                            {/* <ProgressComponent value={Math.min(listProgress, 100)} className="h-2" /> */}
                             <div className="flex justify-between text-xs mt-1 text-muted-foreground">
                               <span>{completedListTasks} completed</span>
                               <span>{listTasks.length} total</span>
@@ -632,6 +632,7 @@ const DocumentDetail = () => {
       </Tabs>
     </div>
   );
+
 };
 
 export default DocumentDetail;
