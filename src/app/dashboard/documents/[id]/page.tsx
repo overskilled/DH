@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/hooks/useAuth';
 import { DepartmentBadge } from '@/components/DepartmentBadge';
 import { StatusBadge } from '@/components/StatusBadge';
 import { UserAvatar, DocumentCreatorAvatar, DocumentResponsibleAvatar, UserAvatarStack } from '@/components/UserAvatar';
@@ -226,7 +225,6 @@ const DocumentDetail = () => {
                   </p>
                 </div>
               </div>
-              {/* <StatusBadge status={document.status as unknown as 'high' | 'low' | 'todo' | 'in_progress' | 'review' | 'completed' | 'active' | 'pending' | 'archived' | 'urgent' | 'medium'} type="document" /> */}
             </div>
 
             <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
@@ -398,7 +396,7 @@ const DocumentDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3">
-                    <UserAvatar user={document.referent as unknown as unknown as User} size="lg" />
+                    <UserAvatar user={document.referent as unknown as User} size="lg" />
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold truncate">
                         {document.referent.firstName} {document.referent.lastName}
@@ -429,7 +427,7 @@ const DocumentDetail = () => {
               </CardHeader>
               <CardContent>
                 <UserAvatarStack
-                  users={allCollaborators.filter(Boolean) as unknown as User[] || []}
+                  users={allCollaborators.filter(Boolean) as User[]}
                   limit={8}
                   size="md"
                   className="justify-start"
@@ -466,7 +464,6 @@ const DocumentDetail = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <h4 className="font-semibold truncate">{list.name}</h4>
-                            {/* <StatusBadge status={list.status as unknown as 'high' | 'low' | 'todo' | 'in_progress' | 'review' | 'completed' | 'active' | 'pending' | 'archived' | 'urgent' | 'medium'} type="document" /> */}
                           </div>
                           <p className="text-sm text-muted-foreground line-clamp-2">
                             {list.description || 'No description'}
@@ -481,7 +478,7 @@ const DocumentDetail = () => {
                         <>
                           <div className="flex items-center justify-between mb-3">
                             <UserAvatarStack
-                              users={listTasks.map(task => task.assignee).filter(Boolean) as unknown as User[] || []}
+                              users={listTasks.map(task => task.assignee).filter(Boolean) as User[]}
                               limit={4}
                               size="sm"
                             />

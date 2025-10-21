@@ -1,7 +1,7 @@
 "use client"
 
 import { FolderOpen, Clock, DollarSign, AlertCircle } from 'lucide-react';
-import { useStore } from '@/hooks/useStore';
+
 import { hasPermission } from '@/lib/permissions';
 import { useAuthStore } from '@/stores/useAuthStore';
 import DashboardRouter from '@/components/DashboardRouter';
@@ -10,59 +10,59 @@ import DashboardRouter from '@/components/DashboardRouter';
 
 const Dashboard = () => {
   const { user, accessToken, logout } = useAuthStore();
-  const { dossiers, tasks, timeEntries } = useStore();
+  // const { dossiers, tasks, timeEntries } = useStore();
 
   if (!user) return null;
 
   // Filter data based on user permissions
-  const userDossiers = hasPermission(user, 'dossier:view')
-    ? dossiers.filter((d: any) =>
-      user.role === 'ADMIN' || user.role === 'BOARD' || d.departmentId === user.departmentId
-    )
-    : [];
+  // const userDossiers = hasPermission(user, 'dossier:view')
+  //   ? dossiers.filter((d: any) =>
+  //     user.role === 'ADMIN' || user.role === 'BOARD' || d.departmentId === user.departmentId
+  //   )
+  //   : [];
 
-  const activeDossiers = userDossiers.filter((d: any) => d.status === 'active');
-  const myTasks = tasks.filter((t: any) => t.assignees.includes(user.id));
-  const pendingTasks = myTasks.filter((t: any) => t.status !== 'completed');
-  const userTimeEntries = timeEntries.filter((te: any) => te.userId === user.id);
+  // const activeDossiers = userDossiers.filter((d: any) => d.status === 'active');
+  // const myTasks = tasks.filter((t: any) => t.assignees.includes(user.id));
+  // const pendingTasks = myTasks.filter((t: any) => t.status !== 'completed');
+  // const userTimeEntries = timeEntries.filter((te: any) => te.userId === user.id);
 
-  const totalBillableHours = userTimeEntries.reduce((sum: any, te: any) => sum + te.duration, 0);
-  const totalRevenue = userTimeEntries.reduce((sum: any, te: any) => sum + (te.duration * te.hourlyRate), 0);
+  // const totalBillableHours = userTimeEntries.reduce((sum: any, te: any) => sum + te.duration, 0);
+  // const totalRevenue = userTimeEntries.reduce((sum: any, te: any) => sum + (te.duration * te.hourlyRate), 0);
 
-  const stats = [
-    {
-      title: 'Active Dossiers',
-      value: activeDossiers.length,
-      description: 'Currently in progress',
-      icon: FolderOpen,
-      color: 'text-[hsl(var(--status-active))]',
-      bg: 'bg-[hsl(var(--status-active))]/10',
-    },
-    {
-      title: 'Pending Tasks',
-      value: pendingTasks.length,
-      description: 'Assigned to you',
-      icon: AlertCircle,
-      color: 'text-[hsl(var(--status-pending))]',
-      bg: 'bg-[hsl(var(--status-pending))]/10',
-    },
-    {
-      title: 'Billable Hours',
-      value: totalBillableHours.toFixed(1),
-      description: 'This month',
-      icon: Clock,
-      color: 'text-[hsl(var(--dept-ip))]',
-      bg: 'bg-[hsl(var(--dept-ip))]/10',
-    },
-    {
-      title: 'Revenue',
-      value: `${totalRevenue.toLocaleString()} FCFA`,
-      description: 'Total generated',
-      icon: DollarSign,
-      color: 'text-[hsl(var(--status-completed))]',
-      bg: 'bg-[hsl(var(--status-completed))]/10',
-    },
-  ];
+  // const stats = [
+  //   {
+  //     title: 'Active Dossiers',
+  //     value: activeDossiers.length,
+  //     description: 'Currently in progress',
+  //     icon: FolderOpen,
+  //     color: 'text-[hsl(var(--status-active))]',
+  //     bg: 'bg-[hsl(var(--status-active))]/10',
+  //   },
+  //   {
+  //     title: 'Pending Tasks',
+  //     value: pendingTasks.length,
+  //     description: 'Assigned to you',
+  //     icon: AlertCircle,
+  //     color: 'text-[hsl(var(--status-pending))]',
+  //     bg: 'bg-[hsl(var(--status-pending))]/10',
+  //   },
+  //   {
+  //     title: 'Billable Hours',
+  //     value: totalBillableHours.toFixed(1),
+  //     description: 'This month',
+  //     icon: Clock,
+  //     color: 'text-[hsl(var(--dept-ip))]',
+  //     bg: 'bg-[hsl(var(--dept-ip))]/10',
+  //   },
+  //   {
+  //     title: 'Revenue',
+  //     value: `${totalRevenue.toLocaleString()} FCFA`,
+  //     description: 'Total generated',
+  //     icon: DollarSign,
+  //     color: 'text-[hsl(var(--status-completed))]',
+  //     bg: 'bg-[hsl(var(--status-completed))]/10',
+  //   },
+  // ];
 
   const containerVariants = {
     hidden: { opacity: 0 },

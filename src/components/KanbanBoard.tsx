@@ -3,7 +3,6 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { motion } from 'framer-motion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Task, TaskStatus } from '@/lib/types';
-import { useStore } from '@/hooks/useStore';
 import { TaskCard } from './TaskCard';
 import React from 'react';
 
@@ -18,8 +17,8 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
 ];
 
 export const KanbanBoard = ({ milestoneId }: KanbanBoardProps) => {
-    const { tasks, updateTask, updateTaskOrder } = useStore();
-    const milestoneTasks = tasks.filter(t => t.milestoneId === milestoneId);
+    // const { tasks, updateTask, updateTaskOrder } = useStore();
+    // const milestoneTasks = tasks.filter(t => t.milestoneId === milestoneId);
 
     const handleDragEnd = (result: DropResult) => {
         const { destination, source, draggableId } = result;
@@ -33,81 +32,81 @@ export const KanbanBoard = ({ milestoneId }: KanbanBoardProps) => {
             return;
         }
 
-        const task = tasks.find(t => t.id === draggableId);
-        if (!task) return;
+        // const task = tasks.find(t => t.id === draggableId);
+        // if (!task) return;
 
         // Reorder tasks within the same column
-        const sourceColumnTasks = [...milestoneTasks]
-            .filter(t => t.status === source.droppableId)
-            .sort((a, b) => a.order - b.order);
+        // const sourceColumnTasks = [...milestoneTasks]
+        //     .filter(t => t.status === source.droppableId)
+        //     .sort((a, b) => a.order - b.order);
 
-        const destinationColumnTasks = [...milestoneTasks]
-            .filter(t => t.status === destination.droppableId)
-            .sort((a, b) => a.order - b.order);
+        // const destinationColumnTasks = [...milestoneTasks]
+        //     .filter(t => t.status === destination.droppableId)
+        //     .sort((a, b) => a.order - b.order);
 
         // Remove from source
-        const [movedTask] = sourceColumnTasks.splice(source.index, 1);
+        // const [movedTask] = sourceColumnTasks.splice(source.index, 1);
 
         if (destination.droppableId === source.droppableId) {
             // Same column reorder
-            sourceColumnTasks.splice(destination.index, 0, movedTask);
+            // sourceColumnTasks.splice(destination.index, 0, movedTask);
 
             // Update orders for source column
-            const updatedSourceTasks = sourceColumnTasks.map((task, index) => ({
-                ...task,
-                order: index,
-            }));
+            // const updatedSourceTasks = sourceColumnTasks.map((task, index) => ({
+            //     ...task,
+            //     order: index,
+            // }));
 
             // Update all tasks with new orders
-            const allOtherTasks = milestoneTasks.filter(t =>
-                t.status !== source.droppableId
-            );
-            const allUpdatedTasks = [...updatedSourceTasks, ...allOtherTasks];
-            updateTaskOrder(milestoneId, allUpdatedTasks);
+            // const allOtherTasks = milestoneTasks.filter(t =>
+            //     t.status !== source.droppableId
+            // );
+            // const allUpdatedTasks = [...updatedSourceTasks, ...allOtherTasks];
+            // updateTaskOrder(milestoneId, allUpdatedTasks);
         } else {
             // Different column move - update status first
-            updateTask(draggableId, {
-                status: destination.droppableId as TaskStatus,
-            });
+            // updateTask(draggableId, {
+            //     status: destination.droppableId as TaskStatus,
+            // });
 
             // Create updated task with new status
-            const updatedTask = {
-                ...movedTask,
-                status: destination.droppableId as TaskStatus,
-            };
+            // const updatedTask = {
+            //     ...movedTask,
+            //     status: destination.droppableId as TaskStatus,
+            // };
             
-            destinationColumnTasks.splice(destination.index, 0, updatedTask);
+            // destinationColumnTasks.splice(destination.index, 0, updatedTask);
 
             // Update orders for both columns
-            const updatedSourceTasks = sourceColumnTasks.map((task, index) => ({
-                ...task,
-                order: index,
-            }));
+            // const updatedSourceTasks = sourceColumnTasks.map((task, index) => ({
+            //     ...task,
+            //     order: index,
+            // }));
 
-            const updatedDestinationTasks = destinationColumnTasks.map((task, index) => ({
-                ...task,
-                order: index,
-            }));
+            // const updatedDestinationTasks = destinationColumnTasks.map((task, index) => ({
+            //     ...task,
+            //     order: index,
+            // }));
 
             // Update all tasks with new orders
-            const allOtherTasks = milestoneTasks.filter(t =>
-                t.status !== source.droppableId && t.status !== destination.droppableId
-            );
-            const allUpdatedTasks = [
-                ...updatedSourceTasks,
-                ...updatedDestinationTasks,
-                ...allOtherTasks
-            ];
-            updateTaskOrder(milestoneId, allUpdatedTasks);
+            // const allOtherTasks = milestoneTasks.filter(t =>
+            //     t.status !== source.droppableId && t.status !== destination.droppableId
+            // );
+            // const allUpdatedTasks = [
+            //     ...updatedSourceTasks,
+            //     ...updatedDestinationTasks,
+            //     ...allOtherTasks
+            // ];
+            // updateTaskOrder(milestoneId, allUpdatedTasks);
         }
     };
 
     // Memoized function to get column tasks
-    const getColumnTasks = (columnId: TaskStatus) => {
-        return milestoneTasks
-            .filter(t => t.status === columnId)
-            .sort((a, b) => a.order - b.order);
-    };
+    // const getColumnTasks = (columnId: TaskStatus) => {
+    //     return milestoneTasks
+    //         .filter(t => t.status === columnId)
+    //         .sort((a, b) => a.order - b.order);
+    // };
 
     return (
         <>
