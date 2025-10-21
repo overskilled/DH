@@ -1,13 +1,12 @@
 "use client";
 import { motion } from 'framer-motion';
-import { ArrowLeft, FileText, DollarSign, Clock, Users, Calendar, Tag, Building2 } from 'lucide-react';
+import { ArrowLeft, FileText, DollarSign, Users, Calendar, Tag, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { DepartmentBadge } from '@/components/DepartmentBadge';
-import { StatusBadge } from '@/components/StatusBadge';
 import { UserAvatar, DocumentCreatorAvatar, DocumentResponsibleAvatar, UserAvatarStack } from '@/components/UserAvatar';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -16,6 +15,7 @@ import { User } from '@/lib/types';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { DocumentsService } from '@/services/document.service';
 
+// Simplified interface to prevent circular dependencies
 interface DocumentDetailData {
   id: string;
   title: string;
@@ -111,6 +111,16 @@ interface DocumentDetailData {
   }>;
 }
 
+// Simple progress component as fallback
+const SimpleProgress = ({ value, className = '' }: { value: number; className?: string }) => (
+  <div className={`w-full bg-gray-200 rounded-full h-2 ${className}`}>
+    <div 
+      className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+      style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
+    />
+  </div>
+);
+
 const DocumentDetail = () => {
   const router = useRouter();
   const params = useParams();
@@ -119,13 +129,20 @@ const DocumentDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const documentId = params.id as string;
+  const documentId = params?.id as string;
 
   useEffect(() => {
+    if (!documentId) {
+      setError('Document ID not found');
+      setLoading(false);
+      return;
+    }
     loadDocument();
   }, [documentId]);
 
   const loadDocument = async () => {
+    if (!documentId) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -139,15 +156,16 @@ const DocumentDetail = () => {
     }
   };
 
+  // Safe loading state
   if (loading) {
     return (
       <div className="space-y-6 p-4 sm:p-6">
         <div className="animate-pulse">
-          <div className="h-8 w-32 bg-muted rounded mb-4"></div>
-          <div className="h-12 bg-muted rounded mb-4"></div>
+          <div className="h-8 w-32 bg-gray-200 rounded mb-4"></div>
+          <div className="h-12 bg-gray-200 rounded mb-4"></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-24 bg-muted rounded"></div>
+              <div key={i} className="h-24 bg-gray-200 rounded"></div>
             ))}
           </div>
         </div>
@@ -155,6 +173,7 @@ const DocumentDetail = () => {
     );
   }
 
+  // Safe error state
   if (error || !document) {
     return (
       <div className="text-center py-12">
@@ -167,32 +186,36 @@ const DocumentDetail = () => {
     );
   }
 
+  // Safe calculations
   const budgetAmount = document.budgetAmount || 0;
   const spentAmount = document.spent || 0;
   const budgetProgress = budgetAmount > 0 ? (spentAmount / budgetAmount) * 100 : 0;
   const isOverBudget = budgetProgress > 90;
 
-  // Calculate statistics
-  const totalTasks = document.lists.flatMap(list => list.tasks).length;
-  const completedTasks = document.lists.flatMap(list => list.tasks).filter(task => task.status === 'DONE').length;
-  const pendingTasks = document.lists.flatMap(list => list.tasks).filter(task => task.status === 'PENDING').length;
-  const totalInvoiced = document.invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
-  const paidInvoices = document.invoices.filter(invoice => invoice.paid).length;
+  // Calculate statistics safely
+  const totalTasks = document.lists?.flatMap(list => list.tasks || []).length || 0;
+  const completedTasks = document.lists?.flatMap(list => list.tasks?.filter(task => task.status === 'DONE') || []).length || 0;
+  const pendingTasks = document.lists?.flatMap(list => list.tasks?.filter(task => task.status === 'PENDING') || []).length || 0;
+  const totalInvoiced = document.invoices?.reduce((sum, invoice) => sum + (invoice.amount || 0), 0) || 0;
+  const paidInvoices = document.invoices?.filter(invoice => invoice.paid).length || 0;
 
-  // Get all collaborators from tasks and time entries
+  // Get all collaborators safely
   const allCollaborators = [
     document.creator,
     document.responsable,
     document.referent,
-    ...document.lists.flatMap(list =>
-      list.tasks.flatMap(task => [
+    ...(document.lists?.flatMap(list =>
+      (list.tasks || []).flatMap(task => [
         task.assignee,
-        ...task.timeEntries.map(entry => entry.collaborator)
+        ...(task.timeEntries || []).map(entry => entry.collaborator)
       ])
-    )
+    ) || [])
   ].filter((user, index, array) =>
     user && array.findIndex(u => u?.id === user.id) === index
   );
+
+  // Use Progress component safely
+  const ProgressComponent = Progress || SimpleProgress;
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
@@ -239,7 +262,7 @@ const DocumentDetail = () => {
                 <Calendar className="h-3 w-3" />
                 Created {format(new Date(document.createdAt), 'MMM dd, yyyy')}
               </Badge>
-              {document.tags.map((tag, idx) => (
+              {(document.tags || []).map((tag, idx) => (
                 <Badge key={idx} variant="secondary" className="flex items-center gap-1">
                   <Tag className="h-3 w-3" />
                   {tag}
@@ -290,7 +313,7 @@ const DocumentDetail = () => {
             <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${isOverBudget ? 'text-destructive' : ''}`}>
               {budgetProgress.toFixed(0)}%
             </div>
-            <Progress
+            <ProgressComponent
               value={Math.min(budgetProgress, 100)}
               className={`mt-2 h-2 ${isOverBudget ? '[&>div]:bg-destructive' : ''}`}
             />
@@ -311,7 +334,7 @@ const DocumentDetail = () => {
             <div className="text-lg sm:text-xl lg:text-2xl font-bold">
               {completedTasks}/{totalTasks}
             </div>
-            <Progress
+            <ProgressComponent
               value={totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0}
               className="mt-2 h-2"
             />
@@ -330,10 +353,10 @@ const DocumentDetail = () => {
           </CardHeader>
           <CardContent>
             <div className="text-lg sm:text-xl lg:text-2xl font-bold">
-              {paidInvoices}/{document.invoices.length}
+              {paidInvoices}/{document.invoices?.length || 0}
             </div>
-            <Progress
-              value={document.invoices.length > 0 ? (paidInvoices / document.invoices.length) * 100 : 0}
+            <ProgressComponent
+              value={(document.invoices?.length || 0) > 0 ? (paidInvoices / (document.invoices?.length || 1)) * 100 : 0}
               className="mt-2 h-2"
             />
             <p className="text-xs text-muted-foreground mt-1">
@@ -396,7 +419,7 @@ const DocumentDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3">
-                    <UserAvatar user={document.referent as unknown as User} size="lg" />
+                    <UserAvatar user={document.referent as User} size="lg" />
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold truncate">
                         {document.referent.firstName} {document.referent.lastName}
@@ -442,13 +465,13 @@ const DocumentDetail = () => {
             <CardHeader>
               <CardTitle>Task Lists</CardTitle>
               <CardDescription>
-                {document.lists.length} lists with {totalTasks} total tasks
+                {(document.lists || []).length} lists with {totalTasks} total tasks
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {document.lists.map((list) => {
-                  const listTasks = list.tasks;
+                {(document.lists || []).map((list) => {
+                  const listTasks = list.tasks || [];
                   const completedListTasks = listTasks.filter(task => task.status === 'DONE').length;
                   const listProgress = listTasks.length > 0 ? (completedListTasks / listTasks.length) * 100 : 0;
 
@@ -458,7 +481,7 @@ const DocumentDetail = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="p-4 border rounded-lg hover:shadow-md transition-all cursor-pointer"
-                      onClick={() => router.push(`/dashboard/lists/${list.id}`)}
+                      onClick={() => list.id && router.push(`/dashboard/lists/${list.id}`)}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                         <div className="flex-1 min-w-0">
@@ -489,7 +512,7 @@ const DocumentDetail = () => {
                               <span className="text-muted-foreground">Progress</span>
                               <span className="font-medium">{listProgress.toFixed(0)}%</span>
                             </div>
-                            <Progress value={Math.min(listProgress, 100)} className="h-2" />
+                            <ProgressComponent value={Math.min(listProgress, 100)} className="h-2" />
                             <div className="flex justify-between text-xs mt-1 text-muted-foreground">
                               <span>{completedListTasks} completed</span>
                               <span>{listTasks.length} total</span>
@@ -507,7 +530,7 @@ const DocumentDetail = () => {
                   );
                 })}
 
-                {document.lists.length === 0 && (
+                {(document.lists || []).length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No task lists yet
                   </div>
@@ -522,12 +545,12 @@ const DocumentDetail = () => {
             <CardHeader>
               <CardTitle>Invoices</CardTitle>
               <CardDescription>
-                {document.invoices.length} invoices • {totalInvoiced.toLocaleString()} FCFA total
+                {(document.invoices || []).length} invoices • {totalInvoiced.toLocaleString()} FCFA total
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {document.invoices.map((invoice) => (
+                {(document.invoices || []).map((invoice) => (
                   <motion.div
                     key={invoice.id}
                     initial={{ opacity: 0, x: -10 }}
@@ -557,7 +580,7 @@ const DocumentDetail = () => {
                   </motion.div>
                 ))}
 
-                {document.invoices.length === 0 && (
+                {(document.invoices || []).length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No invoices yet
                   </div>
@@ -572,12 +595,12 @@ const DocumentDetail = () => {
             <CardHeader>
               <CardTitle>Files</CardTitle>
               <CardDescription>
-                {document.files.length} files attached to this document
+                {(document.files || []).length} files attached to this document
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {document.files.map((file) => (
+                {(document.files || []).map((file) => (
                   <motion.div
                     key={file.id}
                     initial={{ opacity: 0, x: -10 }}
@@ -597,7 +620,7 @@ const DocumentDetail = () => {
                   </motion.div>
                 ))}
 
-                {document.files.length === 0 && (
+                {(document.files || []).length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
                     No files attached
                   </div>
